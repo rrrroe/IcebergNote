@@ -1,6 +1,5 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:realm/realm.dart';
 import '../notes.dart';
 import '../main.dart';
@@ -390,7 +389,7 @@ class ChangePageState extends State<ChangePage> {
               left: 0,
               right: 0,
               child: Container(
-                height: 30,
+                height: 40,
                 decoration: BoxDecoration(
                     color: Theme.of(context).secondaryHeaderColor),
                 child: Row(
