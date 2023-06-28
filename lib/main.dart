@@ -55,19 +55,8 @@ var mainnotesList = NotesList();
 late Realm realm;
 
 void main() {
-  // DatabaseHelper.initializeTables();
-  // final config = Configuration.local([Notes.schema]);
-  // realm = Realm(config);
-
-  final config = Configuration.local([Notes.schema], schemaVersion: 3);
+  final config = Configuration.local([Notes.schema], schemaVersion: 6);
   realm = Realm(config);
-
-  // final config = Configuration.local([Notes.schema], schemaVersion: 3,
-  //     migrationCallback: ((migration, oldSchemaVersion) {
-  //   migration.deleteType('noteID');
-  // }));
-  // realm = Realm(config);
-
   runApp(
     const App(),
   );

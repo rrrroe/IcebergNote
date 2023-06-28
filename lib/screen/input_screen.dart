@@ -1,11 +1,21 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:realm/realm.dart';
 import '../notes.dart';
 import '../main.dart';
 
 String tmpTitle = "", tmpContext = "";
 late Notes latestNote;
+
+class KeyboardManager extends ChangeNotifier {
+  double keyboardHeight = 0.0;
+
+  void updateHeight(double height) {
+    keyboardHeight = height;
+    notifyListeners();
+  }
+}
 
 // ignore: must_be_immutable
 class ChangePage extends StatefulWidget {
@@ -36,6 +46,7 @@ class ChangePageState extends State<ChangePage> {
   var wordCount1 = 0;
   var wordCount2 = 0;
   FocusNode focusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -44,10 +55,10 @@ class ChangePageState extends State<ChangePage> {
     contentController.text = widget.note.noteContext;
     wordCount1 = titleController.text.length;
     wordCount2 = contentController.text.length;
-    // _controller = QuillController(
-    //   document: Document.fromJson(jsonDecode(widget.note.noteContext)),
-    //   selection: const TextSelection.collapsed(offset: 0),
-    // );
+    final KeyboardManager keyboardManager = KeyboardManager();
+    focusNode.addListener(() {
+      keyboardManager.updateHeight(MediaQuery.of(context).viewInsets.bottom);
+    });
     List<Notes> typeDistinctList =
         realm.query<Notes>("noteType !='' DISTINCT(noteType)").toList();
 
@@ -97,366 +108,316 @@ class ChangePageState extends State<ChangePage> {
           title: const Text(""),
           actions: const [],
         ),
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
+        body: Stack(
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 25, // 左右间距
-                      vertical: 0 // 上下间距
-                      ),
-                  child: Column(
-                    children: [
-                      TextField(
-                        textAlign: TextAlign.center,
-                        controller: titleController,
-                        style: const TextStyle(
-                          fontSize: 22,
-                        ),
-                        decoration: const InputDecoration(
-                            labelText: "标题",
-                            labelStyle: TextStyle(
-                              color: Colors.grey,
-                            )
-                            // border: OutlineInputBorder(),
-                            // focusedBorder:
-                            //     OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
-                            // enabledBorder: OutlineInputBorder(
-                            //     borderSide: BorderSide(color: Colors.blue)),
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 25, // 左右间距
+                          vertical: 0 // 上下间距
+                          ),
+                      child: Column(
+                        children: [
+                          TextField(
+                            textAlign: TextAlign.center,
+                            controller: titleController,
+                            style: const TextStyle(
+                              fontSize: 22,
                             ),
-                        onChanged: (value) {
-                          setState(() {
-                            wordCount1 = value.length;
-                          });
-                        },
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text('${wordCount1 + wordCount2}字符'),
-                        ],
-                      ),
-                      Wrap(
-                        direction: Axis.horizontal,
-                        alignment: WrapAlignment.start, // Left align
-                        spacing: 8.0,
-                        runSpacing: 4.0,
-                        children: [
-                          MenuAnchor(
-                            builder: (context, controller, child) {
-                              return FilledButton.tonal(
-                                onPressed: () {
-                                  if (controller.isOpen) {
-                                    controller.close();
-                                  } else {
-                                    controller.open();
-                                  }
-                                },
-                                child: Text(
-                                  widget.note.noteType == ''
-                                      ? '类型'
-                                      : widget.note.noteType,
-                                  style: widget.note.noteType == ''
-                                      ? const TextStyle(color: Colors.grey)
-                                      : const TextStyle(
-                                          color: Color.fromARGB(
-                                              255, 56, 128, 186)),
+                            decoration: const InputDecoration(
+                                labelText: "标题",
+                                labelStyle: TextStyle(
+                                  color: Colors.grey,
+                                )
+                                // border: OutlineInputBorder(),
+                                // focusedBorder:
+                                //     OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
+                                // enabledBorder: OutlineInputBorder(
+                                //     borderSide: BorderSide(color: Colors.blue)),
                                 ),
-                              );
+                            onChanged: (value) {
+                              setState(() {
+                                wordCount1 = value.length;
+                              });
                             },
-                            menuChildren: widget.typeList.map((type) {
-                              return MenuItemButton(
-                                child: Text(type),
-                                onPressed: () {
-                                  switch (type) {
-                                    case '清空':
-                                      setState(() {
-                                        realm.write(() {
-                                          widget.note.noteType = '';
-                                        });
-                                      });
-                                      break;
-                                    case '新建':
-                                      showDialog(
-                                        context: context,
-                                        builder: (ctx) {
-                                          return InputAlertDialog(
-                                            onSubmitted: (text) {
-                                              setState(() {
-                                                if (!text.startsWith('.')) {
-                                                  text = '.$text';
-                                                }
-                                                widget.typeList.add(text);
-                                                realm.write(() {
-                                                  widget.note.noteType = text;
-                                                });
-                                              });
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text('${wordCount1 + wordCount2}字符'),
+                            ],
+                          ),
+                          Wrap(
+                            direction: Axis.horizontal,
+                            alignment: WrapAlignment.start, // Left align
+                            spacing: 8.0,
+                            runSpacing: 4.0,
+                            children: [
+                              MenuAnchor(
+                                builder: (context, controller, child) {
+                                  return FilledButton.tonal(
+                                    onPressed: () {
+                                      if (controller.isOpen) {
+                                        controller.close();
+                                      } else {
+                                        controller.open();
+                                      }
+                                    },
+                                    child: Text(
+                                      widget.note.noteType == ''
+                                          ? '类型'
+                                          : widget.note.noteType,
+                                      style: widget.note.noteType == ''
+                                          ? const TextStyle(color: Colors.grey)
+                                          : const TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 56, 128, 186)),
+                                    ),
+                                  );
+                                },
+                                menuChildren: widget.typeList.map((type) {
+                                  return MenuItemButton(
+                                    child: Text(type),
+                                    onPressed: () {
+                                      switch (type) {
+                                        case '清空':
+                                          setState(() {
+                                            realm.write(() {
+                                              widget.note.noteType = '';
+                                            });
+                                          });
+                                          break;
+                                        case '新建':
+                                          showDialog(
+                                            context: context,
+                                            builder: (ctx) {
+                                              return InputAlertDialog(
+                                                onSubmitted: (text) {
+                                                  setState(() {
+                                                    if (!text.startsWith('.')) {
+                                                      text = '.$text';
+                                                    }
+                                                    widget.typeList.add(text);
+                                                    realm.write(() {
+                                                      widget.note.noteType =
+                                                          text;
+                                                    });
+                                                  });
+                                                },
+                                              );
                                             },
                                           );
-                                        },
-                                      );
-                                      break;
-                                    default:
-                                      setState(() {
-                                        realm.write(() {
-                                          widget.note.noteType = type;
-                                        });
-                                      });
-                                  }
+                                          break;
+                                        default:
+                                          setState(() {
+                                            realm.write(() {
+                                              widget.note.noteType = type;
+                                            });
+                                          });
+                                      }
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                              MenuAnchor(
+                                builder: (context, controller, child) {
+                                  return FilledButton.tonal(
+                                    onPressed: () {
+                                      if (controller.isOpen) {
+                                        controller.close();
+                                      } else {
+                                        controller.open();
+                                      }
+                                    },
+                                    child: Text(
+                                      widget.note.noteProject == ''
+                                          ? '项目'
+                                          : widget.note.noteProject,
+                                      style: widget.note.noteProject == ''
+                                          ? const TextStyle(color: Colors.grey)
+                                          : const TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 215, 55, 55)),
+                                    ),
+                                  );
                                 },
-                              );
-                            }).toList(),
-                          ),
-                          MenuAnchor(
-                            builder: (context, controller, child) {
-                              return FilledButton.tonal(
-                                onPressed: () {
-                                  if (controller.isOpen) {
-                                    controller.close();
-                                  } else {
-                                    controller.open();
-                                  }
-                                },
-                                child: Text(
-                                  widget.note.noteProject == ''
-                                      ? '项目'
-                                      : widget.note.noteProject,
-                                  style: widget.note.noteProject == ''
-                                      ? const TextStyle(color: Colors.grey)
-                                      : const TextStyle(
-                                          color:
-                                              Color.fromARGB(255, 215, 55, 55)),
-                                ),
-                              );
-                            },
-                            menuChildren: widget.projectList.map((project) {
-                              return MenuItemButton(
-                                child: Text(project),
-                                onPressed: () {
-                                  switch (project) {
-                                    case '清空':
-                                      setState(() {
-                                        realm.write(() {
-                                          widget.note.noteProject = '';
-                                        });
-                                      });
-                                      break;
-                                    case '新建':
-                                      showDialog(
-                                        context: context,
-                                        builder: (ctx) {
-                                          return InputAlertDialog(
-                                            onSubmitted: (text) {
-                                              setState(() {
-                                                if (!text.startsWith('~')) {
-                                                  text = '~$text';
-                                                }
-                                                widget.typeList.add(text);
-                                                realm.write(() {
-                                                  widget.note.noteProject =
-                                                      text;
-                                                });
-                                              });
+                                menuChildren: widget.projectList.map((project) {
+                                  return MenuItemButton(
+                                    child: Text(project),
+                                    onPressed: () {
+                                      switch (project) {
+                                        case '清空':
+                                          setState(() {
+                                            realm.write(() {
+                                              widget.note.noteProject = '';
+                                            });
+                                          });
+                                          break;
+                                        case '新建':
+                                          showDialog(
+                                            context: context,
+                                            builder: (ctx) {
+                                              return InputAlertDialog(
+                                                onSubmitted: (text) {
+                                                  setState(() {
+                                                    if (!text.startsWith('~')) {
+                                                      text = '~$text';
+                                                    }
+                                                    widget.projectList
+                                                        .add(text);
+                                                    realm.write(() {
+                                                      widget.note.noteProject =
+                                                          text;
+                                                    });
+                                                  });
+                                                },
+                                              );
                                             },
                                           );
-                                        },
-                                      );
-                                      break;
-                                    default:
-                                      setState(() {
-                                        realm.write(() {
-                                          widget.note.noteProject = project;
-                                        });
-                                      });
-                                  }
+                                          break;
+                                        default:
+                                          setState(() {
+                                            realm.write(() {
+                                              widget.note.noteProject = project;
+                                            });
+                                          });
+                                      }
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                              MenuAnchor(
+                                builder: (context, controller, child) {
+                                  return FilledButton.tonal(
+                                    onPressed: () {
+                                      if (controller.isOpen) {
+                                        controller.close();
+                                      } else {
+                                        controller.open();
+                                      }
+                                    },
+                                    child: Text(
+                                      widget.note.noteFolder == ''
+                                          ? '路径'
+                                          : widget.note.noteFolder,
+                                      style: widget.note.noteFolder == ''
+                                          ? const TextStyle(color: Colors.grey)
+                                          : const TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 4, 123, 60)),
+                                    ),
+                                  );
                                 },
-                              );
-                            }).toList(),
-                          ),
-                          MenuAnchor(
-                            builder: (context, controller, child) {
-                              return FilledButton.tonal(
-                                onPressed: () {
-                                  if (controller.isOpen) {
-                                    controller.close();
-                                  } else {
-                                    controller.open();
-                                  }
-                                },
-                                child: Text(
-                                  widget.note.noteFolder == ''
-                                      ? '路径'
-                                      : widget.note.noteFolder,
-                                  style: widget.note.noteFolder == ''
-                                      ? const TextStyle(color: Colors.grey)
-                                      : const TextStyle(
-                                          color:
-                                              Color.fromARGB(255, 4, 123, 60)),
-                                ),
-                              );
-                            },
-                            menuChildren: widget.folderList.map((folder) {
-                              return MenuItemButton(
-                                child: Text(folder),
-                                onPressed: () {
-                                  switch (folder) {
-                                    case '清空':
-                                      setState(() {
-                                        realm.write(() {
-                                          widget.note.noteFolder = '';
-                                        });
-                                      });
-                                      break;
-                                    case '新建':
-                                      showDialog(
-                                        context: context,
-                                        builder: (ctx) {
-                                          return InputAlertDialog(
-                                            onSubmitted: (text) {
-                                              setState(() {
-                                                if (!text.startsWith('/')) {
-                                                  text = '/$text';
-                                                }
-                                                widget.typeList.add(text);
-                                                realm.write(() {
-                                                  widget.note.noteFolder = text;
-                                                });
-                                              });
+                                menuChildren: widget.folderList.map((folder) {
+                                  return MenuItemButton(
+                                    child: Text(folder),
+                                    onPressed: () {
+                                      switch (folder) {
+                                        case '清空':
+                                          setState(() {
+                                            realm.write(() {
+                                              widget.note.noteFolder = '';
+                                            });
+                                          });
+                                          break;
+                                        case '新建':
+                                          showDialog(
+                                            context: context,
+                                            builder: (ctx) {
+                                              return InputAlertDialog(
+                                                onSubmitted: (text) {
+                                                  setState(() {
+                                                    if (!text.startsWith('/')) {
+                                                      text = '/$text';
+                                                    }
+                                                    widget.folderList.add(text);
+                                                    realm.write(() {
+                                                      widget.note.noteFolder =
+                                                          text;
+                                                    });
+                                                  });
+                                                },
+                                              );
                                             },
                                           );
-                                        },
-                                      );
-                                      break;
-                                    default:
-                                      setState(() {
-                                        realm.write(() {
-                                          widget.note.noteFolder = folder;
-                                        });
-                                      });
-                                  }
-                                },
-                              );
-                            }).toList(),
+                                          break;
+                                        default:
+                                          setState(() {
+                                            realm.write(() {
+                                              widget.note.noteFolder = folder;
+                                            });
+                                          });
+                                      }
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      // Container(
-                      //   width: 300,
-                      //   child: QuillEditor.basic(
-                      //     controller: _controller,
-                      //     readOnly: false,
-                      //   ),
-                      // ),
-                      // QuillEditor(
-                      //   controller: _controller,
-                      //   scrollController: ScrollController(),
-                      //   scrollable: true,
-                      //   focusNode: focusNode,
-                      //   autoFocus: false,
-                      //   readOnly: false,
-                      //   maxHeight: 5,
-                      //   minHeight: 5,
-                      //   placeholder: 'Add content',
-                      //   enableSelectionToolbar: true,
-                      //   expands: false,
-                      //   padding: EdgeInsets.zero,
-                      //   onImagePaste: _onImagePaste,
-                      //   onTapUp: (details, p1) {
-                      //     return false;
-                      //   },
-                      //   customStyles: DefaultStyles(
-                      //     h1: DefaultTextBlockStyle(
-                      //         const TextStyle(
-                      //           fontSize: 32,
-                      //           color: Colors.black,
-                      //           height: 1.15,
-                      //           fontWeight: FontWeight.w300,
-                      //         ),
-                      //         const VerticalSpacing(16, 0),
-                      //         const VerticalSpacing(0, 0),
-                      //         null),
-                      //     sizeSmall: const TextStyle(fontSize: 9),
-                      //   ),
-                      // ),
-                      TextField(
-                        focusNode: focusNode,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          height: 1.5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        controller: contentController,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                        ),
-                        maxLines: null,
-                        minLines: 6,
-                        onChanged: (value) {
-                          setState(() {
-                            wordCount2 = value.length;
-                          });
-                        },
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          TextButton(
-                            onPressed: () async {
-                              await FlutterClipboard.copy(
-                                  contentController.text);
-                              // ignore: use_build_context_synchronously
-                              poplog(1, '复制', context);
+                          TextField(
+                            focusNode: focusNode,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              height: 1.5,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            controller: contentController,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                            ),
+                            maxLines: null,
+                            minLines: 6,
+                            onChanged: (value) {
+                              setState(() {
+                                wordCount2 = value.length;
+                              });
                             },
-                            child: const Text('复制'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              save();
-                              Navigator.pop(context);
-                              widget.onPageClosed();
-                            },
-                            child: const Text('保存'),
                           ),
                         ],
                       ),
-                      // QuillToolbar.basic(
-                      //   controller: _controller,
-                      // ),
-                      const SizedBox(height: 5),
-                      // 一个屏幕下方的ROW，当键盘弹出的时候自动在键盘上面
-                    ],
+                    ),
                   ),
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: 30,
+                decoration: BoxDecoration(
+                    color: Theme.of(context).secondaryHeaderColor),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        await FlutterClipboard.copy(contentController.text);
+                        // ignore: use_build_context_synchronously
+                        poplog(1, '复制', context);
+                      },
+                      child: const Text('复制'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        save();
+                        Navigator.pop(context);
+                        widget.onPageClosed();
+                      },
+                      child: const Text('保存'),
+                    ),
+                  ],
                 ),
               ),
             ),
-            // Positioned(
-            //   bottom: 400,
-            //   child: Container(
-            //     height: 30,
-            //     decoration: const BoxDecoration(
-            //       border: Border(
-            //           top: BorderSide(width: 1, color: Colors.grey),
-            //           bottom: BorderSide(width: 1, color: Colors.grey)),
-            //     ),
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.end,
-            //       crossAxisAlignment: CrossAxisAlignment.center,
-            //       children: [
-            //         TextButton(
-            //           onPressed: () {
-            //             save();
-            //           },
-            //           child: const Text('保存'),
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
-            // const SizedBox(height: 6),
           ],
         ),
       ),
@@ -471,8 +432,15 @@ class ChangePageState extends State<ChangePage> {
         List<String> tmpList = contentController.text.split('\n');
         List<Notes> tmpnoteList = [];
         for (int i = 0; i < tmpList.length; i++) {
-          tmpnoteList.add(Notes(ObjectId(), '', tmpList[i], '',
-              noteType: '.todo', noteCreatTime: DateTime.now().toString()));
+          tmpnoteList.add(Notes(
+            ObjectId(),
+            widget.note.noteFolder,
+            tmpList[i],
+            '',
+            noteType: '.todo',
+            noteCreatTime: DateTime.now().toString(),
+            noteProject: widget.note.noteProject,
+          ));
           realm.add(tmpnoteList[i]);
         }
         realm.delete(widget.note);
@@ -505,6 +473,7 @@ class _InputAlertDialogState extends State<InputAlertDialog> {
   void _submit() {
     final text = _controller.text;
     widget.onSubmitted(text);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -568,6 +537,17 @@ void poplog(int n, String m, BuildContext context) {
         duration: const Duration(seconds: 3),
         elevation: 8.0,
       ),
+    );
+  }
+}
+
+class MenuWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        TextButton(child: const Text('菜单'), onPressed: () {/* 点击按钮的操作 */}),
+      ],
     );
   }
 }

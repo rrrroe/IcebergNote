@@ -291,16 +291,27 @@ class BottomPopSheet extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
-          // ListTile(
-          //   leading: const Icon(Icons.settings),
-          //   title: const Text('属性'),
-          //   onTap: () {
-          //     // TODO:编辑属性
-          //     onDialogClosed();
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('编辑'),
+            onTap: () {
+              onDialogClosed();
 
-          //     Navigator.pop(context);
-          //   },
-          // ),
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangePage(
+                    onPageClosed: () {
+                      onDialogClosed();
+                    },
+                    note: note,
+                    mod: 1,
+                  ),
+                ),
+              );
+            },
+          ),
           ListTile(
             leading: const Icon(Icons.delete),
             title: const Text('删除', style: TextStyle(color: Colors.red)),

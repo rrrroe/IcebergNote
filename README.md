@@ -1,16 +1,31 @@
-# icebergnote
+# IcebergNote
 
-A new Flutter project.
+一个基于 Flutter 开发的本地存储记录软件，记录你的一切。
 
-## Getting Started
+现在，她只是一个安卓离线备忘录，简洁、快速、眯起眼睛来也还算好看。
 
-This project is a starting point for a Flutter application.
+在我的想象中，后续的功能清单多得令人发指：链接、双链、待办、习惯、记账、投资记录、时间记录、读书记录、跑步记录、微信读书书摘、多维表、富文本、多端同步、数据导入导出、各种回顾、每日复盘、自动化周报月报年报、多维表……
 
-A few resources to get you started if this is your first Flutter project:
+每次想到未来的她是如此完美，我都会激动到睡不着觉！！！
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+下载地址：https://www.feijix.com/s/3ugS1m4
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 当前功能
+
+[备忘]
+[待办]
+
+## 更新日志
+
+V0.0.6-
+1、[界面]优化：软键盘上方菜单，终于有了，折腾真机调试、问 AI 都是狗屁不通，遇到好多问题，还把我的历史数据都搞丢了；
+2、[待办]优化：一次性多个待办时，会复制设定的类型、项目、路径；
+3、[模型]抓虫：新建属性字段弹窗不会消失，类型、项目、路径字段列表混乱；
+
+V0.0.5-20230626
+1、回收站功能上线（源自一次痛心疾首的误删）；  
+2、统一首页、搜索、回收站三个页面（后续修改样式更 easy）；  
+3、主页新增实时时间（后续会有时间记录＋日期提醒）；  
+4、解决标题溢出的 BUG；  
+5、优化了类型、项目、路径的显示和字段；  
+6、简易待办系统上线啦，只需要将类型改为““todo”即可，标题为空时，内容里面换行可以一次性增加多个待办（界面和功能还比较简陋，后续改进）。
