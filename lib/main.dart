@@ -55,7 +55,7 @@ var mainnotesList = NotesList();
 late Realm realm;
 
 void main() {
-  final config = Configuration.local([Notes.schema], schemaVersion: 6);
+  final config = Configuration.local([Notes.schema], schemaVersion: 7);
   realm = Realm(config);
   runApp(
     const App(),
