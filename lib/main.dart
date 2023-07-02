@@ -48,6 +48,13 @@ class NotesList {
         "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType == '.TODO' OR noteType == '.todo' OR noteType == '.Todo' OR noteType == '.待办' ) SORT(id DESC) LIMIT($visibleItemCount)",
         [n]);
   }
+
+  searchall(String n, int m) {
+    visibleItemCount = visibleItemCount + m;
+    notesList = realm.query<Notes>(
+        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) SORT(id DESC) LIMIT($visibleItemCount)",
+        [n]);
+  }
 }
 
 var mainnotesList = NotesList();
