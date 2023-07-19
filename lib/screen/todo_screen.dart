@@ -11,6 +11,7 @@ class TodoPage extends StatefulWidget {
   const TodoPage({super.key, required this.mod, required this.txt});
   final String txt;
   final int mod;
+
   @override
   _TodoPageState createState() => _TodoPageState();
 }
@@ -21,23 +22,17 @@ class _TodoPageState extends State<TodoPage> {
   var searchnotesList = NotesList();
   String searchText = '';
   late String time;
+  List<String> folderList = ['清空'];
+  List<String> projectList = ['清空'];
+  String searchProject = '';
+  String searchFolder = '';
+
   void refreshList() {
     double scrollPosition = _scrollController.position.pixels;
     setState(() {
-      switch (widget.mod) {
-        case 0:
-          searchnotesList.search(searchText, 0);
-          break;
-        case 1:
-          searchnotesList.search(searchText, 0);
-          break;
-        case 2:
-          searchnotesList.searchDeleted(searchText, 0);
-          break;
-        case 3:
-          searchnotesList.searchTodo(searchText, 0);
-          break;
-      }
+      searchnotesList.searchall(
+          searchText, 0, '.todo', searchProject, searchFolder);
+
       _scrollController.jumpTo(scrollPosition);
     });
   }
@@ -46,19 +41,25 @@ class _TodoPageState extends State<TodoPage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
-    switch (widget.mod) {
-      case 0:
-        searchnotesList.search(searchText, 0);
-        break;
-      case 1:
-        searchnotesList.search(searchText, 0);
-        break;
-      case 2:
-        searchnotesList.searchDeleted(searchText, 0);
-        break;
-      case 3:
-        searchnotesList.searchTodo(searchText, 0);
-        break;
+
+    searchnotesList.searchall(
+        searchText, 0, '.todo', searchProject, searchFolder);
+
+    List<Notes> folderDistinctList = realm
+        .query<Notes>(
+            "noteFolder !='' AND noteType == '.todo' DISTINCT(noteFolder)")
+        .toList();
+
+    for (int i = 0; i < folderDistinctList.length; i++) {
+      folderList.add(folderDistinctList[i].noteFolder);
+    }
+    List<Notes> projectDistinctList = realm
+        .query<Notes>(
+            "noteProject !='' AND noteType == '.todo' DISTINCT(noteProject)")
+        .toList();
+
+    for (int i = 0; i < projectDistinctList.length; i++) {
+      projectList.add(projectDistinctList[i].noteProject);
     }
   }
 
@@ -73,68 +74,17 @@ class _TodoPageState extends State<TodoPage> {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
       setState(() {
-        switch (widget.mod) {
-          case 0:
-            searchnotesList.search(searchText, 15);
-            break;
-          case 1:
-            searchnotesList.search(searchText, 15);
-            break;
-          case 2:
-            searchnotesList.searchDeleted(searchText, 15);
-            break;
-          case 3:
-            searchnotesList.searchTodo(searchText, 15);
-            break;
-        }
+        searchnotesList.searchall(
+            searchText, 15, '.todo', searchProject, searchFolder);
+
         refreshList();
       });
     }
     if (_scrollController.position.pixels == 0 && widget.mod == 0) {
       setState(() {
-        switch (widget.mod) {
-          case 0:
-            searchnotesList.search(searchText, 0);
-            break;
-          case 1:
-            searchnotesList.search(searchText, 0);
-            break;
-          case 2:
-            searchnotesList.searchDeleted(searchText, 0);
-            break;
-          case 3:
-            searchnotesList.searchTodo(searchText, 0);
-            break;
-        }
+        searchnotesList.searchall(
+            searchText, 0, '.todo', searchProject, searchFolder);
       });
-    }
-  }
-
-  PreferredSizeWidget buildAppBar() {
-    if (widget.mod == 0) {
-      return AppBar(
-        title: Row(
-          children: [
-            const Expanded(
-              child: TimeBar(),
-            ),
-            IconButton(
-              onPressed: () {
-                // TODO:时间记录
-              },
-              icon: const Icon(
-                Icons.add_alarm,
-              ),
-            ),
-          ],
-        ),
-      );
-    } else if (widget.mod == 1) {
-      return AppBar(title: const Text("搜索"));
-    } else if (widget.mod == 3) {
-      return AppBar(title: const Text("待办"));
-    } else {
-      return AppBar(title: const Text("回收站"));
     }
   }
 
@@ -443,43 +393,112 @@ class _TodoPageState extends State<TodoPage> {
             );
           },
           child: const Icon(Icons.add)),
-      appBar: buildAppBar(),
-      body: Column(
-        children: [
-          Offstage(
-            offstage: widget.mod == 0,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-              child: Center(
-                child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      hintText: '输入内容',
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        searchText = value;
-                        switch (widget.mod) {
-                          case 0:
-                            searchnotesList.search(searchText, 0);
-                            break;
-                          case 1:
-                            searchnotesList.search(searchText, 0);
-                            break;
-                          case 2:
-                            searchnotesList.searchDeleted(searchText, 0);
-                            break;
-                          case 3:
-                            searchnotesList.searchTodo(searchText, 0);
-                            break;
-                        }
-                        refreshList();
-                      });
-                    }),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 20,
+            ),
+            // const Text(
+            //   '待办',
+            //   style: TextStyle(
+            //     color: Color.fromARGB(255, 56, 128, 186), // 改变颜色
+            //     fontSize: 20, // 改变字体大小
+            //   ),
+            // ),
+            Expanded(
+              child: TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: '搜索',
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(
+                    () {
+                      searchText = value;
+                      searchnotesList.searchall(
+                          searchText, 0, '.todo', searchProject, searchFolder);
+                      refreshList();
+                    },
+                  );
+                },
               ),
             ),
-          ),
+            MenuAnchor(
+              builder: (context, controller, child) {
+                return FilledButton.tonal(
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  child: Text(
+                    searchProject == '' ? '项目' : searchProject,
+                    style: searchProject == ''
+                        ? const TextStyle(color: Colors.grey)
+                        : const TextStyle(
+                            color: Color.fromARGB(255, 215, 55, 55)),
+                  ),
+                );
+              },
+              menuChildren: projectList.map((project) {
+                return MenuItemButton(
+                  child: Text(project),
+                  onPressed: () {
+                    if (project == '清空') {
+                      searchProject = '';
+                    } else {
+                      searchProject = project;
+                    }
+                    refreshList();
+                  },
+                );
+              }).toList(),
+            ),
+            MenuAnchor(
+              builder: (context, controller, child) {
+                return FilledButton.tonal(
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  child: Text(
+                    searchFolder == '' ? '路径' : searchFolder,
+                    style: searchFolder == ''
+                        ? const TextStyle(color: Colors.grey)
+                        : const TextStyle(
+                            color: Color.fromARGB(255, 4, 123, 60)),
+                  ),
+                );
+              },
+              menuChildren: folderList.map((folder) {
+                return MenuItemButton(
+                  child: Text(folder),
+                  onPressed: () {
+                    if (folder == '清空') {
+                      searchFolder = '';
+                    } else {
+                      searchFolder = folder;
+                    }
+                    refreshList();
+                  },
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -502,8 +521,6 @@ class _TodoPageState extends State<TodoPage> {
     );
   }
 }
-
-
 
 // class TodoPage extends StatefulWidget {
 //   const TodoPage({super.key, required this.mod, required this.txt});

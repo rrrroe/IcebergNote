@@ -49,11 +49,11 @@ class NotesList {
         [n]);
   }
 
-  searchall(String n, int m) {
+  searchall(String n, int m, String type, String project, String folder) {
     visibleItemCount = visibleItemCount + m;
     notesList = realm.query<Notes>(
-        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) SORT(id DESC) LIMIT($visibleItemCount)",
-        [n]);
+        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType CONTAINS[c] \$1 AND noteProject CONTAINS[c] \$2 AND noteFolder CONTAINS[c] \$3 ) SORT(id DESC) LIMIT($visibleItemCount)",
+        [n, type, project, folder]);
   }
 }
 
