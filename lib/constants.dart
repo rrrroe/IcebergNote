@@ -38,3 +38,12 @@ enum ScreenSelected {
   const ScreenSelected(this.value);
   final int value;
 }
+
+ButtonStyle selectButtonStyle = ElevatedButton.styleFrom(
+  foregroundColor: const Color.fromARGB(15, 233, 239, 247),
+  backgroundColor: const Color.fromARGB(200, 233, 239, 247),
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(4),
+  ),
+  padding: const EdgeInsets.all(3),
+);

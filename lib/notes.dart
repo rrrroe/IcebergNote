@@ -28,6 +28,9 @@ class _Notes {
   late bool noteIsDeleted = false;
   late bool noteIsShared = false;
   late bool noteIsAchive = false;
+  late String noteFinishState = "";
+  late String noteFinishTime = "";
+  late String noteAlarmTime = "";
 }
 //flutter pub run realm generate，用来生成notes.g.dart
 //   // 将 Notes 表加入到 Realm 中

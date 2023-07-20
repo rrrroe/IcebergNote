@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:realm/realm.dart';
 
+import '../constants.dart';
 import '../main.dart';
 import '../notes.dart';
 import 'input_screen.dart';
@@ -24,6 +25,8 @@ class _TodoPageState extends State<TodoPage> {
   late String time;
   List<String> folderList = ['清空'];
   List<String> projectList = ['清空'];
+  List<String> isFinishedList = ['待完', '已完', '全部'];
+
   String searchProject = '';
   String searchFolder = '';
 
@@ -398,13 +401,13 @@ class _TodoPageState extends State<TodoPage> {
         child: Row(
           children: [
             SizedBox(
-              width: 20,
+              width: 30,
             ),
             // const Text(
             //   '待办',
             //   style: TextStyle(
-            //     color: Color.fromARGB(255, 56, 128, 186), // 改变颜色
-            //     fontSize: 20, // 改变字体大小
+            //     color: Color.fromARGB(255, 56, 128, 186),
+            //     fontSize: 20,
             //   ),
             // ),
             Expanded(
@@ -431,6 +434,7 @@ class _TodoPageState extends State<TodoPage> {
             MenuAnchor(
               builder: (context, controller, child) {
                 return FilledButton.tonal(
+                  style: selectButtonStyle,
                   onPressed: () {
                     if (controller.isOpen) {
                       controller.close();
@@ -461,9 +465,13 @@ class _TodoPageState extends State<TodoPage> {
                 );
               }).toList(),
             ),
+            SizedBox(
+              width: 5,
+            ),
             MenuAnchor(
               builder: (context, controller, child) {
                 return FilledButton.tonal(
+                  style: selectButtonStyle,
                   onPressed: () {
                     if (controller.isOpen) {
                       controller.close();
@@ -493,6 +501,46 @@ class _TodoPageState extends State<TodoPage> {
                   },
                 );
               }).toList(),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            MenuAnchor(
+              builder: (context, controller, child) {
+                return FilledButton.tonal(
+                  style: selectButtonStyle,
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  child: Text(
+                    searchFolder == '未完成' ? '路径' : searchFolder,
+                    style: searchFolder == ''
+                        ? const TextStyle(color: Colors.grey)
+                        : const TextStyle(
+                            color: Color.fromARGB(255, 139, 78, 236)),
+                  ),
+                );
+              },
+              menuChildren: folderList.map((folder) {
+                return MenuItemButton(
+                  child: Text(folder),
+                  onPressed: () {
+                    if (folder == '清空') {
+                      searchFolder = '';
+                    } else {
+                      searchFolder = folder;
+                    }
+                    refreshList();
+                  },
+                );
+              }).toList(),
+            ),
+            SizedBox(
+              width: 30,
             ),
           ],
         ),

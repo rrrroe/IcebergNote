@@ -1,6 +1,7 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:realm/realm.dart';
+import '../constants.dart';
 import '../notes.dart';
 import '../main.dart';
 
@@ -30,7 +31,7 @@ class ChangePage extends StatefulWidget {
   List<String> typeList = ['新建', '清空'];
   List<String> folderList = ['新建', '清空'];
   List<String> projectList = ['新建', '清空'];
-
+  List<String> finishList = ['未完成', '已完成', '进行中', '全部', '新建'];
   @override
   ChangePageState createState() => ChangePageState();
 }
@@ -75,6 +76,15 @@ class ChangePageState extends State<ChangePage> {
 
     for (int i = 0; i < projectDistinctList.length; i++) {
       widget.projectList.add(projectDistinctList[i].noteProject);
+    }
+    if (widget.note.noteType == '.todo' && widget.note.noteFinishState == '') {
+      List<Notes> finishDistinctList = realm
+          .query<Notes>("noteFinishState !='' DISTINCT(noteFinishState)")
+          .toList();
+
+      for (int i = 0; i < finishDistinctList.length; i++) {
+        widget.finishList.add(finishDistinctList[i].noteFinishState);
+      }
     }
   }
 
@@ -160,6 +170,7 @@ class ChangePageState extends State<ChangePage> {
                               MenuAnchor(
                                 builder: (context, controller, child) {
                                   return FilledButton.tonal(
+                                    style: selectButtonStyle,
                                     onPressed: () {
                                       if (controller.isOpen) {
                                         controller.close();
@@ -226,6 +237,7 @@ class ChangePageState extends State<ChangePage> {
                               MenuAnchor(
                                 builder: (context, controller, child) {
                                   return FilledButton.tonal(
+                                    style: selectButtonStyle,
                                     onPressed: () {
                                       if (controller.isOpen) {
                                         controller.close();
@@ -293,6 +305,7 @@ class ChangePageState extends State<ChangePage> {
                               MenuAnchor(
                                 builder: (context, controller, child) {
                                   return FilledButton.tonal(
+                                    style: selectButtonStyle,
                                     onPressed: () {
                                       if (controller.isOpen) {
                                         controller.close();
@@ -355,6 +368,70 @@ class ChangePageState extends State<ChangePage> {
                                     },
                                   );
                                 }).toList(),
+                              ),
+                              Visibility(
+                                visible: widget.note.noteType == ".todo",
+                                child: MenuAnchor(
+                                  builder: (context, controller, child) {
+                                    return FilledButton.tonal(
+                                      style: selectButtonStyle,
+                                      onPressed: () {
+                                        if (controller.isOpen) {
+                                          controller.close();
+                                        } else {
+                                          controller.open();
+                                        }
+                                      },
+                                      child: Text(
+                                        widget.note.noteFolder,
+                                        style: const TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 180, 68, 255)),
+                                      ),
+                                    );
+                                  },
+                                  menuChildren: widget.folderList.map((folder) {
+                                    return MenuItemButton(
+                                      child: Text(folder),
+                                      onPressed: () {
+                                        switch (folder) {
+                                          case '清空':
+                                            setState(() {
+                                              realm.write(() {
+                                                widget.note.noteFolder = '';
+                                              });
+                                            });
+                                            break;
+                                          case '新建':
+                                            showDialog(
+                                              context: context,
+                                              builder: (ctx) {
+                                                return InputAlertDialog(
+                                                  onSubmitted: (text) {
+                                                    setState(() {
+                                                      widget.folderList
+                                                          .add(text);
+                                                      realm.write(() {
+                                                        widget.note.noteFolder =
+                                                            text;
+                                                      });
+                                                    });
+                                                  },
+                                                );
+                                              },
+                                            );
+                                            break;
+                                          default:
+                                            setState(() {
+                                              realm.write(() {
+                                                widget.note.noteFolder = folder;
+                                              });
+                                            });
+                                        }
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
                               ),
                             ],
                           ),
