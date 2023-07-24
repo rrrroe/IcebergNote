@@ -388,9 +388,9 @@ class _SearchPageState extends State<SearchPage> {
   final ScrollController _scrollController = ScrollController();
   var searchnotesList = NotesList();
   String searchText = '';
-  List<String> folderList = ['清空'];
-  List<String> typeList = ['清空'];
-  List<String> projectList = ['清空'];
+  List<String> folderList = ['全部'];
+  List<String> typeList = ['全部'];
+  List<String> projectList = ['全部'];
   // List<String> finishStateList = ['未完', '已完'];
   String searchType = '';
   String searchProject = '';
@@ -402,7 +402,6 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       switch (widget.mod) {
         case 0:
-          print(searchType);
           searchnotesList.searchall(
               searchText, 0, searchType, searchProject, searchFolder, '');
           break;
@@ -426,7 +425,8 @@ class _SearchPageState extends State<SearchPage> {
     _scrollController.addListener(_scrollListener);
     switch (widget.mod) {
       case 0:
-        searchnotesList.search(searchText, 0);
+        searchnotesList.searchall(
+            searchText, 0, searchType, searchProject, searchFolder, '');
         break;
       case 1:
         searchnotesList.search(searchText, 0);
@@ -482,7 +482,8 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         switch (widget.mod) {
           case 0:
-            searchnotesList.search(searchText, 15);
+            searchnotesList.searchall(
+                searchText, 15, searchType, searchProject, searchFolder, '');
             break;
           case 1:
             searchnotesList.search(searchText, 15);
@@ -501,7 +502,8 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         switch (widget.mod) {
           case 0:
-            searchnotesList.search(searchText, 0);
+            searchnotesList.searchall(
+                searchText, 0, searchType, searchProject, searchFolder, '');
             break;
           case 1:
             searchnotesList.search(searchText, 0);
@@ -519,19 +521,13 @@ class _SearchPageState extends State<SearchPage> {
 
   PreferredSizeWidget buildAppBar() {
     if (widget.mod == 0) {
-      return AppBar(
-        title: Row(
+      return PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: Row(
           children: [
             const SizedBox(
               width: 30,
             ),
-            // const Text(
-            //   '待办',
-            //   style: TextStyle(
-            //     color: Color.fromARGB(255, 56, 128, 186),
-            //     fontSize: 20,
-            //   ),
-            // ),
             Expanded(
               child: TextField(
                 controller: _searchController,
@@ -553,40 +549,7 @@ class _SearchPageState extends State<SearchPage> {
                 },
               ),
             ),
-            MenuAnchor(
-              builder: (context, controller, child) {
-                return FilledButton.tonal(
-                  style: selectButtonStyle,
-                  onPressed: () {
-                    if (controller.isOpen) {
-                      controller.close();
-                    } else {
-                      controller.open();
-                    }
-                  },
-                  child: Text(
-                    searchType == '' ? '类型' : searchType,
-                    style: searchType == ''
-                        ? const TextStyle(color: Colors.grey)
-                        : const TextStyle(
-                            color: Color.fromARGB(255, 56, 128, 186)),
-                  ),
-                );
-              },
-              menuChildren: typeList.map((type) {
-                return MenuItemButton(
-                  child: Text(type),
-                  onPressed: () {
-                    if (type == '清空') {
-                      searchType = '';
-                    } else {
-                      searchType = type;
-                    }
-                    refreshList();
-                  },
-                );
-              }).toList(),
-            ),
+
             const SizedBox(
               width: 5,
             ),
@@ -614,7 +577,7 @@ class _SearchPageState extends State<SearchPage> {
                 return MenuItemButton(
                   child: Text(project),
                   onPressed: () {
-                    if (project == '清空') {
+                    if (project == '全部') {
                       searchProject = '';
                     } else {
                       searchProject = project;
@@ -651,7 +614,7 @@ class _SearchPageState extends State<SearchPage> {
                 return MenuItemButton(
                   child: Text(folder),
                   onPressed: () {
-                    if (folder == '清空') {
+                    if (folder == '全部') {
                       searchFolder = '';
                     } else {
                       searchFolder = folder;
@@ -661,9 +624,43 @@ class _SearchPageState extends State<SearchPage> {
                 );
               }).toList(),
             ),
-            // const SizedBox(
-            //   width: 5,
-            // ),
+            const SizedBox(
+              width: 5,
+            ),
+            MenuAnchor(
+              builder: (context, controller, child) {
+                return FilledButton.tonal(
+                  style: selectButtonStyle,
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  child: Text(
+                    searchType == '' ? '类型' : searchType,
+                    style: searchType == ''
+                        ? const TextStyle(color: Colors.grey)
+                        : const TextStyle(
+                            color: Color.fromARGB(255, 56, 128, 186)),
+                  ),
+                );
+              },
+              menuChildren: typeList.map((type) {
+                return MenuItemButton(
+                  child: Text(type),
+                  onPressed: () {
+                    if (type == '全部') {
+                      searchType = '';
+                    } else {
+                      searchType = type;
+                    }
+                    refreshList();
+                  },
+                );
+              }).toList(),
+            ),
             // MenuAnchor(
             //   builder: (context, controller, child) {
             //     return FilledButton.tonal(
@@ -698,6 +695,7 @@ class _SearchPageState extends State<SearchPage> {
             //     );
             //   }).toList(),
             // ),
+
             const SizedBox(
               width: 30,
             ),
@@ -735,9 +733,8 @@ class _SearchPageState extends State<SearchPage> {
         note.noteType == '.待办' ||
         note.noteType == '.Todo') {
       return Card(
-        margin: const EdgeInsets.fromLTRB(30, 10, 30, 0),
-        elevation: 3, // 阴影大小
-
+        margin: const EdgeInsets.fromLTRB(30, 0, 30, 10),
+        elevation: 3,
         shadowColor: Theme.of(context).primaryColor,
         child: ListTile(
           title: CheckboxListTile(
@@ -881,7 +878,7 @@ class _SearchPageState extends State<SearchPage> {
       );
     } else {
       return Card(
-        margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+        margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
         elevation: 3, // 阴影大小
         shadowColor: Colors.grey,
         child: ListTile(
@@ -1040,40 +1037,6 @@ class _SearchPageState extends State<SearchPage> {
       appBar: buildAppBar(),
       body: Column(
         children: [
-          Offstage(
-            offstage: widget.mod == 0,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-              child: Center(
-                child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      hintText: '输入内容',
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        searchText = value;
-                        switch (widget.mod) {
-                          case 0:
-                            searchnotesList.search(searchText, 0);
-                            break;
-                          case 1:
-                            searchnotesList.search(searchText, 0);
-                            break;
-                          case 2:
-                            searchnotesList.searchDeleted(searchText, 0);
-                            break;
-                          case 3:
-                            searchnotesList.searchTodo(searchText, 0);
-                            break;
-                        }
-                        refreshList();
-                      });
-                    }),
-              ),
-            ),
-          ),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,

@@ -168,19 +168,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             handleBrightnessChange: widget.handleBrightnessChange,
             showTooltipBelow: false,
           ),
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const SearchPage(
-                          mod: 1,
-                          txt: '',
-                        )),
-              );
-            },
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.search),
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //           builder: (context) => const SearchPage(
+          //                 mod: 1,
+          //                 txt: '',
+          //               )),
+          //     );
+          //   },
+          // ),
         ]);
   }
 

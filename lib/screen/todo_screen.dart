@@ -23,8 +23,8 @@ class _TodoPageState extends State<TodoPage> {
   var searchnotesList = NotesList();
   String searchText = '';
   late String time;
-  List<String> folderList = ['清空'];
-  List<String> projectList = ['清空'];
+  List<String> folderList = ['全部'];
+  List<String> projectList = ['全部'];
   List<String> finishStateList = ['未完', '已完'];
 
   String searchProject = '';
@@ -472,7 +472,7 @@ class _TodoPageState extends State<TodoPage> {
                 return MenuItemButton(
                   child: Text(project),
                   onPressed: () {
-                    if (project == '清空') {
+                    if (project == '全部') {
                       searchProject = '';
                     } else {
                       searchProject = project;
@@ -509,7 +509,7 @@ class _TodoPageState extends State<TodoPage> {
                 return MenuItemButton(
                   child: Text(folder),
                   onPressed: () {
-                    if (folder == '清空') {
+                    if (folder == '全部') {
                       searchFolder = '';
                     } else {
                       searchFolder = folder;
