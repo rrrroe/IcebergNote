@@ -34,6 +34,9 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
     bool noteIsDeleted = false,
     bool noteIsShared = false,
     bool noteIsAchive = false,
+    String noteFinishState = "",
+    String noteFinishTime = "",
+    String noteAlarmTime = "",
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<Notes>({
@@ -57,6 +60,9 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
         'noteIsDeleted': false,
         'noteIsShared': false,
         'noteIsAchive': false,
+        'noteFinishState': "",
+        'noteFinishTime': "",
+        'noteAlarmTime': "",
       });
     }
     RealmObjectBase.set(this, 'id', id);
@@ -83,6 +89,9 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'noteIsDeleted', noteIsDeleted);
     RealmObjectBase.set(this, 'noteIsShared', noteIsShared);
     RealmObjectBase.set(this, 'noteIsAchive', noteIsAchive);
+    RealmObjectBase.set(this, 'noteFinishState', noteFinishState);
+    RealmObjectBase.set(this, 'noteFinishTime', noteFinishTime);
+    RealmObjectBase.set(this, 'noteAlarmTime', noteAlarmTime);
   }
 
   Notes._();
@@ -246,6 +255,27 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
       RealmObjectBase.set(this, 'noteIsAchive', value);
 
   @override
+  String get noteFinishState =>
+      RealmObjectBase.get<String>(this, 'noteFinishState') as String;
+  @override
+  set noteFinishState(String value) =>
+      RealmObjectBase.set(this, 'noteFinishState', value);
+
+  @override
+  String get noteFinishTime =>
+      RealmObjectBase.get<String>(this, 'noteFinishTime') as String;
+  @override
+  set noteFinishTime(String value) =>
+      RealmObjectBase.set(this, 'noteFinishTime', value);
+
+  @override
+  String get noteAlarmTime =>
+      RealmObjectBase.get<String>(this, 'noteAlarmTime') as String;
+  @override
+  set noteAlarmTime(String value) =>
+      RealmObjectBase.set(this, 'noteAlarmTime', value);
+
+  @override
   Stream<RealmObjectChanges<Notes>> get changes =>
       RealmObjectBase.getChanges<Notes>(this);
 
@@ -281,6 +311,9 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('noteIsDeleted', RealmPropertyType.bool),
       SchemaProperty('noteIsShared', RealmPropertyType.bool),
       SchemaProperty('noteIsAchive', RealmPropertyType.bool),
+      SchemaProperty('noteFinishState', RealmPropertyType.string),
+      SchemaProperty('noteFinishTime', RealmPropertyType.string),
+      SchemaProperty('noteAlarmTime', RealmPropertyType.string),
     ]);
   }
 }

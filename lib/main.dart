@@ -49,11 +49,12 @@ class NotesList {
         [n]);
   }
 
-  searchall(String n, int m, String type, String project, String folder) {
+  searchall(String n, int m, String type, String project, String folder,
+      String finishstate) {
     visibleItemCount = visibleItemCount + m;
     notesList = realm.query<Notes>(
-        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType CONTAINS[c] \$1 AND noteProject CONTAINS[c] \$2 AND noteFolder CONTAINS[c] \$3 ) SORT(id DESC) LIMIT($visibleItemCount)",
-        [n, type, project, folder]);
+        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType CONTAINS[c] \$1 AND noteProject CONTAINS[c] \$2 AND noteFolder CONTAINS[c] \$3 AND noteFinishState CONTAINS[c] \$4 ) AND noteIsDeleted != true SORT(id DESC) LIMIT($visibleItemCount)",
+        [n, type, project, folder, finishstate]);
   }
 }
 
@@ -62,7 +63,7 @@ var mainnotesList = NotesList();
 late Realm realm;
 
 void main() {
-  final config = Configuration.local([Notes.schema], schemaVersion: 8);
+  final config = Configuration.local([Notes.schema], schemaVersion: 10);
   realm = Realm(config);
   runApp(
     const App(),

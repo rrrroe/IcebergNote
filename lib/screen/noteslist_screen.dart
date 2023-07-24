@@ -517,46 +517,50 @@ class _SearchPageState extends State<SearchPage> {
         shadowColor: Theme.of(context).primaryColor,
         child: ListTile(
           title: CheckboxListTile(
-              title: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChangePage(
-                        onPageClosed: () {
-                          refreshList();
-                        },
-                        note: note,
-                        mod: 1,
-                      ),
+            title: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChangePage(
+                      onPageClosed: () {
+                        refreshList();
+                      },
+                      note: note,
+                      mod: 1,
                     ),
-                  );
-                },
-                child: Text(
-                  note.noteTitle,
-                  style: TextStyle(
-                    decoration: note.noteIsAchive
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none,
-                    fontSize: 18,
                   ),
+                );
+              },
+              child: Text(
+                note.noteTitle,
+                style: TextStyle(
+                  decoration: note.noteIsAchive
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                  fontSize: 18,
                 ),
               ),
-              value: note.noteIsAchive,
-              onChanged: (value) {
-                if (value == true) {
+            ),
+            value: note.noteFinishState == '已完',
+            onChanged: (value) {
+              if (value == true) {
+                setState(() {
                   realm.write(() {
-                    note.noteIsAchive = value!;
-                    note.noteAchiveTime = DateTime.now().toString();
+                    note.noteFinishState = '已完';
+                    note.noteFinishTime = DateTime.now().toString();
                   });
-                } else {
-                  realm.write(() {
-                    note.noteIsAchive = value!;
-                    note.noteAchiveTime = '';
+                });
+              } else {
+                realm.write(() {
+                  setState(() {
+                    note.noteFinishState = '未完';
+                    note.noteFinishTime = '';
                   });
-                }
-                setState(() {});
-              }),
+                });
+              }
+            },
+          ),
           subtitle: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,

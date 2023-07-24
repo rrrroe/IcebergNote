@@ -31,7 +31,11 @@ class ChangePage extends StatefulWidget {
   List<String> typeList = ['新建', '清空'];
   List<String> folderList = ['新建', '清空'];
   List<String> projectList = ['新建', '清空'];
-  List<String> finishList = ['未完成', '已完成', '进行中', '全部', '新建'];
+  List<String> finishStateList = [
+    '未完',
+    '已完',
+  ];
+
   @override
   ChangePageState createState() => ChangePageState();
 }
@@ -77,15 +81,17 @@ class ChangePageState extends State<ChangePage> {
     for (int i = 0; i < projectDistinctList.length; i++) {
       widget.projectList.add(projectDistinctList[i].noteProject);
     }
-    if (widget.note.noteType == '.todo' && widget.note.noteFinishState == '') {
-      List<Notes> finishDistinctList = realm
-          .query<Notes>("noteFinishState !='' DISTINCT(noteFinishState)")
-          .toList();
+    List<Notes> finishStateDistinctList = realm
+        .query<Notes>("noteFinishState !='' DISTINCT(noteFinishState)")
+        .toList();
 
-      for (int i = 0; i < finishDistinctList.length; i++) {
-        widget.finishList.add(finishDistinctList[i].noteFinishState);
+    for (int i = 0; i < finishStateDistinctList.length; i++) {
+      if ((finishStateDistinctList[i].noteFinishState != '未完') &&
+          (finishStateDistinctList[i].noteFinishState != '已完')) {
+        widget.finishStateList.add(finishStateDistinctList[i].noteFinishState);
       }
     }
+    widget.finishStateList.add('新建');
   }
 
   @override
@@ -383,25 +389,21 @@ class ChangePageState extends State<ChangePage> {
                                         }
                                       },
                                       child: Text(
-                                        widget.note.noteFolder,
+                                        widget.note.noteFinishState == ''
+                                            ? '未完'
+                                            : widget.note.noteFinishState,
                                         style: const TextStyle(
                                             color: Color.fromARGB(
                                                 255, 180, 68, 255)),
                                       ),
                                     );
                                   },
-                                  menuChildren: widget.folderList.map((folder) {
+                                  menuChildren:
+                                      widget.finishStateList.map((finishState) {
                                     return MenuItemButton(
-                                      child: Text(folder),
+                                      child: Text(finishState),
                                       onPressed: () {
-                                        switch (folder) {
-                                          case '清空':
-                                            setState(() {
-                                              realm.write(() {
-                                                widget.note.noteFolder = '';
-                                              });
-                                            });
-                                            break;
+                                        switch (finishState) {
                                           case '新建':
                                             showDialog(
                                               context: context,
@@ -409,10 +411,11 @@ class ChangePageState extends State<ChangePage> {
                                                 return InputAlertDialog(
                                                   onSubmitted: (text) {
                                                     setState(() {
-                                                      widget.folderList
+                                                      widget.finishStateList
                                                           .add(text);
                                                       realm.write(() {
-                                                        widget.note.noteFolder =
+                                                        widget.note
+                                                                .noteFinishState =
                                                             text;
                                                       });
                                                     });
@@ -424,7 +427,8 @@ class ChangePageState extends State<ChangePage> {
                                           default:
                                             setState(() {
                                               realm.write(() {
-                                                widget.note.noteFolder = folder;
+                                                widget.note.noteFinishState =
+                                                    finishState;
                                               });
                                             });
                                         }

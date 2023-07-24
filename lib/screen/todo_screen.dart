@@ -25,16 +25,17 @@ class _TodoPageState extends State<TodoPage> {
   late String time;
   List<String> folderList = ['清空'];
   List<String> projectList = ['清空'];
-  List<String> isFinishedList = ['待完', '已完', '全部'];
+  List<String> finishStateList = ['未完', '已完'];
 
   String searchProject = '';
   String searchFolder = '';
+  String searchFinishState = '未完';
 
   void refreshList() {
     double scrollPosition = _scrollController.position.pixels;
     setState(() {
-      searchnotesList.searchall(
-          searchText, 0, '.todo', searchProject, searchFolder);
+      searchnotesList.searchall(searchText, 0, '.todo', searchProject,
+          searchFolder, searchFinishState);
 
       _scrollController.jumpTo(scrollPosition);
     });
@@ -46,7 +47,7 @@ class _TodoPageState extends State<TodoPage> {
     _scrollController.addListener(_scrollListener);
 
     searchnotesList.searchall(
-        searchText, 0, '.todo', searchProject, searchFolder);
+        searchText, 0, '.todo', searchProject, searchFolder, searchFinishState);
 
     List<Notes> folderDistinctList = realm
         .query<Notes>(
@@ -64,6 +65,18 @@ class _TodoPageState extends State<TodoPage> {
     for (int i = 0; i < projectDistinctList.length; i++) {
       projectList.add(projectDistinctList[i].noteProject);
     }
+    List<Notes> finishStateDistinctList = realm
+        .query<Notes>(
+            "noteFinishState !='' AND noteType == '.todo' DISTINCT(noteFinishState)")
+        .toList();
+
+    for (int i = 0; i < finishStateDistinctList.length; i++) {
+      if ((finishStateDistinctList[i].noteFinishState != '未完') &&
+          (finishStateDistinctList[i].noteFinishState != '已完')) {
+        finishStateList.add(finishStateDistinctList[i].noteFinishState);
+      }
+    }
+    finishStateList.add('全部');
   }
 
   @override
@@ -77,16 +90,16 @@ class _TodoPageState extends State<TodoPage> {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
       setState(() {
-        searchnotesList.searchall(
-            searchText, 15, '.todo', searchProject, searchFolder);
+        searchnotesList.searchall(searchText, 15, '.todo', searchProject,
+            searchFolder, searchFinishState);
 
         refreshList();
       });
     }
     if (_scrollController.position.pixels == 0 && widget.mod == 0) {
       setState(() {
-        searchnotesList.searchall(
-            searchText, 0, '.todo', searchProject, searchFolder);
+        searchnotesList.searchall(searchText, 0, '.todo', searchProject,
+            searchFolder, searchFinishState);
       });
     }
   }
@@ -103,46 +116,50 @@ class _TodoPageState extends State<TodoPage> {
         shadowColor: Theme.of(context).primaryColor,
         child: ListTile(
           title: CheckboxListTile(
-              title: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChangePage(
-                        onPageClosed: () {
-                          refreshList();
-                        },
-                        note: note,
-                        mod: 1,
-                      ),
+            title: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChangePage(
+                      onPageClosed: () {
+                        refreshList();
+                      },
+                      note: note,
+                      mod: 1,
                     ),
-                  );
-                },
-                child: Text(
-                  note.noteTitle,
-                  style: TextStyle(
-                    decoration: note.noteIsAchive
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none,
-                    fontSize: 18,
                   ),
+                );
+              },
+              child: Text(
+                note.noteTitle,
+                style: TextStyle(
+                  decoration: note.noteIsAchive
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                  fontSize: 18,
                 ),
               ),
-              value: note.noteIsAchive,
-              onChanged: (value) {
-                if (value == true) {
+            ),
+            value: note.noteFinishState == '已完',
+            onChanged: (value) {
+              if (value == true) {
+                setState(() {
                   realm.write(() {
-                    note.noteIsAchive = value!;
-                    note.noteAchiveTime = DateTime.now().toString();
+                    note.noteFinishState = '已完';
+                    note.noteFinishTime = DateTime.now().toString();
                   });
-                } else {
-                  realm.write(() {
-                    note.noteIsAchive = value!;
-                    note.noteAchiveTime = '';
+                });
+              } else {
+                realm.write(() {
+                  setState(() {
+                    note.noteFinishState = '未完';
+                    note.noteFinishTime = '';
                   });
-                }
-                setState(() {});
-              }),
+                });
+              }
+            },
+          ),
           subtitle: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,10 +414,10 @@ class _TodoPageState extends State<TodoPage> {
           },
           child: const Icon(Icons.add)),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60.0),
+        preferredSize: const Size.fromHeight(60.0),
         child: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 30,
             ),
             // const Text(
@@ -423,8 +440,8 @@ class _TodoPageState extends State<TodoPage> {
                   setState(
                     () {
                       searchText = value;
-                      searchnotesList.searchall(
-                          searchText, 0, '.todo', searchProject, searchFolder);
+                      searchnotesList.searchall(searchText, 0, '.todo',
+                          searchProject, searchFolder, searchFinishState);
                       refreshList();
                     },
                   );
@@ -465,7 +482,7 @@ class _TodoPageState extends State<TodoPage> {
                 );
               }).toList(),
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             MenuAnchor(
@@ -502,7 +519,7 @@ class _TodoPageState extends State<TodoPage> {
                 );
               }).toList(),
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             MenuAnchor(
@@ -517,29 +534,29 @@ class _TodoPageState extends State<TodoPage> {
                     }
                   },
                   child: Text(
-                    searchFolder == '未完成' ? '路径' : searchFolder,
-                    style: searchFolder == ''
+                    searchFinishState == '' ? '全部' : searchFinishState,
+                    style: searchFinishState == ''
                         ? const TextStyle(color: Colors.grey)
                         : const TextStyle(
                             color: Color.fromARGB(255, 139, 78, 236)),
                   ),
                 );
               },
-              menuChildren: folderList.map((folder) {
+              menuChildren: finishStateList.map((finishState) {
                 return MenuItemButton(
-                  child: Text(folder),
+                  child: Text(finishState),
                   onPressed: () {
-                    if (folder == '清空') {
-                      searchFolder = '';
+                    if (finishState == '全部') {
+                      searchFinishState = '';
                     } else {
-                      searchFolder = folder;
+                      searchFinishState = finishState;
                     }
                     refreshList();
                   },
                 );
               }).toList(),
             ),
-            SizedBox(
+            const SizedBox(
               width: 30,
             ),
           ],
