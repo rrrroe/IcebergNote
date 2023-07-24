@@ -11,6 +11,7 @@ import 'package:icebergnote/screen/input_screen.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:realm/realm.dart';
 import '../main.dart';
+import '../constants.dart';
 
 const rowDivider = SizedBox(width: 20);
 const colDivider = SizedBox(height: 10);
@@ -387,13 +388,23 @@ class _SearchPageState extends State<SearchPage> {
   final ScrollController _scrollController = ScrollController();
   var searchnotesList = NotesList();
   String searchText = '';
+  List<String> folderList = ['清空'];
+  List<String> typeList = ['清空'];
+  List<String> projectList = ['清空'];
+  // List<String> finishStateList = ['未完', '已完'];
+  String searchType = '';
+  String searchProject = '';
+  String searchFolder = '';
+  // String searchFinishState = '';
   late String time;
   void refreshList() {
     double scrollPosition = _scrollController.position.pixels;
     setState(() {
       switch (widget.mod) {
         case 0:
-          searchnotesList.search(searchText, 0);
+          print(searchType);
+          searchnotesList.searchall(
+              searchText, 0, searchType, searchProject, searchFolder, '');
           break;
         case 1:
           searchnotesList.search(searchText, 0);
@@ -427,6 +438,35 @@ class _SearchPageState extends State<SearchPage> {
         searchnotesList.searchTodo(searchText, 0);
         break;
     }
+    List<Notes> typeDistinctList =
+        realm.query<Notes>("noteType !='' DISTINCT(noteType)").toList();
+
+    for (int i = 0; i < typeDistinctList.length; i++) {
+      typeList.add(typeDistinctList[i].noteType);
+    }
+    List<Notes> folderDistinctList =
+        realm.query<Notes>("noteFolder !='' DISTINCT(noteFolder)").toList();
+
+    for (int i = 0; i < folderDistinctList.length; i++) {
+      folderList.add(folderDistinctList[i].noteFolder);
+    }
+    List<Notes> projectDistinctList =
+        realm.query<Notes>("noteProject !='' DISTINCT(noteProject)").toList();
+
+    for (int i = 0; i < projectDistinctList.length; i++) {
+      projectList.add(projectDistinctList[i].noteProject);
+    }
+    // List<Notes> finishStateDistinctList = realm
+    //     .query<Notes>("noteFinishState !='' DISTINCT(noteFinishState)")
+    //     .toList();
+
+    // for (int i = 0; i < finishStateDistinctList.length; i++) {
+    //   if ((finishStateDistinctList[i].noteFinishState != '未完') &&
+    //       (finishStateDistinctList[i].noteFinishState != '已完')) {
+    //     finishStateList.add(finishStateDistinctList[i].noteFinishState);
+    //   }
+    // }
+    // finishStateList.add('全部');
   }
 
   @override
@@ -482,20 +522,204 @@ class _SearchPageState extends State<SearchPage> {
       return AppBar(
         title: Row(
           children: [
-            const Expanded(
-              child: TimeBar(),
+            const SizedBox(
+              width: 30,
             ),
-            IconButton(
-              onPressed: () {
-                // TODO:时间记录
-              },
-              icon: const Icon(
-                Icons.add_alarm,
+            // const Text(
+            //   '待办',
+            //   style: TextStyle(
+            //     color: Color.fromARGB(255, 56, 128, 186),
+            //     fontSize: 20,
+            //   ),
+            // ),
+            Expanded(
+              child: TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: '搜索',
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(
+                    () {
+                      searchText = value;
+                      searchnotesList.searchall(
+                          searchText, 0, '', searchProject, searchFolder, '');
+                      refreshList();
+                    },
+                  );
+                },
               ),
+            ),
+            MenuAnchor(
+              builder: (context, controller, child) {
+                return FilledButton.tonal(
+                  style: selectButtonStyle,
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  child: Text(
+                    searchType == '' ? '类型' : searchType,
+                    style: searchType == ''
+                        ? const TextStyle(color: Colors.grey)
+                        : const TextStyle(
+                            color: Color.fromARGB(255, 56, 128, 186)),
+                  ),
+                );
+              },
+              menuChildren: typeList.map((type) {
+                return MenuItemButton(
+                  child: Text(type),
+                  onPressed: () {
+                    if (type == '清空') {
+                      searchType = '';
+                    } else {
+                      searchType = type;
+                    }
+                    refreshList();
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            MenuAnchor(
+              builder: (context, controller, child) {
+                return FilledButton.tonal(
+                  style: selectButtonStyle,
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  child: Text(
+                    searchProject == '' ? '项目' : searchProject,
+                    style: searchProject == ''
+                        ? const TextStyle(color: Colors.grey)
+                        : const TextStyle(
+                            color: Color.fromARGB(255, 215, 55, 55)),
+                  ),
+                );
+              },
+              menuChildren: projectList.map((project) {
+                return MenuItemButton(
+                  child: Text(project),
+                  onPressed: () {
+                    if (project == '清空') {
+                      searchProject = '';
+                    } else {
+                      searchProject = project;
+                    }
+                    refreshList();
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            MenuAnchor(
+              builder: (context, controller, child) {
+                return FilledButton.tonal(
+                  style: selectButtonStyle,
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  child: Text(
+                    searchFolder == '' ? '路径' : searchFolder,
+                    style: searchFolder == ''
+                        ? const TextStyle(color: Colors.grey)
+                        : const TextStyle(
+                            color: Color.fromARGB(255, 4, 123, 60)),
+                  ),
+                );
+              },
+              menuChildren: folderList.map((folder) {
+                return MenuItemButton(
+                  child: Text(folder),
+                  onPressed: () {
+                    if (folder == '清空') {
+                      searchFolder = '';
+                    } else {
+                      searchFolder = folder;
+                    }
+                    refreshList();
+                  },
+                );
+              }).toList(),
+            ),
+            // const SizedBox(
+            //   width: 5,
+            // ),
+            // MenuAnchor(
+            //   builder: (context, controller, child) {
+            //     return FilledButton.tonal(
+            //       style: selectButtonStyle,
+            //       onPressed: () {
+            //         if (controller.isOpen) {
+            //           controller.close();
+            //         } else {
+            //           controller.open();
+            //         }
+            //       },
+            //       child: Text(
+            //         searchFinishState == '' ? '全部' : searchFinishState,
+            //         style: searchFinishState == ''
+            //             ? const TextStyle(color: Colors.grey)
+            //             : const TextStyle(
+            //                 color: Color.fromARGB(255, 139, 78, 236)),
+            //       ),
+            //     );
+            //   },
+            //   menuChildren: finishStateList.map((finishState) {
+            //     return MenuItemButton(
+            //       child: Text(finishState),
+            //       onPressed: () {
+            //         if (finishState == '全部') {
+            //           searchFinishState = '';
+            //         } else {
+            //           searchFinishState = finishState;
+            //         }
+            //         refreshList();
+            //       },
+            //     );
+            //   }).toList(),
+            // ),
+            const SizedBox(
+              width: 30,
             ),
           ],
         ),
       );
+      //   Row(
+      //     children: [
+      //       const Expanded(
+      //         child: TimeBar(),
+      //       ),
+      //       IconButton(
+      //         onPressed: () {
+      //           // TODO:时间记录
+      //         },
+      //         icon: const Icon(
+      //           Icons.add_alarm,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // );
     } else if (widget.mod == 1) {
       return AppBar(title: const Text("搜索"));
     } else if (widget.mod == 3) {
