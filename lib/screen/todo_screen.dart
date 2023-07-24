@@ -115,7 +115,9 @@ class _TodoPageState extends State<TodoPage> {
 
         shadowColor: Theme.of(context).primaryColor,
         child: ListTile(
+          minVerticalPadding: 1,
           title: CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
             title: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -395,6 +397,7 @@ class _TodoPageState extends State<TodoPage> {
               '',
               noteCreatTime: DateTime.now().toString(),
               noteType: '.todo',
+              noteFinishState: '未完',
             );
             realm.write(() {
               realm.add<Notes>(note, update: true);

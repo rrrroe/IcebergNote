@@ -737,7 +737,9 @@ class _SearchPageState extends State<SearchPage> {
         elevation: 3,
         shadowColor: Theme.of(context).primaryColor,
         child: ListTile(
+          minVerticalPadding: 1,
           title: CheckboxListTile(
+            // contentPadding: EdgeInsets.zero,
             title: GestureDetector(
               onTap: () {
                 Navigator.push(
