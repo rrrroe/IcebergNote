@@ -453,6 +453,9 @@ class ChangePageState extends State<ChangePage> {
                             maxLines: null,
                             minLines: 6,
                             onChanged: (value) {
+                              realm.write(() {
+                                widget.note.noteContext = value;
+                              });
                               setState(() {
                                 wordCount2 = value.length;
                               });
