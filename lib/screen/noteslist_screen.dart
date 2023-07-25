@@ -884,18 +884,18 @@ class _SearchPageState extends State<SearchPage> {
         elevation: 3, // 阴影大小
         shadowColor: Colors.grey,
         child: ListTile(
-          title: SizedBox(
-            height: 40,
-            child: Visibility(
-              visible: note.noteTitle != "",
+          title: Visibility(
+            visible: note.noteTitle != "",
+            child: SizedBox(
+              height: 40,
               child: Text(
                 note.noteTitle,
                 maxLines: 1,
                 overflow: TextOverflow.fade,
                 style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Color.fromARGB(255, 0, 71, 165)),
               ),
             ),
           ),
