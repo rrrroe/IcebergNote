@@ -908,7 +908,7 @@ class _SearchPageState extends State<SearchPage> {
               Visibility(
                 visible: note.noteContext != "",
                 child: Text(
-                  note.noteContext,
+                  note.noteContext.replaceAll(RegExp('\n|/n'), ' '),
                   maxLines: 5,
                   style: const TextStyle(
                     fontSize: 16,
