@@ -916,13 +916,13 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 ),
               ),
-              Text(
-                '${note.noteContext.length + note.noteTitle.length}${note.noteCreatTime.length > 19 ? '${note.noteCreatTime.substring(0, 19)}创建       ' : note.noteCreatTime}${note.noteUpdateTime.length > 19 ? '${note.noteUpdateTime.substring(0, 19)}修改' : note.noteUpdateTime}',
-                maxLines: 1,
-                style: const TextStyle(
-                  fontSize: 10,
-                ),
-              ),
+              // Text(
+              //   '${note.noteContext.length + note.noteTitle.length}${note.noteCreatTime.length > 19 ? '${note.noteCreatTime.substring(0, 19)}创建       ' : note.noteCreatTime}${note.noteUpdateTime.length > 19 ? '${note.noteUpdateTime.substring(0, 19)}修改' : note.noteUpdateTime}',
+              //   maxLines: 1,
+              //   style: const TextStyle(
+              //     fontSize: 10,
+              //   ),
+              // ),
               Visibility(
                 visible:
                     note.noteType + note.noteProject + note.noteFolder != "",
