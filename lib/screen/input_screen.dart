@@ -463,6 +463,9 @@ class ChangePageState extends State<ChangePage> {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: 40,
+                )
               ],
             ),
             Positioned(
