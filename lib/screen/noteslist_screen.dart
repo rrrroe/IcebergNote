@@ -884,22 +884,20 @@ class _SearchPageState extends State<SearchPage> {
         elevation: 3, // 阴影大小
         shadowColor: Colors.grey,
         child: ListTile(
-          title: Row(
-            children: [
-              Visibility(
-                visible: note.noteTitle != "",
-                child: Text(
-                  note.noteTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+          title: SizedBox(
+            height: 40,
+            child: Visibility(
+              visible: note.noteTitle != "",
+              child: Text(
+                note.noteTitle,
+                maxLines: 1,
+                overflow: TextOverflow.fade,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const Spacer(),
-            ],
+            ),
           ),
           subtitle: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -963,7 +961,7 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
           onTap: () {
