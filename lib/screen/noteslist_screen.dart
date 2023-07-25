@@ -934,6 +934,7 @@ class _SearchPageState extends State<SearchPage> {
                         note.noteType,
                         style: const TextStyle(
                           fontSize: 10,
+                          color: Color.fromARGB(255, 56, 128, 186),
                         ),
                       ),
                     ),
@@ -945,6 +946,7 @@ class _SearchPageState extends State<SearchPage> {
                         note.noteProject,
                         style: const TextStyle(
                           fontSize: 10,
+                          color: Color.fromARGB(255, 215, 55, 55),
                         ),
                       ),
                     ),
@@ -956,6 +958,7 @@ class _SearchPageState extends State<SearchPage> {
                         note.noteFolder,
                         style: const TextStyle(
                           fontSize: 10,
+                          color: Color.fromARGB(255, 4, 123, 60),
                         ),
                       ),
                     ),
