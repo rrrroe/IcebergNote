@@ -895,7 +895,7 @@ class _SearchPageState extends State<SearchPage> {
                 style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
-                    color: Color.fromARGB(255, 0, 71, 165)),
+                    color: Color.fromARGB(255, 0, 140, 198)),
               ),
             ),
           ),
