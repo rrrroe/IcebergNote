@@ -4,6 +4,7 @@ import 'package:realm/realm.dart';
 import '../constants.dart';
 import '../notes.dart';
 import '../main.dart';
+import 'table.dart';
 
 String tmpTitle = "", tmpContext = "";
 late Notes latestNote;
@@ -487,6 +488,7 @@ class ChangePageState extends State<ChangePage> {
                     TextButton(
                       onPressed: () async {
                         await FlutterClipboard.copy(contentController.text);
+                        creatRecordClass();
                         poplog(1, '复制', context);
                       },
                       child: const Text('复制'),

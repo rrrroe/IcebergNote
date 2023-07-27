@@ -12,6 +12,7 @@ import 'package:icebergnote/notes.dart';
 import 'package:realm/realm.dart';
 import '../main.dart';
 import '../constants.dart';
+import 'table.dart';
 
 const rowDivider = SizedBox(width: 20);
 const colDivider = SizedBox(height: 10);
@@ -968,18 +969,33 @@ class _SearchPageState extends State<SearchPage> {
             ],
           ),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChangePage(
-                  onPageClosed: () {
-                    refreshList();
-                  },
-                  note: note,
-                  mod: 1,
+            if (note.noteType == '.记录') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RecordChangePage(
+                    onPageClosed: () {
+                      refreshList();
+                    },
+                    note: note,
+                    mod: 1,
+                  ),
                 ),
-              ),
-            );
+              );
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangePage(
+                    onPageClosed: () {
+                      refreshList();
+                    },
+                    note: note,
+                    mod: 1,
+                  ),
+                ),
+              );
+            }
           },
           onLongPress: () {
             showModalBottomSheet(
@@ -1011,13 +1027,15 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-          onPressed: () {
+      floatingActionButton: GestureDetector(
+          onLongPress: () {
             Notes note = Notes(
               ObjectId(),
               '',
               '',
               '',
+              noteType: '.记录',
+              noteProject: '~跑步',
               noteCreatTime: DateTime.now().toString(),
             );
             realm.write(() {
@@ -1026,17 +1044,40 @@ class _SearchPageState extends State<SearchPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ChangePage(
-                  onPageClosed: () {
-                    refreshList();
-                  },
+                builder: (context) => RecordChangePage(
+                  onPageClosed: () {},
+                  mod: 1,
                   note: note,
-                  mod: 0,
                 ),
               ),
             );
           },
-          child: const Icon(Icons.add)),
+          child: FloatingActionButton(
+              onPressed: () {
+                Notes note = Notes(
+                  ObjectId(),
+                  '',
+                  '',
+                  '',
+                  noteCreatTime: DateTime.now().toString(),
+                );
+                realm.write(() {
+                  realm.add<Notes>(note, update: true);
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChangePage(
+                      onPageClosed: () {
+                        refreshList();
+                      },
+                      note: note,
+                      mod: 0,
+                    ),
+                  ),
+                );
+              },
+              child: const Icon(Icons.add))),
       appBar: buildAppBar(),
       body: Column(
         children: [
