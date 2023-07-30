@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -87,9 +85,6 @@ class RecordChangePageState extends State<RecordChangePage> {
   late final Notes templateNote;
   Map template = {};
   Map record = {};
-
-  // late QuillController _controller;
-
   var wordCount1 = 0;
   var wordCount2 = 0;
   FocusNode focusNode = FocusNode();
@@ -458,7 +453,7 @@ class RecordChangePageState extends State<RecordChangePage> {
                                     Expanded(
                                       flex: 2,
                                       child: Text(
-                                        template.keys.elementAt(index) + '：',
+                                        template.keys.elementAt(index) + ':',
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(),
                                       ),

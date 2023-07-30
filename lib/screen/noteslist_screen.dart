@@ -14,7 +14,7 @@ import '../main.dart';
 import '../constants.dart';
 import 'table.dart';
 
-const rowDivider = SizedBox(width: 20);
+const rowDividerincrease = SizedBox(width: 20);
 const colDivider = SizedBox(height: 10);
 const tinySpacing = 3.0;
 const smallSpacing = 10.0;
@@ -1024,33 +1024,46 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+  void showOtherMenu() {
+    List<String> recordProjectList = [];
+    List<Notes> recordProjectDistinctList = realm
+        .query<Notes>(
+            "noteType == '.表头' AND noteProject !='' DISTINCT(noteProject)")
+        .toList();
+    for (int i = 0; i < recordProjectDistinctList.length; i++) {
+      recordProjectList.add(recordProjectDistinctList[i].noteType);
+    }
+    if (recordProjectList.length == 0) {
+      poplog(2, '', context);
+      return;
+    } else {
+      Notes note = Notes(ObjectId(), '', '', '',
+          noteCreatTime: DateTime.now().toString(),
+          noteProject: recordProjectList[0],
+          noteType: '.记录');
+      realm.write(() {
+        realm.add<Notes>(note, update: true);
+      });
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BottomPopSheet(
+            note: note,
+            onDialogClosed: () {
+              refreshList();
+            },
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: GestureDetector(
           onLongPress: () {
-            Notes note = Notes(
-              ObjectId(),
-              '',
-              '',
-              '',
-              noteType: '.记录',
-              noteProject: '~跑步',
-              noteCreatTime: DateTime.now().toString(),
-            );
-            realm.write(() {
-              realm.add<Notes>(note, update: true);
-            });
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RecordChangePage(
-                  onPageClosed: () {},
-                  mod: 1,
-                  note: note,
-                ),
-              ),
-            );
+            showOtherMenu();
           },
           child: FloatingActionButton(
               onPressed: () {
@@ -1965,17 +1978,14 @@ class _ProgressIndicatorsState extends State<ProgressIndicators> {
               Expanded(
                 child: Row(
                   children: <Widget>[
-                    rowDivider,
                     CircularProgressIndicator(
                       value: progressValue,
                     ),
-                    rowDivider,
                     Expanded(
                       child: LinearProgressIndicator(
                         value: progressValue,
                       ),
                     ),
-                    rowDivider,
                   ],
                 ),
               ),
@@ -3137,11 +3147,10 @@ class _MenusState extends State<Menus> {
       tooltipMessage: 'Use MenuAnchor or DropdownMenu<T>',
       child: Column(
         children: [
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ButtonAnchorExample(),
-              rowDivider,
               IconButtonAnchorExample(),
             ],
           ),
