@@ -10,6 +10,8 @@ import 'package:flutter/services.dart';
 import 'package:icebergnote/screen/input_screen.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:realm/realm.dart';
+import 'package:yaml/yaml.dart';
+
 import '../main.dart';
 import '../constants.dart';
 import 'table.dart';
@@ -324,6 +326,59 @@ class BottomPopSheet extends StatelessWidget {
               onDialogClosed();
               Navigator.pop(context);
             },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BottomRecordTypeSheet extends StatelessWidget {
+  const BottomRecordTypeSheet(
+      {Key? key, required this.recordProjectList, required this.onDialogClosed})
+      : super(key: key);
+  final List<String> recordProjectList;
+  final VoidCallback onDialogClosed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: recordProjectList.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: const Icon(Icons.folder),
+                  title: Text(recordProjectList[index]),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Notes note = Notes(ObjectId(), '', '', '',
+                        noteCreatTime: DateTime.now().toString(),
+                        noteProject: recordProjectList[index],
+                        noteType: '.记录');
+                    realm.write(() {
+                      realm.add<Notes>(note, update: true);
+                    });
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RecordChangePage(
+                          onPageClosed: () {
+                            onDialogClosed();
+                          },
+                          note: note,
+                          mod: 0,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -879,6 +934,107 @@ class _SearchPageState extends State<SearchPage> {
           },
         ),
       );
+    } else if (note.noteType == '.记录') {
+      Map noteMap = loadYaml(note.noteContext) as YamlMap;
+      Map noteMapOther = {...noteMap};
+      noteMapOther.remove(noteMapOther.keys.first);
+
+      var templateNote = realm.query<Notes>(
+          "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+          [
+            '.表头',
+            note.noteProject,
+          ])[0];
+      Map template = loadYaml(templateNote.noteContext.substring(
+          0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
+      Map templateProperty = loadYaml(templateNote.noteContext
+          .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
+      List propertySettings1 = template.values.elementAt(0).split(',');
+      return Card(
+        margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        elevation: 0,
+        shadowColor: const Color.fromARGB(255, 255, 132, 132),
+        color: Color.fromARGB(
+          40,
+          templateProperty['color'][0],
+          templateProperty['color'][1],
+          templateProperty['color'][2],
+        ),
+        child: ListTile(
+          title: SizedBox(
+            height: 40,
+            child: Text(
+              '${note.noteProject}  ${propertySettings1[1]}${noteMap[noteMap.keys.first]}${propertySettings1[2]}',
+              maxLines: 1,
+              overflow: TextOverflow.fade,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Color.fromARGB(
+                  255,
+                  templateProperty['color'][0],
+                  templateProperty['color'][1],
+                  templateProperty['color'][2],
+                ),
+              ),
+            ),
+          ),
+          subtitle: Wrap(
+            spacing: 10,
+            children: List.generate(noteMapOther.length, (index) {
+              List propertySettings =
+                  template.values.elementAt(index + 1).split(',');
+              if (noteMapOther.values.elementAt(index) != null) {
+                return Text(
+                  '${noteMapOther.keys.elementAt(index)}: ${propertySettings[1].toString()}${noteMapOther.values.elementAt(index)}${propertySettings[2].toString()}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                );
+              } else {
+                return Container();
+              }
+            }),
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RecordChangePage(
+                  onPageClosed: () {
+                    refreshList();
+                  },
+                  note: note,
+                  mod: 1,
+                ),
+              ),
+            );
+          },
+          onLongPress: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                if (widget.mod == 2) {
+                  return BottomPopSheetDeleted(
+                    note: note,
+                    onDialogClosed: () {
+                      refreshList();
+                    },
+                  );
+                } else {
+                  return BottomPopSheet(
+                    note: note,
+                    onDialogClosed: () {
+                      refreshList();
+                    },
+                  );
+                }
+              },
+            );
+          },
+        ),
+      );
     } else {
       return Card(
         margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
@@ -969,33 +1125,18 @@ class _SearchPageState extends State<SearchPage> {
             ],
           ),
           onTap: () {
-            if (note.noteType == '.记录') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RecordChangePage(
-                    onPageClosed: () {
-                      refreshList();
-                    },
-                    note: note,
-                    mod: 1,
-                  ),
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChangePage(
+                  onPageClosed: () {
+                    refreshList();
+                  },
+                  note: note,
+                  mod: 1,
                 ),
-              );
-            } else {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChangePage(
-                    onPageClosed: () {
-                      refreshList();
-                    },
-                    note: note,
-                    mod: 1,
-                  ),
-                ),
-              );
-            }
+              ),
+            );
           },
           onLongPress: () {
             showModalBottomSheet(
@@ -1031,9 +1172,9 @@ class _SearchPageState extends State<SearchPage> {
             "noteType == '.表头' AND noteProject !='' DISTINCT(noteProject)")
         .toList();
     for (int i = 0; i < recordProjectDistinctList.length; i++) {
-      recordProjectList.add(recordProjectDistinctList[i].noteType);
+      recordProjectList.add(recordProjectDistinctList[i].noteProject);
     }
-    if (recordProjectList.length == 0) {
+    if (recordProjectList.isEmpty) {
       poplog(2, '', context);
       return;
     } else {
@@ -1047,8 +1188,8 @@ class _SearchPageState extends State<SearchPage> {
       showModalBottomSheet(
         context: context,
         builder: (context) {
-          return BottomPopSheet(
-            note: note,
+          return BottomRecordTypeSheet(
+            recordProjectList: recordProjectList,
             onDialogClosed: () {
               refreshList();
             },
@@ -3147,7 +3288,7 @@ class _MenusState extends State<Menus> {
       tooltipMessage: 'Use MenuAnchor or DropdownMenu<T>',
       child: Column(
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ButtonAnchorExample(),

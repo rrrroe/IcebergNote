@@ -1,7 +1,6 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:realm/realm.dart';
 import 'package:yaml/yaml.dart';
 
 import '../constants.dart';
@@ -21,37 +20,9 @@ class KeyboardManager extends ChangeNotifier {
 String mapToyaml(Map map) {
   String yaml = '';
   for (var i = 0; i < map.length; i++) {
-    yaml = yaml + '${map.keys.elementAt(i)}: ${map.values.elementAt(i)}\n';
+    yaml = '$yaml${map.keys.elementAt(i)}: ${map.values.elementAt(i)}\n';
   }
   return yaml;
-}
-
-creatRecordClass() {
-  late RealmResults<Notes> tableNotesList, tableTemplate;
-  tableTemplate = realm.query<Notes>(
-      "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
-      [
-        '.表头',
-        '~跑步',
-      ]);
-  tableNotesList = realm.query<Notes>(
-      "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC)",
-      [
-        '.记录',
-        '~跑步',
-      ]);
-  List<dynamic> recordList = [];
-  Map template = loadYaml(tableTemplate.toList()[0].noteContext) as YamlMap;
-  if (tableNotesList.isNotEmpty) {
-    for (var i = 0; i < tableNotesList.length; i++) {
-      recordList
-          .add(loadYaml(tableNotesList.toList()[i].noteContext) as YamlMap);
-    }
-  }
-  recordList.sort((a, b) => a['序号'].compareTo(b['序号']));
-  print(tableTemplate.toList()[0].noteContext);
-  print(
-      tableTemplate.toList()[0].noteContext.replaceAll(RegExp(r': .*'), ': '));
 }
 
 class RecordChangePage extends StatefulWidget {
@@ -84,6 +55,7 @@ class RecordChangePageState extends State<RecordChangePage> {
   final ScrollController _scrollController = ScrollController();
   late final Notes templateNote;
   Map template = {};
+  Map templateProperty = {};
   Map record = {};
   var wordCount1 = 0;
   var wordCount2 = 0;
@@ -135,9 +107,13 @@ class RecordChangePageState extends State<RecordChangePage> {
         "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
         [
           '.表头',
-          '~跑步',
+          widget.note.noteProject,
         ])[0];
-    template = loadYaml(templateNote.noteContext) as YamlMap;
+    template = loadYaml(templateNote.noteContext
+        .substring(0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
+    templateProperty = loadYaml(templateNote.noteContext
+        .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
+
     realm.write(() {
       if (widget.note.noteContext == '') {
         widget.note.noteContext =
@@ -445,6 +421,12 @@ class RecordChangePageState extends State<RecordChangePage> {
                             List propertySettings =
                                 template.values.elementAt(index).split(',');
                             return Card(
+                              elevation: 0,
+                              color: Color.fromARGB(
+                                  50,
+                                  templateProperty['color'][0],
+                                  templateProperty['color'][1],
+                                  templateProperty['color'][2]),
                               child: ListTile(
                                 horizontalTitleGap: 0,
                                 minVerticalPadding: 0,
