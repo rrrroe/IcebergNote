@@ -529,7 +529,8 @@ class ChangePageState extends State<ChangePage> {
         realm.delete(widget.note);
       } else {
         widget.note.noteTitle = titleController.text;
-        widget.note.noteContext = contentController.text;
+        widget.note.noteContext =
+            contentController.text.replaceAll(RegExp(r'\n+'), '\n\n');
         if (widget.note.noteCreatTime == '') {
           widget.note.noteCreatTime = DateTime.now().toString();
         }
