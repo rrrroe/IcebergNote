@@ -789,13 +789,15 @@ class _SearchPageState extends State<SearchPage> {
         note.noteType == '.待办' ||
         note.noteType == '.Todo') {
       return Card(
-        margin: const EdgeInsets.fromLTRB(30, 0, 30, 10),
-        elevation: 3,
+        color: note.noteFinishState == '已完'
+            ? Color.fromARGB(40, 200, 200, 200)
+            : Color.fromARGB(40, 0, 123, 128),
+        margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        elevation: 0,
         shadowColor: Theme.of(context).primaryColor,
         child: ListTile(
           minVerticalPadding: 1,
           title: CheckboxListTile(
-            // contentPadding: EdgeInsets.zero,
             title: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -814,7 +816,10 @@ class _SearchPageState extends State<SearchPage> {
               child: Text(
                 note.noteTitle,
                 style: TextStyle(
-                  decoration: note.noteIsAchive
+                  color: note.noteFinishState == '已完'
+                      ? Color.fromARGB(255, 200, 200, 200)
+                      : Color.fromARGB(255, 0, 123, 128),
+                  decoration: note.noteFinishState == '已完'
                       ? TextDecoration.lineThrough
                       : TextDecoration.none,
                   fontSize: 18,
@@ -1038,8 +1043,9 @@ class _SearchPageState extends State<SearchPage> {
     } else {
       return Card(
         margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-        elevation: 3, // 阴影大小
+        elevation: 0,
         shadowColor: Colors.grey,
+        color: Color.fromARGB(40, 0, 140, 198),
         child: ListTile(
           title: Visibility(
             visible: note.noteTitle != "",
