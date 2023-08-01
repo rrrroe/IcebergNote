@@ -790,8 +790,8 @@ class _SearchPageState extends State<SearchPage> {
         note.noteType == '.Todo') {
       return Card(
         color: note.noteFinishState == '已完'
-            ? Color.fromARGB(40, 200, 200, 200)
-            : Color.fromARGB(40, 0, 123, 128),
+            ? const Color.fromARGB(40, 200, 200, 200)
+            : const Color.fromARGB(40, 0, 123, 128),
         margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
         elevation: 0,
         shadowColor: Theme.of(context).primaryColor,
@@ -817,8 +817,8 @@ class _SearchPageState extends State<SearchPage> {
                 note.noteTitle,
                 style: TextStyle(
                   color: note.noteFinishState == '已完'
-                      ? Color.fromARGB(255, 200, 200, 200)
-                      : Color.fromARGB(255, 0, 123, 128),
+                      ? const Color.fromARGB(255, 200, 200, 200)
+                      : const Color.fromARGB(255, 0, 123, 128),
                   decoration: note.noteFinishState == '已完'
                       ? TextDecoration.lineThrough
                       : TextDecoration.none,
@@ -998,7 +998,7 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 );
               } else {
-                return Container();
+                return const SizedBox(height: 0, width: 0);
               }
             }),
           ),
@@ -1045,7 +1045,7 @@ class _SearchPageState extends State<SearchPage> {
         margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
         elevation: 0,
         shadowColor: Colors.grey,
-        color: Color.fromARGB(40, 0, 140, 198),
+        color: const Color.fromARGB(40, 0, 140, 198),
         child: ListTile(
           title: Visibility(
             visible: note.noteTitle != "",
