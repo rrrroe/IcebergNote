@@ -1048,7 +1048,7 @@ class _SearchPageState extends State<SearchPage> {
               child: Text(
                 note.noteTitle,
                 maxLines: 1,
-                overflow: TextOverflow.fade,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
