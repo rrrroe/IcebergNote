@@ -837,6 +837,7 @@ class _SearchPageState extends State<SearchPage> {
                 visible: note.noteContext != "",
                 child: Text(
                   note.noteContext,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -1014,6 +1015,7 @@ class _SearchPageState extends State<SearchPage> {
                 visible: note.noteContext != "",
                 child: Text(
                   note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
+                  overflow: TextOverflow.ellipsis,
                   maxLines: 5,
                   style: const TextStyle(
                     fontSize: 16,
