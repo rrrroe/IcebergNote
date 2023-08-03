@@ -111,8 +111,8 @@ class _TodoPageState extends State<TodoPage> {
         note.noteType == '.Todo') {
       return Card(
         color: note.noteFinishState == '已完'
-            ? Color.fromARGB(40, 200, 200, 200)
-            : Color.fromARGB(40, 0, 123, 128),
+            ? const Color.fromARGB(40, 200, 200, 200)
+            : const Color.fromARGB(40, 0, 123, 128),
         margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
         elevation: 0,
         shadowColor: Theme.of(context).primaryColor,
@@ -138,8 +138,8 @@ class _TodoPageState extends State<TodoPage> {
                 note.noteTitle,
                 style: TextStyle(
                   color: note.noteFinishState == '已完'
-                      ? Color.fromARGB(255, 200, 200, 200)
-                      : Color.fromARGB(255, 0, 123, 128),
+                      ? const Color.fromARGB(255, 200, 200, 200)
+                      : const Color.fromARGB(255, 0, 123, 128),
                   decoration: note.noteFinishState == '已完'
                       ? TextDecoration.lineThrough
                       : TextDecoration.none,
@@ -174,7 +174,14 @@ class _TodoPageState extends State<TodoPage> {
                 visible: note.noteContext != "",
                 child: Text(
                   note.noteContext,
-                  style: const TextStyle(
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: note.noteFinishState == '已完'
+                        ? const Color.fromARGB(255, 200, 200, 200)
+                        : Color.fromARGB(255, 0, 0, 0),
+                    decoration: note.noteFinishState == '已完'
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -291,6 +298,7 @@ class _TodoPageState extends State<TodoPage> {
                 visible: note.noteContext != "",
                 child: Text(
                   note.noteContext,
+                  overflow: TextOverflow.ellipsis,
                   maxLines: 5,
                   style: const TextStyle(
                     fontSize: 16,
