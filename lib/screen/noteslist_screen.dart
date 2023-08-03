@@ -758,22 +758,6 @@ class _SearchPageState extends State<SearchPage> {
           ],
         ),
       );
-      //   Row(
-      //     children: [
-      //       const Expanded(
-      //         child: TimeBar(),
-      //       ),
-      //       IconButton(
-      //         onPressed: () {
-      //           // TODO:时间记录
-      //         },
-      //         icon: const Icon(
-      //           Icons.add_alarm,
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // );
     } else if (widget.mod == 1) {
       return AppBar(title: const Text("搜索"));
     } else if (widget.mod == 3) {
@@ -792,7 +776,7 @@ class _SearchPageState extends State<SearchPage> {
         color: note.noteFinishState == '已完'
             ? const Color.fromARGB(40, 200, 200, 200)
             : const Color.fromARGB(40, 0, 123, 128),
-        margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
         elevation: 0,
         shadowColor: Theme.of(context).primaryColor,
         child: ListTile(
@@ -859,46 +843,6 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 ),
               ),
-              const Visibility(
-                visible: true,
-                child: Row(
-                  children: [
-                    // Container(
-                    //   width: 70,
-                    //   padding: const EdgeInsets.all(0),
-                    //   alignment: Alignment.centerLeft,
-                    //   child: Text(
-                    //     note.noteType,
-                    //     style: const TextStyle(
-                    //       fontSize: 10,
-                    //     ),
-                    //   ),
-                    // ),
-                    // Container(
-                    //   padding: const EdgeInsets.all(0),
-                    //   alignment: Alignment.centerLeft,
-                    //   width: 79,
-                    //   child: Text(
-                    //     note.noteProject,
-                    //     style: const TextStyle(
-                    //       fontSize: 10,
-                    //     ),
-                    //   ),
-                    // ),
-                    // Container(
-                    //   padding: const EdgeInsets.all(0),
-                    //   alignment: Alignment.centerLeft,
-                    //   width: 150,
-                    //   child: Text(
-                    //     note.noteFolder,
-                    //     style: const TextStyle(
-                    //       fontSize: 10,
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
-                ),
-              )
             ],
           ),
           onTap: () {
@@ -956,7 +900,7 @@ class _SearchPageState extends State<SearchPage> {
           .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
       List propertySettings1 = template.values.elementAt(0).split(',');
       return Card(
-        margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
         elevation: 0,
         shadowColor: const Color.fromARGB(255, 255, 132, 132),
         color: Color.fromARGB(
@@ -1042,7 +986,7 @@ class _SearchPageState extends State<SearchPage> {
       );
     } else {
       return Card(
-        margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
         elevation: 0,
         shadowColor: Colors.grey,
         color: const Color.fromARGB(40, 0, 140, 198),

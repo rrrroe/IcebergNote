@@ -262,7 +262,7 @@ class _TodoPageState extends State<TodoPage> {
       );
     } else {
       return Card(
-        margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+        margin: const EdgeInsets.fromLTRB(15, 10, 15, 0),
         elevation: 3, // 阴影大小
         shadowColor: Colors.grey,
         child: ListTile(
