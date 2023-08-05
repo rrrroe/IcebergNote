@@ -1019,7 +1019,6 @@ class _SearchPageState extends State<SearchPage> {
                   maxLines: 5,
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

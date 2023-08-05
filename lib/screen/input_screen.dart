@@ -143,6 +143,7 @@ class ChangePageState extends State<ChangePage> {
                             controller: titleController,
                             style: const TextStyle(
                               fontSize: 22,
+                              fontWeight: FontWeight.w600,
                             ),
                             decoration: const InputDecoration(
                                 labelText: "标题",
@@ -445,7 +446,6 @@ class ChangePageState extends State<ChangePage> {
                             style: const TextStyle(
                               fontSize: 18,
                               height: 1.5,
-                              fontWeight: FontWeight.w600,
                             ),
                             controller: contentController,
                             decoration: const InputDecoration(
