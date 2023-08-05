@@ -1191,8 +1191,8 @@ class _SearchPageState extends State<SearchPage> {
             child: ListView.builder(
               controller: _scrollController,
               itemCount: searchnotesList.notesList.length,
-              physics: BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics()),
+              // physics: const BouncingScrollPhysics(
+              //     parent: AlwaysScrollableScrollPhysics()),
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onLongPress: () {
