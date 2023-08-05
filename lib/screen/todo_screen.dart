@@ -178,7 +178,7 @@ class _TodoPageState extends State<TodoPage> {
                   style: TextStyle(
                     color: note.noteFinishState == '已完'
                         ? const Color.fromARGB(255, 200, 200, 200)
-                        : Color.fromARGB(255, 0, 0, 0),
+                        : const Color.fromARGB(255, 0, 0, 0),
                     decoration: note.noteFinishState == '已完'
                         ? TextDecoration.lineThrough
                         : TextDecoration.none,

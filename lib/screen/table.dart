@@ -57,8 +57,6 @@ class RecordChangePageState extends State<RecordChangePage> {
   Map template = {};
   Map templateProperty = {};
   Map record = {};
-  var wordCount1 = 0;
-  var wordCount2 = 0;
   FocusNode focusNode = FocusNode();
 
   @override
@@ -68,8 +66,6 @@ class RecordChangePageState extends State<RecordChangePage> {
     titleController.text = widget.note.noteTitle;
     contentController.text = widget.note.noteContext;
 
-    wordCount1 = titleController.text.length;
-    wordCount2 = contentController.text.length;
     final KeyboardManager keyboardManager = KeyboardManager();
     focusNode.addListener(() {
       keyboardManager.updateHeight(MediaQuery.of(context).viewInsets.bottom);
@@ -191,18 +187,10 @@ class RecordChangePageState extends State<RecordChangePage> {
                               // enabledBorder: OutlineInputBorder(
                               //     borderSide: BorderSide(color: Colors.blue)),
                               ),
-                          onChanged: (value) {
-                            setState(() {
-                              wordCount1 = value.length;
-                            });
-                          },
+                          onChanged: (value) {},
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text('${wordCount1 + wordCount2}字符'),
-                          ],
+                        const SizedBox(
+                          height: 5,
                         ),
                         Wrap(
                           direction: Axis.horizontal,
@@ -418,103 +406,13 @@ class RecordChangePageState extends State<RecordChangePage> {
                           shrinkWrap: true,
                           padding: const EdgeInsets.all(0),
                           itemBuilder: (context, index) {
-                            List propertySettings =
-                                template.values.elementAt(index).split(',');
-                            return Card(
-                              elevation: 0,
-                              color: Color.fromARGB(
-                                  50,
-                                  templateProperty['color'][0],
-                                  templateProperty['color'][1],
-                                  templateProperty['color'][2]),
-                              child: ListTile(
-                                horizontalTitleGap: 0,
-                                minVerticalPadding: 0,
-                                title: Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 2,
-                                      child: Text(
-                                        template.keys.elementAt(index) + ':',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Text(
-                                        propertySettings[1],
-                                        textAlign: TextAlign.right,
-                                        style: const TextStyle(),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 6,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 0,
-                                            bottom: 0,
-                                            left: 5,
-                                            right: 5),
-                                        child: SizedBox(
-                                          height: 45,
-                                          child: TextField(
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              height: 1,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            controller:
-                                                propertyControllerList[index],
-                                            decoration: InputDecoration(
-                                              border:
-                                                  const UnderlineInputBorder(),
-                                              contentPadding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      10, 0, 10, 0),
-                                              // prefixIcon: Text(
-                                              //   propertySettings[1],
-                                              // ),
-                                              // suffixIcon: Text(
-                                              //   propertySettings[2],
-                                              // ),
-                                            ),
-                                            maxLines:
-                                                propertySettings[0] == 'Text'
-                                                    ? 1
-                                                    : null,
-                                            minLines:
-                                                propertySettings[0] == 'Text'
-                                                    ? 1
-                                                    : 1,
-                                            onChanged: (value) {
-                                              record[template.keys
-                                                  .elementAt(index)] = value;
-                                              realm.write(() {
-                                                widget.note.noteContext =
-                                                    mapToyaml(record);
-                                              });
-                                              setState(() {
-                                                wordCount2 = value.length;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Text(
-                                        propertySettings[2],
-                                        textAlign: TextAlign.left,
-                                        style: const TextStyle(),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
+                            return buildPropertyCard(
+                                widget.note,
+                                template,
+                                templateProperty,
+                                index,
+                                propertyControllerList,
+                                record);
                           },
                         ),
                       ],
@@ -556,6 +454,143 @@ class RecordChangePageState extends State<RecordChangePage> {
                     ),
                   ],
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Widget buildPropertyCard(Notes note, Map template, Map templateProperty,
+    int index, List<TextEditingController> propertyControllerList, Map record) {
+  List propertySettings = template.values.elementAt(index).split(',');
+  EdgeInsets edgeInsets = const EdgeInsets.fromLTRB(0, 0, 0, 0);
+  TextStyle textStyle =
+      const TextStyle(overflow: TextOverflow.fade, fontSize: 14);
+  if (propertySettings[0] == 'LongText') {
+    return Card(
+      elevation: 0,
+      color: Color.fromARGB(50, templateProperty['color'][0],
+          templateProperty['color'][1], templateProperty['color'][2]),
+      child: ListTile(
+        horizontalTitleGap: 0,
+        minVerticalPadding: 0,
+        title: Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Text(
+                template.keys.elementAt(index) + ':',
+                textAlign: TextAlign.center,
+                style: textStyle,
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text(
+                propertySettings[1],
+                textAlign: TextAlign.right,
+                style: textStyle,
+              ),
+            ),
+            Expanded(
+              flex: 6,
+              child: Padding(
+                padding: edgeInsets,
+                child: SizedBox(
+                  height: 45,
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    style: textStyle,
+                    controller: propertyControllerList[index],
+                    decoration: InputDecoration(
+                      border: const UnderlineInputBorder(),
+                      contentPadding: edgeInsets,
+                    ),
+                    maxLines: 1,
+                    minLines: 1,
+                    onChanged: (value) {
+                      record[template.keys.elementAt(index)] = value;
+                      realm.write(() {
+                        note.noteContext = mapToyaml(record);
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                propertySettings[2],
+                textAlign: TextAlign.left,
+                style: textStyle,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  } else {
+    return Card(
+      elevation: 0,
+      color: Color.fromARGB(50, templateProperty['color'][0],
+          templateProperty['color'][1], templateProperty['color'][2]),
+      child: ListTile(
+        horizontalTitleGap: 0,
+        minVerticalPadding: 0,
+        title: Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Text(
+                template.keys.elementAt(index) + ':',
+                textAlign: TextAlign.center,
+                style: textStyle,
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text(
+                propertySettings[1],
+                textAlign: TextAlign.right,
+                style: textStyle,
+              ),
+            ),
+            Expanded(
+              flex: 6,
+              child: Padding(
+                padding: edgeInsets,
+                child: SizedBox(
+                  height: 45,
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    style: textStyle,
+                    controller: propertyControllerList[index],
+                    decoration: InputDecoration(
+                      border: const UnderlineInputBorder(),
+                      contentPadding: edgeInsets,
+                    ),
+                    maxLines: 1,
+                    minLines: 1,
+                    onChanged: (value) {
+                      record[template.keys.elementAt(index)] = value;
+                      realm.write(() {
+                        note.noteContext = mapToyaml(record);
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                propertySettings[2],
+                textAlign: TextAlign.left,
+                style: textStyle,
               ),
             ),
           ],

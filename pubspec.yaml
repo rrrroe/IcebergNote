@@ -67,7 +67,7 @@ flutter:
     - family: LXGWWenKai
       fonts:
         # - asset: lib/assets/fonts/LXGWWenKai-Regular.ttf
-        - asset: lib/assets/fonts/LXGWWenKai-Bold.ttf
+        - asset: lib/assets/fonts/lxgw-wenkai-screen.ttf
           # weight: 600
   assets:
     # - lib/assets/fonts/
