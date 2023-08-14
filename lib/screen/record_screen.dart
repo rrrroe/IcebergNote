@@ -1,7 +1,8 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:icebergnote/screen/noteslist_screen.dart';
 import 'package:yaml/yaml.dart';
-
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../notes.dart';
@@ -529,7 +530,7 @@ Widget buildPropertyCard(Notes note, Map template, Map templateProperty,
                   maxLines: 1,
                   minLines: 1,
                   onChanged: (value) {
-                    record[template.keys.elementAt(index)] = (value ?? 'null');
+                    record[template.keys.elementAt(index)] = (Value);
                     realm.write(() {
                       note.noteContext = mapToyaml(record);
                     });
