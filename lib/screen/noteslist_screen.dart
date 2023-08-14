@@ -14,7 +14,7 @@ import 'package:yaml/yaml.dart';
 
 import '../main.dart';
 import '../constants.dart';
-import 'table.dart';
+import 'record_screen.dart';
 
 const rowDividerincrease = SizedBox(width: 20);
 const colDivider = SizedBox(height: 10);
@@ -22,244 +22,6 @@ const tinySpacing = 3.0;
 const smallSpacing = 10.0;
 const double cardWidth = 115;
 const double widthConstraint = 450;
-
-// class FirstComponentList extends StatefulWidget {
-//   const FirstComponentList({
-//     Key? key,
-//     required this.showNavBottomBar,
-//     required this.scaffoldKey,
-//     required this.showSecondList,
-//   }) : super(key: key);
-
-//   final bool showNavBottomBar;
-//   final GlobalKey<ScaffoldState> scaffoldKey;
-//   final bool showSecondList;
-//   @override
-//   _FirstComponentListState createState() => _FirstComponentListState();
-// }
-
-// class _FirstComponentListState extends State<FirstComponentList> {
-//   final ScrollController _scrollController = ScrollController();
-//   void refreshList() {
-//     double scrollPosition = _scrollController.position.pixels;
-//     mainnotesList.increase(0);
-//     setState(() {
-//       _scrollController.jumpTo(scrollPosition);
-//     });
-//   }
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _scrollController.addListener(_scrollListener);
-//   }
-
-//   @override
-//   void dispose() {
-//     _scrollController.removeListener(_scrollListener);
-//     _scrollController.dispose();
-//     super.dispose();
-//   }
-
-//   void _scrollListener() {
-//     if (_scrollController.position.pixels ==
-//         _scrollController.position.maxScrollExtent) {
-//       // Reached the bottom of the list
-//       setState(() {
-//         mainnotesList.increase(5);
-//       });
-//     }
-//     if (_scrollController.position.pixels == 0) {
-//       setState(() {
-//         mainnotesList.increase(0);
-//       });
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       floatingActionButton: FloatingActionButton(
-//         heroTag: "add_button",
-//         onPressed: () {
-//           // showDialog(
-//           //   context: context,
-//           //   builder: (BuildContext context) {
-//           //     return NewNoteDialog(
-//           //       onDialogClosed: () {
-//           //         refreshList();
-//           //       },
-//           //     );
-//           //   },
-//           // );
-//         },
-//         child: GestureDetector(
-//           onTap: () {
-//             Notes tmpNote = Notes(
-//               ObjectId(),
-//               "",
-//               "",
-//               "",
-//               noteCreatTime: DateTime.now().toString(),
-//             );
-//             realm.write(() {
-//               realm.add<Notes>(tmpNote, update: true);
-//             });
-//             HapticFeedback.lightImpact();
-//             Navigator.push(
-//               context,
-//               MaterialPageRoute(
-//                 builder: (context) => ChangePage(
-//                   onPageClosed: () {
-//                     refreshList();
-//                   },
-//                   note: tmpNote,
-//                   mod: 0,
-//                 ),
-//               ),
-//             );
-//           },
-//           onLongPress: () {
-//             HapticFeedback.heavyImpact();
-//           },
-//           child: const Icon(Icons.add),
-//         ),
-//       ),
-//       body: ListView.builder(
-//         controller: _scrollController,
-//         itemCount: mainnotesList.notesList.length,
-//         itemBuilder: (context, index) {
-//           return GestureDetector(
-//             onLongPress: () {
-//               HapticFeedback.heavyImpact();
-//             },
-//             onTap: () {
-//               HapticFeedback.lightImpact();
-//             },
-//             child: Card(
-//               margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-//               elevation: 3, // 阴影大小
-//               shadowColor: Colors.grey,
-//               child: ListTile(
-//                 title: Visibility(
-//                   visible: mainnotesList.notesList[index].noteTitle != "",
-//                   child: Text(
-//                     mainnotesList.notesList[index].noteTitle,
-//                     maxLines: 1,
-//                     overflow: TextOverflow.fade,
-//                     style: const TextStyle(
-//                       fontSize: 18,
-//                       fontWeight: FontWeight.w600,
-//                     ),
-//                   ),
-//                 ),
-//                 subtitle: Column(
-//                   mainAxisAlignment: MainAxisAlignment.start,
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     Visibility(
-//                       visible: mainnotesList.notesList[index].noteContext != "",
-//                       child: Text(
-//                         mainnotesList.notesList[index].noteContext,
-//                         maxLines: 5,
-//                         style: const TextStyle(
-//                           fontSize: 16,
-//                           fontWeight: FontWeight.w600,
-//                         ),
-//                       ),
-//                     ),
-//                     Visibility(
-//                       visible: mainnotesList.notesList[index].noteType +
-//                               mainnotesList.notesList[index].noteProject +
-//                               mainnotesList.notesList[index].noteFolder !=
-//                           "",
-//                       child: Row(
-//                         children: [
-//                           Container(
-//                             width: 70,
-//                             padding: const EdgeInsets.all(0),
-//                             alignment: Alignment.centerLeft,
-//                             child: Text(
-//                               mainnotesList.notesList[index].noteType,
-//                               style: const TextStyle(
-//                                 fontSize: 10,
-//                               ),
-//                             ),
-//                           ),
-//                           Container(
-//                             padding: const EdgeInsets.all(0),
-//                             alignment: Alignment.centerLeft,
-//                             width: 79,
-//                             child: Text(
-//                               mainnotesList.notesList[index].noteProject,
-//                               style: const TextStyle(
-//                                 fontSize: 10,
-//                               ),
-//                             ),
-//                           ),
-//                           Container(
-//                             padding: const EdgeInsets.all(0),
-//                             alignment: Alignment.centerLeft,
-//                             width: 150,
-//                             child: Text(
-//                               mainnotesList.notesList[index].noteFolder,
-//                               style: const TextStyle(
-//                                 fontSize: 10,
-//                               ),
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                     Text(
-//                       '${mainnotesList.notesList[index].noteCreatTime.length > 19 ? '${mainnotesList.notesList[index].noteCreatTime.substring(0, 19)}创建     ' : mainnotesList.notesList[index].noteCreatTime}${mainnotesList.notesList[index].noteUpdateTime.length > 19 ? '${mainnotesList.notesList[index].noteUpdateTime.substring(0, 19)}修改' : mainnotesList.notesList[index].noteUpdateTime}     ${mainnotesList.notesList[index].noteContext.length + mainnotesList.notesList[index].noteTitle.length}字符',
-//                       maxLines: 1,
-//                       style: const TextStyle(
-//                         fontSize: 10,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 // trailing: Column(
-//                 //   mainAxisAlignment: MainAxisAlignment.end,
-//                 //   crossAxisAlignment: CrossAxisAlignment.start,
-//                 //   children: [],
-//                 // ),
-//                 onTap: () {
-//                   Navigator.push(
-//                     context,
-//                     MaterialPageRoute(
-//                       builder: (context) => ChangePage(
-//                         onPageClosed: () {
-//                           refreshList();
-//                         },
-//                         note: mainnotesList.notesList[index],
-//                         mod: 1,
-//                       ),
-//                     ),
-//                   );
-//                 },
-//                 onLongPress: () {
-//                   showModalBottomSheet(
-//                     context: context,
-//                     builder: (context) {
-//                       return BottomPopSheet(
-//                         note: mainnotesList.notesList[index],
-//                         onDialogClosed: () {
-//                           refreshList();
-//                         },
-//                       );
-//                     },
-//                   );
-//                 },
-//               ),
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
 
 class BottomPopSheet extends StatelessWidget {
   const BottomPopSheet(
@@ -289,7 +51,7 @@ class BottomPopSheet extends StatelessWidget {
             title: const Text('复制'),
             onTap: () async {
               await FlutterClipboard.copy(
-                  '${note.noteTitle}\n${note.noteContext}\n${note.noteUpdateTime.length > 10 ? note.noteUpdateTime.substring(0, 10) : ''}');
+                  '${note.noteTitle}\n${note.noteContext}');
               poplog(1, '复制', context);
               onDialogClosed();
               Navigator.pop(context);
@@ -885,21 +647,45 @@ class _SearchPageState extends State<SearchPage> {
         ),
       );
     } else if (note.noteType == '.记录') {
-      Map noteMap = loadYaml(note.noteContext) as YamlMap;
-      Map noteMapOther = {...noteMap};
-      noteMapOther.remove(noteMapOther.keys.first);
-
       var templateNote = realm.query<Notes>(
           "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
           [
             '.表头',
             note.noteProject,
           ])[0];
+      if (note.noteContext == '') {
+        realm.write(() {
+          note.noteContext =
+              templateNote.noteContext.replaceAll(RegExp(r': .*'), ': ');
+        });
+      }
+      Map noteMap = loadYaml(note.noteContext) as Map;
+      Map noteMapOther = {...noteMap};
+      noteMapOther.remove(noteMapOther.keys.first);
+
       Map template = loadYaml(templateNote.noteContext.substring(
           0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
       Map templateProperty = loadYaml(templateNote.noteContext
           .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
-      List propertySettings1 = template.values.elementAt(0).split(',');
+      // Map template = {
+      //   '序号': ['数字', '第', '次'],
+      //   '距离': ['数字', 'null', 'km'],
+      //   '地点': ['单选', 'null', 'null'],
+      //   '感受': ['多选', 'null', 'null'],
+      //   '配速': ['时间', 'null', 'null'],
+      //   '日期': ['日期', 'null', 'null'],
+      //   '想法': ['长文', 'null', 'null'],
+      // };
+      // Map templateProperty = {
+      //   'settings': 1,
+      //   'color': [255, 132, 132],
+      // };
+      // realm.write(() {
+      //   templateNote.noteContext =
+      //       mapToyaml(template) + '\n\n' + mapToyaml(templateProperty);
+      // });
+
+      List propertySettings1 = template.values.elementAt(0);
       return Card(
         margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
         elevation: 0,
@@ -914,7 +700,7 @@ class _SearchPageState extends State<SearchPage> {
           title: SizedBox(
             height: 40,
             child: Text(
-              '${note.noteProject}  ${propertySettings1[1]}${noteMap[noteMap.keys.first]}${propertySettings1[2]}',
+              '${note.noteProject}  ${propertySettings1[1] ?? ''}${noteMap[noteMap.keys.first] ?? ''}${propertySettings1[2] ?? ''}',
               maxLines: 1,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -932,11 +718,13 @@ class _SearchPageState extends State<SearchPage> {
           subtitle: Wrap(
             spacing: 10,
             children: List.generate(noteMapOther.length, (index) {
-              List propertySettings =
-                  template.values.elementAt(index + 1).split(',');
+              List propertySettings = ['', '', ''];
+              if (template.containsKey(noteMapOther.keys.elementAt(index))) {
+                propertySettings = template[noteMapOther.keys.elementAt(index)];
+              }
               if (noteMapOther.values.elementAt(index) != null) {
                 return Text(
-                  '${noteMapOther.keys.elementAt(index)}: ${propertySettings[1].toString()}${noteMapOther.values.elementAt(index)}${propertySettings[2].toString()}',
+                  '${noteMapOther.keys.elementAt(index) ?? ''}: ${propertySettings[1] ?? ''}${noteMapOther.values.elementAt(index)}${propertySettings[2] ?? ''}',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

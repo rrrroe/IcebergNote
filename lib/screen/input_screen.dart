@@ -4,7 +4,6 @@ import 'package:realm/realm.dart';
 import '../constants.dart';
 import '../notes.dart';
 import '../main.dart';
-import 'table.dart';
 
 String tmpTitle = "", tmpContext = "";
 late Notes latestNote;
