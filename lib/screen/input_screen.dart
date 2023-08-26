@@ -466,7 +466,7 @@ class ChangePageState extends State<ChangePage> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 )
               ],

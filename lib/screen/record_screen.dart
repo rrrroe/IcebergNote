@@ -1,8 +1,6 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
-import 'package:icebergnote/screen/noteslist_screen.dart';
 import 'package:yaml/yaml.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../notes.dart';
@@ -62,7 +60,6 @@ class RecordChangePageState extends State<RecordChangePage> {
   Map templateProperty = {};
   Map record = {};
   FocusNode focusNode = FocusNode();
-
   @override
   void initState() {
     super.initState();
@@ -425,13 +422,13 @@ class RecordChangePageState extends State<RecordChangePage> {
                           shrinkWrap: true,
                           padding: const EdgeInsets.all(0),
                           itemBuilder: (context, index) {
-                            return buildPropertyCard(
-                                widget.note,
-                                template,
-                                templateProperty,
-                                index,
-                                propertyControllerList,
-                                record);
+                            return PropertyCard(
+                              note: widget.note,
+                              template: template,
+                              templateProperty: templateProperty,
+                              index: index,
+                              record: record,
+                            );
                           },
                         ),
                       ],
@@ -482,25 +479,68 @@ class RecordChangePageState extends State<RecordChangePage> {
   }
 }
 
-Widget buildPropertyCard(Notes note, Map template, Map templateProperty,
-    int index, List<TextEditingController> propertyControllerList, Map record) {
-  List propertySettings = template.values.elementAt(index);
+class PropertyCard extends StatefulWidget {
+  final Notes note;
+  final Map template;
+  final Map templateProperty;
+  final int index;
+  final Map record;
+
+  PropertyCard({
+    super.key,
+    required this.note,
+    required this.template,
+    required this.templateProperty,
+    required this.index,
+    required this.record,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _PropertyCardState();
+}
+
+class _PropertyCardState extends State<PropertyCard> {
+  late List propertySettings;
+  TextEditingController contentController = TextEditingController();
   EdgeInsets edgeInsets = const EdgeInsets.fromLTRB(0, 0, 0, 0);
   TextStyle textStyle =
       const TextStyle(overflow: TextOverflow.fade, fontSize: 14);
-  if (propertySettings[0] == 'LongText') {
-    return Container();
-  } else {
+  String error = '';
+  @override
+  Widget build(BuildContext context) {
+    return buildCard();
+  }
+
+  void initState() {
+    super.initState();
+    propertySettings = widget.template.values.elementAt(widget.index);
+    contentController.text =
+        widget.record[widget.template.keys.elementAt(widget.index)].toString();
+  }
+
+  Widget buildCard() {
+    switch (widget.template[0]) {
+      case '数字':
+        return buildNumberCard();
+      default:
+        return buildNumberCard();
+    }
+  }
+
+  Widget buildNumberCard() {
     return Card(
       elevation: 0,
-      color: Color.fromARGB(50, templateProperty['color'][0],
-          templateProperty['color'][1], templateProperty['color'][2]),
+      color: Color.fromARGB(
+          50,
+          widget.templateProperty['color'][0],
+          widget.templateProperty['color'][1],
+          widget.templateProperty['color'][2]),
       child: Row(
         children: [
           Expanded(
             flex: 2,
             child: Text(
-              template.keys.elementAt(index) + ':',
+              widget.template.keys.elementAt(widget.index) + ':',
               textAlign: TextAlign.center,
               style: textStyle,
             ),
@@ -522,18 +562,30 @@ Widget buildPropertyCard(Notes note, Map template, Map templateProperty,
                 child: TextField(
                   textAlign: TextAlign.center,
                   style: textStyle,
-                  controller: propertyControllerList[index],
+                  controller: contentController,
                   decoration: InputDecoration(
                     border: const UnderlineInputBorder(),
+                    errorText: error,
                     contentPadding: edgeInsets,
                   ),
+                  keyboardType: TextInputType.number,
                   maxLines: 1,
                   minLines: 1,
                   onChanged: (value) {
-                    record[template.keys.elementAt(index)] = (Value);
-                    realm.write(() {
-                      note.noteContext = mapToyaml(record);
-                    });
+                    if (double.tryParse(value) != null) {
+                      widget.record[
+                          widget.template.keys.elementAt(widget.index)] = value;
+                      realm.write(() {
+                        widget.note.noteContext = mapToyaml(widget.record);
+                      });
+                      setState(() {
+                        error = '';
+                      });
+                    } else {
+                      setState(() {
+                        error = '请输入数字';
+                      });
+                    }
                   },
                 ),
               ),
@@ -550,6 +602,151 @@ Widget buildPropertyCard(Notes note, Map template, Map templateProperty,
         ],
       ),
     );
+  }
+}
+
+Widget buildPropertyCard(
+  Notes note,
+  Map template,
+  Map templateProperty,
+  int index,
+  List<TextEditingController> propertyControllerList,
+  Map record,
+  RecordChangePageState state,
+) {
+  List propertySettings = template.values.elementAt(index);
+  EdgeInsets edgeInsets = const EdgeInsets.fromLTRB(0, 0, 0, 0);
+  TextStyle textStyle =
+      const TextStyle(overflow: TextOverflow.fade, fontSize: 14);
+  String error = 'ree';
+  switch (propertySettings[0]) {
+    case '数字':
+      return Card(
+        elevation: 0,
+        color: Color.fromARGB(50, templateProperty['color'][0],
+            templateProperty['color'][1], templateProperty['color'][2]),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Text(
+                template.keys.elementAt(index) + ':',
+                textAlign: TextAlign.center,
+                style: textStyle,
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text(
+                propertySettings[1] ?? '',
+                textAlign: TextAlign.right,
+                style: textStyle,
+              ),
+            ),
+            Expanded(
+              flex: 6,
+              child: Padding(
+                padding: edgeInsets,
+                child: SizedBox(
+                  height: 45,
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    style: textStyle,
+                    controller: propertyControllerList[index],
+                    decoration: InputDecoration(
+                      border: const UnderlineInputBorder(),
+                      errorText: error,
+                      contentPadding: edgeInsets,
+                    ),
+                    keyboardType: TextInputType.number,
+                    maxLines: 1,
+                    minLines: 1,
+                    onChanged: (value) {
+                      if (double.tryParse(value) != null) {
+                        record[template.keys.elementAt(index)] = value;
+                        realm.write(() {
+                          note.noteContext = mapToyaml(record);
+                        });
+                        error = '';
+                      } else {
+                        error = '请输入数字';
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                propertySettings[2] ?? '',
+                textAlign: TextAlign.left,
+                style: textStyle,
+              ),
+            ),
+          ],
+        ),
+      );
+    default:
+      return Card(
+        elevation: 0,
+        color: Color.fromARGB(50, templateProperty['color'][0],
+            templateProperty['color'][1], templateProperty['color'][2]),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Text(
+                template.keys.elementAt(index) + ':',
+                textAlign: TextAlign.center,
+                style: textStyle,
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text(
+                propertySettings[1] ?? '',
+                textAlign: TextAlign.right,
+                style: textStyle,
+              ),
+            ),
+            Expanded(
+              flex: 6,
+              child: Padding(
+                padding: edgeInsets,
+                child: SizedBox(
+                  height: 45,
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    style: textStyle,
+                    controller: propertyControllerList[index],
+                    decoration: InputDecoration(
+                      border: const UnderlineInputBorder(),
+                      contentPadding: edgeInsets,
+                    ),
+                    maxLines: 1,
+                    minLines: 1,
+                    onChanged: (value) {
+                      record[template.keys.elementAt(index)] = value;
+                      realm.write(() {
+                        note.noteContext = mapToyaml(record);
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                propertySettings[2] ?? '',
+                textAlign: TextAlign.left,
+                style: textStyle,
+              ),
+            ),
+          ],
+        ),
+      );
   }
 }
 
