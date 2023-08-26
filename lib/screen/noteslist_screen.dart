@@ -536,8 +536,8 @@ class _SearchPageState extends State<SearchPage> {
         note.noteType == '.Todo') {
       return Card(
         color: note.noteFinishState == '已完'
-            ? const Color.fromARGB(40, 200, 200, 200)
-            : const Color.fromARGB(40, 0, 123, 128),
+            ? const Color.fromARGB(20, 200, 200, 200)
+            : const Color.fromARGB(20, 0, 123, 128),
         margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
         elevation: 0,
         shadowColor: Theme.of(context).primaryColor,
@@ -774,133 +774,138 @@ class _SearchPageState extends State<SearchPage> {
         ),
       );
     } else {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-        elevation: 0,
-        shadowColor: Colors.grey,
-        color: const Color.fromARGB(40, 0, 140, 198),
-        child: ListTile(
-          title: Visibility(
-            visible: note.noteTitle != "",
-            child: SizedBox(
-              height: 40,
-              child: Text(
-                note.noteTitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Color.fromARGB(255, 0, 140, 198)),
-              ),
-            ),
-          ),
-          subtitle: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Visibility(
-                visible: note.noteContext != "",
-                child: Text(
-                  note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 5,
-                  style: const TextStyle(
-                    fontSize: 16,
+      return GestureDetector(
+        child: Card(
+          margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+          elevation: 0,
+          shadowColor: Colors.grey,
+          color: const Color.fromARGB(20, 0, 140, 198),
+          child: Padding(
+            padding: EdgeInsets.all(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Visibility(
+                  visible: note.noteTitle != "",
+                  child: SizedBox(
+                    height: 35,
+                    child: Text(
+                      note.noteTitle,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Color.fromARGB(255, 0, 140, 198)),
+                    ),
                   ),
                 ),
-              ),
-              // Text(
-              //   '${note.noteContext.length + note.noteTitle.length}${note.noteCreatTime.length > 19 ? '${note.noteCreatTime.substring(0, 19)}创建       ' : note.noteCreatTime}${note.noteUpdateTime.length > 19 ? '${note.noteUpdateTime.substring(0, 19)}修改' : note.noteUpdateTime}',
-              //   maxLines: 1,
-              //   style: const TextStyle(
-              //     fontSize: 10,
-              //   ),
-              // ),
-              Visibility(
-                visible:
-                    note.noteType + note.noteProject + note.noteFolder != "",
-                child: Row(
-                  children: [
-                    Container(
-                      width: 70,
-                      padding: const EdgeInsets.all(0),
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        note.noteType,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: Color.fromARGB(255, 56, 128, 186),
-                        ),
-                      ),
+                Visibility(
+                  visible: note.noteContext != "",
+                  child: Text(
+                    note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 5,
+                    style: const TextStyle(
+                      fontSize: 16,
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(0),
-                      alignment: Alignment.centerLeft,
-                      width: 79,
-                      child: Text(
-                        note.noteProject,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: Color.fromARGB(255, 215, 55, 55),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(0),
-                      alignment: Alignment.centerLeft,
-                      width: 150,
-                      child: Text(
-                        note.noteFolder,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: Color.fromARGB(255, 4, 123, 60),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                // Text(
+                //   '${note.noteContext.length + note.noteTitle.length}${note.noteCreatTime.length > 19 ? '${note.noteCreatTime.substring(0, 19)}创建       ' : note.noteCreatTime}${note.noteUpdateTime.length > 19 ? '${note.noteUpdateTime.substring(0, 19)}修改' : note.noteUpdateTime}',
+                //   maxLines: 1,
+                //   style: const TextStyle(
+                //     fontSize: 10,
+                //   ),
+                // ),
+                Visibility(
+                  visible:
+                      note.noteType + note.noteProject + note.noteFolder != "",
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 70,
+                        padding: const EdgeInsets.all(0),
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          note.noteType,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Color.fromARGB(255, 56, 128, 186),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(0),
+                        alignment: Alignment.centerLeft,
+                        width: 79,
+                        child: Text(
+                          note.noteProject,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Color.fromARGB(255, 215, 55, 55),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(0),
+                        alignment: Alignment.centerLeft,
+                        width: 150,
+                        child: Text(
+                          note.noteFolder,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Color.fromARGB(255, 4, 123, 60),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChangePage(
-                  onPageClosed: () {
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChangePage(
+                onPageClosed: () {
+                  refreshList();
+                },
+                note: note,
+                mod: 1,
+              ),
+            ),
+          );
+        },
+        onLongPress: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              if (widget.mod == 2) {
+                return BottomPopSheetDeleted(
+                  note: note,
+                  onDialogClosed: () {
                     refreshList();
                   },
+                );
+              } else {
+                return BottomPopSheet(
                   note: note,
-                  mod: 1,
-                ),
-              ),
-            );
-          },
-          onLongPress: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                if (widget.mod == 2) {
-                  return BottomPopSheetDeleted(
-                    note: note,
-                    onDialogClosed: () {
-                      refreshList();
-                    },
-                  );
-                } else {
-                  return BottomPopSheet(
-                    note: note,
-                    onDialogClosed: () {
-                      refreshList();
-                    },
-                  );
-                }
-              },
-            );
-          },
-        ),
+                  onDialogClosed: () {
+                    refreshList();
+                  },
+                );
+              }
+            },
+          );
+        },
       );
+      ;
     }
   }
 
