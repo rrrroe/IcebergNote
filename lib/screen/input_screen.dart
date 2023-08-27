@@ -4,6 +4,7 @@ import 'package:realm/realm.dart';
 import '../constants.dart';
 import '../notes.dart';
 import '../main.dart';
+import 'record_screen.dart';
 
 String tmpTitle = "", tmpContext = "";
 late Notes latestNote;
@@ -484,6 +485,24 @@ class ChangePageState extends State<ChangePage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    TextButton(
+                      onPressed: () {
+                        if (widget.note.noteType == '.表头') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RecordTemplateChangePage(
+                                note: widget.note,
+                                onPageClosed: () {
+                                  setState(() {});
+                                },
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text('高级'),
+                    ),
                     TextButton(
                       onPressed: () async {
                         await FlutterClipboard.copy(contentController.text);

@@ -19,6 +19,8 @@ class KeyboardManager extends ChangeNotifier {
   }
 }
 
+List templateTypeList = ['数字', '文本', '单选', '多选', '时间', '日期', '长文'];
+
 String mapToyaml(Map map) {
   String yaml = '';
   for (var i = 0; i < map.length; i++) {
@@ -755,11 +757,9 @@ class RecordTemplateChangePage extends StatefulWidget {
     Key? key,
     required this.onPageClosed,
     required this.note,
-    required this.mod,
   }) : super(key: key);
   final VoidCallback onPageClosed;
   final Notes note;
-  final int mod;
   final List<String> typeList = ['新建', '清空'];
   final List<String> folderList = ['新建', '清空'];
   final List<String> projectList = ['新建', '清空'];
@@ -781,7 +781,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
   final ScrollController _scrollController = ScrollController();
   Map template = {};
   Map templateProperty = {};
-
+  Map templateNew = {};
   FocusNode focusNode = FocusNode();
   int key = 0;
   String generateKey() {
@@ -820,6 +820,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
     }
     template = loadYaml(widget.note.noteContext
         .substring(0, widget.note.noteContext.indexOf('settings'))) as YamlMap;
+    templateNew = Map.from(template);
     templateProperty = loadYaml(widget.note.noteContext
         .substring(widget.note.noteContext.indexOf('settings'))) as YamlMap;
     for (var i = 0; i < template.length; i++) {
@@ -1149,14 +1150,6 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                                 style: textStyle,
                               ),
                             ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                '后缀',
-                                textAlign: TextAlign.center,
-                                style: textStyle,
-                              ),
-                            ),
                           ],
                         ),
                         ListView.builder(
@@ -1165,11 +1158,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                           shrinkWrap: true,
                           padding: edgeInsets,
                           itemBuilder: (context, index) {
-                            return buildTemplatePropertyCard(
-                                template,
-                                templateProperty,
-                                index,
-                                propertyControllerList);
+                            return buildTemplatePropertyCard(templateProperty,
+                                index, propertyControllerList);
                           },
                         ),
                       ],
@@ -1219,10 +1209,9 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
     );
   }
 
-  Widget buildTemplatePropertyCard(Map template, Map templateProperty,
-      int index, List<TextEditingController> propertyControllerList) {
+  Widget buildTemplatePropertyCard(Map templateProperty, int index,
+      List<TextEditingController> propertyControllerList) {
     List propertySettings = template.values.elementAt(index);
-    List templateTypeList = ['数字', '文本', '单选', '多选', '时间', '日期', '长文'];
     return Card(
       elevation: 0,
       color: Color.fromARGB(50, templateProperty['color'][0],
@@ -1239,7 +1228,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
             ),
           ),
           Expanded(
-            flex: 4,
+            flex: 2,
             child: MenuAnchor(
               builder: (context, controller, child) {
                 return FilledButton.tonal(
@@ -1278,9 +1267,10 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                         break;
                       default:
                         setState(() {
-                          realm.write(() {
-                            widget.note.noteType = type;
-                          });
+                          // propertySettings[0] = type;
+                          templateNew[template.keys.elementAt(index)][0] = type;
+                          print(template);
+                          print(templateNew);
                         });
                     }
                   },
