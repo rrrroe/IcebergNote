@@ -685,7 +685,7 @@ class _SearchPageState extends State<SearchPage> {
       //       mapToyaml(template) + '\n\n' + mapToyaml(templateProperty);
       // });
 
-      List propertySettings1 = template.values.elementAt(0);
+      List propertySettings1 = template.values.elementAt(0).split(",");
       return Card(
         margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
         elevation: 0,
@@ -700,7 +700,7 @@ class _SearchPageState extends State<SearchPage> {
           title: SizedBox(
             height: 40,
             child: Text(
-              '${note.noteProject}  ${propertySettings1[1] ?? ''}${noteMap[noteMap.keys.first] ?? ''}${propertySettings1[2] ?? ''}',
+              '${note.noteProject}  ${propertySettings1[2] ?? ''}${noteMap[noteMap.keys.first] ?? ''}${propertySettings1[3] ?? ''}',
               maxLines: 1,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -718,13 +718,14 @@ class _SearchPageState extends State<SearchPage> {
           subtitle: Wrap(
             spacing: 10,
             children: List.generate(noteMapOther.length, (index) {
-              List propertySettings = ['', '', ''];
+              List propertySettings = ['', '', '', ''];
               if (template.containsKey(noteMapOther.keys.elementAt(index))) {
-                propertySettings = template[noteMapOther.keys.elementAt(index)];
+                propertySettings =
+                    template[noteMapOther.keys.elementAt(index)].split(",");
               }
               if (noteMapOther.values.elementAt(index) != null) {
                 return Text(
-                  '${noteMapOther.keys.elementAt(index) ?? ''}: ${propertySettings[1] ?? ''}${noteMapOther.values.elementAt(index)}${propertySettings[2] ?? ''}',
+                  '${propertySettings[0] ?? ''}: ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index)}${propertySettings[3] ?? ''}',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

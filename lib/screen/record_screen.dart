@@ -126,7 +126,7 @@ class RecordChangePageState extends State<RecordChangePage> {
     List templateKeys = template.keys.toList();
     Map sortedRecord = {};
 
-    for (String key in templateKeys) {
+    for (int key in templateKeys) {
       if (record.containsKey(key)) {
         sortedRecord[key] = record[key];
       }
@@ -504,7 +504,7 @@ class PropertyCard extends StatefulWidget {
 class _PropertyCardState extends State<PropertyCard> {
   late List propertySettings;
   TextEditingController contentController = TextEditingController();
-  EdgeInsets edgeInsets = const EdgeInsets.fromLTRB(0, 0, 0, 0);
+  EdgeInsets edgeInsets = const EdgeInsets.fromLTRB(5, 5, 5, 5);
   TextStyle textStyle =
       const TextStyle(overflow: TextOverflow.fade, fontSize: 14);
   String error = '';
@@ -515,17 +515,23 @@ class _PropertyCardState extends State<PropertyCard> {
 
   void initState() {
     super.initState();
-    propertySettings = widget.template.values.elementAt(widget.index);
+    propertySettings =
+        widget.template.values.elementAt(widget.index).split(",");
     contentController.text =
         widget.record[widget.template.keys.elementAt(widget.index)].toString();
+    if (contentController.text == 'null') {
+      contentController.text = '';
+    }
   }
 
   Widget buildCard() {
-    switch (widget.template[0]) {
+    switch (propertySettings[1]) {
       case '数字':
         return buildNumberCard();
+      case '长文':
+        return buildLongTextCard();
       default:
-        return buildNumberCard();
+        return buildLongTextCard();
     }
   }
 
@@ -542,7 +548,7 @@ class _PropertyCardState extends State<PropertyCard> {
           Expanded(
             flex: 2,
             child: Text(
-              widget.template.keys.elementAt(widget.index) + ':',
+              propertySettings[0] + ':',
               textAlign: TextAlign.center,
               style: textStyle,
             ),
@@ -550,7 +556,7 @@ class _PropertyCardState extends State<PropertyCard> {
           Expanded(
             flex: 1,
             child: Text(
-              propertySettings[1] ?? '',
+              propertySettings[2] ?? '',
               textAlign: TextAlign.right,
               style: textStyle,
             ),
@@ -596,7 +602,75 @@ class _PropertyCardState extends State<PropertyCard> {
           Expanded(
             flex: 2,
             child: Text(
+              propertySettings[3] ?? '',
+              textAlign: TextAlign.left,
+              style: textStyle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildLongTextCard() {
+    return Card(
+      elevation: 0,
+      color: Color.fromARGB(
+          50,
+          widget.templateProperty['color'][0],
+          widget.templateProperty['color'][1],
+          widget.templateProperty['color'][2]),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[0] + ':',
+              textAlign: TextAlign.center,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
               propertySettings[2] ?? '',
+              textAlign: TextAlign.right,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: Padding(
+              padding: edgeInsets,
+              child: Container(
+                color: Colors.white,
+                height: 45,
+                child: TextField(
+                  textAlign: TextAlign.center,
+                  style: textStyle,
+                  controller: contentController,
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      errorText: error,
+                      contentPadding: edgeInsets,
+                      fillColor: const Color.fromARGB(255, 60, 52, 52)),
+                  maxLines: 10,
+                  minLines: 5,
+                  onChanged: (value) {
+                    widget.record[
+                        widget.template.keys.elementAt(widget.index)] = value;
+                    realm.write(() {
+                      widget.note.noteContext = mapToyaml(widget.record);
+                    });
+                  },
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[3] ?? '',
               textAlign: TextAlign.left,
               style: textStyle,
             ),
@@ -616,12 +690,12 @@ Widget buildPropertyCard(
   Map record,
   RecordChangePageState state,
 ) {
-  List propertySettings = template.values.elementAt(index);
+  List propertySettings = template.values.elementAt(index).split(",");
   EdgeInsets edgeInsets = const EdgeInsets.fromLTRB(0, 0, 0, 0);
   TextStyle textStyle =
       const TextStyle(overflow: TextOverflow.fade, fontSize: 14);
   String error = 'ree';
-  switch (propertySettings[0]) {
+  switch (propertySettings[1]) {
     case '数字':
       return Card(
         elevation: 0,
@@ -640,7 +714,7 @@ Widget buildPropertyCard(
             Expanded(
               flex: 1,
               child: Text(
-                propertySettings[1] ?? '',
+                propertySettings[2] ?? '',
                 textAlign: TextAlign.right,
                 style: textStyle,
               ),
@@ -681,7 +755,7 @@ Widget buildPropertyCard(
             Expanded(
               flex: 2,
               child: Text(
-                propertySettings[2] ?? '',
+                propertySettings[3] ?? '',
                 textAlign: TextAlign.left,
                 style: textStyle,
               ),
@@ -707,7 +781,7 @@ Widget buildPropertyCard(
             Expanded(
               flex: 1,
               child: Text(
-                propertySettings[1] ?? '',
+                propertySettings[2] ?? '',
                 textAlign: TextAlign.right,
                 style: textStyle,
               ),
@@ -741,7 +815,7 @@ Widget buildPropertyCard(
             Expanded(
               flex: 2,
               child: Text(
-                propertySettings[2] ?? '',
+                propertySettings[3] ?? '',
                 textAlign: TextAlign.left,
                 style: textStyle,
               ),
@@ -1211,7 +1285,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
 
   Widget buildTemplatePropertyCard(Map templateProperty, int index,
       List<TextEditingController> propertyControllerList) {
-    List propertySettings = template.values.elementAt(index);
+    List propertySettings = template.values.elementAt(index).split(",");
     return Card(
       elevation: 0,
       color: Color.fromARGB(50, templateProperty['color'][0],
@@ -1241,8 +1315,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                     }
                   },
                   child: Text(
-                    propertySettings[0] == '' ? '类型' : propertySettings[0],
-                    style: propertySettings[0] == ''
+                    propertySettings[1] == '' ? '类型' : propertySettings[1],
+                    style: propertySettings[1] == ''
                         ? const TextStyle(color: Colors.grey)
                         : TextStyle(
                             color: Color.fromARGB(
