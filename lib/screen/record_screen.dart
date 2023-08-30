@@ -800,6 +800,7 @@ class _PropertyCardState extends State<PropertyCard> {
                   },
                   menuChildren: typeList.map((Selected) {
                     return MenuItemButton(
+                      style: selectedContextButtonStyle,
                       child: Text(Selected),
                       onPressed: () {
                         switch (Selected) {

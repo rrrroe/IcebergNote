@@ -672,23 +672,6 @@ class _SearchPageState extends State<SearchPage> {
           0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
       Map templateProperty = loadYaml(templateNote.noteContext
           .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
-      // Map template = {
-      //   '序号': ['数字', '第', '次'],
-      //   '距离': ['数字', 'null', 'km'],
-      //   '地点': ['单选', 'null', 'null'],
-      //   '感受': ['多选', 'null', 'null'],
-      //   '配速': ['时间', 'null', 'null'],
-      //   '日期': ['日期', 'null', 'null'],
-      //   '想法': ['长文', 'null', 'null'],
-      // };
-      // Map templateProperty = {
-      //   'settings': 1,
-      //   'color': [255, 132, 132],
-      // };
-      // realm.write(() {
-      //   templateNote.noteContext =
-      //       mapToyaml(template) + '\n\n' + mapToyaml(templateProperty);
-      // });
       Color backgroundColor = Color.fromARGB(
         40,
         templateProperty['color'][0],
@@ -723,67 +706,97 @@ class _SearchPageState extends State<SearchPage> {
           ),
           subtitle: Wrap(
             spacing: 10,
-            children: List.generate(noteMapOther.length, (index) {
-              List propertySettings = ['', '', '', ''];
-              if (template.containsKey(noteMapOther.keys.elementAt(index))) {
-                propertySettings =
-                    template[noteMapOther.keys.elementAt(index)].split(",");
-              }
-              if (noteMapOther.values.elementAt(index) != null) {
-                if (propertySettings[1] == '长文') {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${propertySettings[0] ?? ''}: ',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: fontColor,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n')}${propertySettings[3] ?? ''}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                } else {
-                  return RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "${propertySettings[0] ?? ''}: ",
-                          style: TextStyle(
-                            fontFamily: 'LXGWWenKai',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: fontColor,
-                          ),
-                        ),
-                        TextSpan(
-                          text:
-                              '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
-                          style: const TextStyle(
-                            fontFamily: 'LXGWWenKai',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
+            children: List.generate(
+              noteMapOther.length,
+              (index) {
+                List propertySettings = ['', '', '', ''];
+                if (template.containsKey(noteMapOther.keys.elementAt(index))) {
+                  propertySettings =
+                      template[noteMapOther.keys.elementAt(index)].split(",");
                 }
-              } else {
-                return const SizedBox(height: 0, width: 0);
-              }
-            }),
+                if (noteMapOther.values.elementAt(index) != null) {
+                  switch (propertySettings[1]) {
+                    case '长文':
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${propertySettings[0] ?? ''}: ',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: fontColor,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n')}${propertySettings[3] ?? ''}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    case '单选':
+                      return RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "${propertySettings[0] ?? ''}: ",
+                              style: TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: fontColor,
+                              ),
+                            ),
+                            TextSpan(
+                              text:
+                                  '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
+                              style: const TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    default:
+                      return RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "${propertySettings[0] ?? ''}: ",
+                              style: TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: fontColor,
+                              ),
+                            ),
+                            TextSpan(
+                              text:
+                                  '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString()} ${propertySettings[3] ?? ''}  ',
+                              style: const TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                  }
+                } else {
+                  return const SizedBox(height: 0, width: 0);
+                }
+              },
+            ),
           ),
           onTap: () {
             Navigator.push(
