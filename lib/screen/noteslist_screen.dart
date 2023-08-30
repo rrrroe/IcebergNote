@@ -1030,6 +1030,7 @@ class _SearchPageState extends State<SearchPage> {
         children: [
           Expanded(
             child: RefreshIndicator(
+              color: Color.fromARGB(255, 0, 140, 198),
               onRefresh: () {
                 return refreshData();
               },
