@@ -47,3 +47,11 @@ ButtonStyle selectButtonStyle = ElevatedButton.styleFrom(
   ),
   padding: const EdgeInsets.all(3),
 );
+ButtonStyle selectedContextButtonStyle = ElevatedButton.styleFrom(
+  foregroundColor: const Color.fromARGB(255, 0, 0, 0),
+  backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(4),
+  ),
+  padding: const EdgeInsets.all(3),
+);

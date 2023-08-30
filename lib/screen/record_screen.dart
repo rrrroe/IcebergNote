@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_function_literals_in_foreach_calls
+
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:yaml/yaml.dart';
@@ -428,7 +430,7 @@ class RecordChangePageState extends State<RecordChangePage> {
                             itemBuilder: (context, index) {
                               return PropertyCard(
                                 note: widget.note,
-                                template: template,
+                                templateNote: templateNote,
                                 templateProperty: templateProperty,
                                 index: index,
                                 record: record,
@@ -486,7 +488,7 @@ class RecordChangePageState extends State<RecordChangePage> {
 
 class PropertyCard extends StatefulWidget {
   final Notes note;
-  final Map template;
+  final Notes templateNote;
   final Map templateProperty;
   final int index;
   final Map record;
@@ -494,7 +496,7 @@ class PropertyCard extends StatefulWidget {
   const PropertyCard({
     super.key,
     required this.note,
-    required this.template,
+    required this.templateNote,
     required this.templateProperty,
     required this.index,
     required this.record,
@@ -506,6 +508,7 @@ class PropertyCard extends StatefulWidget {
 
 class _PropertyCardState extends State<PropertyCard> {
   late List propertySettings;
+  Map template = {};
   TextEditingController contentController = TextEditingController();
   EdgeInsets edgeInsets = const EdgeInsets.fromLTRB(5, 5, 5, 5);
   TextStyle textStyle =
@@ -516,12 +519,14 @@ class _PropertyCardState extends State<PropertyCard> {
     return buildCard();
   }
 
+  @override
   void initState() {
     super.initState();
-    propertySettings =
-        widget.template.values.elementAt(widget.index).split(",");
+    template = loadYaml(widget.templateNote.noteContext.substring(
+        0, widget.templateNote.noteContext.indexOf('settings'))) as YamlMap;
+    propertySettings = template.values.elementAt(widget.index).split(",");
     contentController.text = widget
-        .record[widget.template.keys.elementAt(widget.index)]
+        .record[template.keys.elementAt(widget.index)]
         .toString()
         .replaceAll('    ', '\n');
     if (contentController.text == 'null') {
@@ -533,6 +538,8 @@ class _PropertyCardState extends State<PropertyCard> {
     switch (propertySettings[1]) {
       case '数字':
         return buildNumberCard();
+      case '单选':
+        return buildSingleSelectCard();
       case '长文':
         return buildLongTextCard();
       default:
@@ -587,8 +594,8 @@ class _PropertyCardState extends State<PropertyCard> {
                   minLines: 1,
                   onChanged: (value) {
                     if (double.tryParse(value) != null) {
-                      widget.record[
-                          widget.template.keys.elementAt(widget.index)] = value;
+                      widget.record[template.keys.elementAt(widget.index)] =
+                          value;
                       realm.write(() {
                         widget.note.noteContext = mapToyaml(widget.record);
                       });
@@ -655,8 +662,7 @@ class _PropertyCardState extends State<PropertyCard> {
                   maxLines: 10,
                   minLines: 5,
                   onChanged: (value) {
-                    widget.record[
-                            widget.template.keys.elementAt(widget.index)] =
+                    widget.record[template.keys.elementAt(widget.index)] =
                         value.replaceAll('\n', '    ').trim();
                     realm.write(() {
                       widget.note.noteContext = mapToyaml(widget.record);
@@ -716,12 +722,139 @@ class _PropertyCardState extends State<PropertyCard> {
                   maxLines: 1,
                   minLines: 1,
                   onChanged: (value) {
-                    widget.record[
-                        widget.template.keys.elementAt(widget.index)] = value;
+                    widget.record[template.keys.elementAt(widget.index)] =
+                        value;
                     realm.write(() {
                       widget.note.noteContext = mapToyaml(widget.record);
                     });
                   },
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[3] ?? '',
+              textAlign: TextAlign.left,
+              style: textStyle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildSingleSelectCard() {
+    final List<String> typeList =
+        ['新建', '清空'] + propertySettings[4].split("//");
+    return Card(
+      elevation: 0,
+      color: Color.fromARGB(
+          50,
+          widget.templateProperty['color'][0],
+          widget.templateProperty['color'][1],
+          widget.templateProperty['color'][2]),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[0] + ':',
+              textAlign: TextAlign.center,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[2] ?? '',
+              textAlign: TextAlign.right,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: Padding(
+              padding: edgeInsets,
+              child: Container(
+                color: Colors.white,
+                height: 45,
+                child: MenuAnchor(
+                  builder: (context, controller, child) {
+                    return FilledButton.tonal(
+                      style: selectedContextButtonStyle,
+                      onPressed: () {
+                        if (controller.isOpen) {
+                          controller.close();
+                        } else {
+                          controller.open();
+                        }
+                      },
+                      child: Text(
+                        widget.record[template.keys.elementAt(widget.index)]
+                            .toString(),
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    );
+                  },
+                  menuChildren: typeList.map((Selected) {
+                    return MenuItemButton(
+                      child: Text(Selected),
+                      onPressed: () {
+                        switch (Selected) {
+                          case '清空':
+                            setState(() {
+                              widget.record[
+                                  template.keys.elementAt(widget.index)] = '';
+                              realm.write(() {
+                                widget.note.noteContext =
+                                    mapToyaml(widget.record);
+                              });
+                            });
+                            break;
+                          case '新建':
+                            showDialog(
+                              context: context,
+                              builder: (ctx) {
+                                return InputAlertDialog(
+                                  onSubmitted: (text) {
+                                    realm.write(() {
+                                      widget.templateNote.noteContext = widget
+                                          .templateNote.noteContext
+                                          .replaceAll(
+                                              propertySettings[4],
+                                              propertySettings[4] +
+                                                  '//' +
+                                                  text);
+                                    });
+                                    setState(() {
+                                      typeList.add(text);
+                                      widget.record[template.keys
+                                          .elementAt(widget.index)] = text;
+                                      realm.write(() {
+                                        widget.note.noteContext =
+                                            mapToyaml(widget.record);
+                                      });
+                                    });
+                                  },
+                                );
+                              },
+                            );
+                            break;
+                          default:
+                            setState(() {
+                              widget.record[template.keys
+                                  .elementAt(widget.index)] = Selected;
+                              realm.write(() {
+                                widget.note.noteContext =
+                                    mapToyaml(widget.record);
+                              });
+                            });
+                        }
+                      },
+                    );
+                  }).toList(),
                 ),
               ),
             ),
@@ -1402,8 +1535,6 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                         setState(() {
                           // propertySettings[0] = type;
                           templateNew[template.keys.elementAt(index)][0] = type;
-                          print(template);
-                          print(templateNew);
                         });
                     }
                   },

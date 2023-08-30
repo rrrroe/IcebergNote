@@ -831,7 +831,7 @@ class _SearchPageState extends State<SearchPage> {
           shadowColor: Colors.grey,
           color: const Color.fromARGB(20, 0, 140, 198),
           child: Padding(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1023,15 +1023,13 @@ class _SearchPageState extends State<SearchPage> {
         children: [
           Expanded(
             child: RefreshIndicator(
-              color: Color.fromARGB(255, 0, 140, 198),
+              color: const Color.fromARGB(255, 0, 140, 198),
               onRefresh: () {
                 return refreshData();
               },
               child: ListView.builder(
                 controller: _scrollController,
                 itemCount: searchnotesList.notesList.length,
-                // physics: const BouncingScrollPhysics(
-                //     parent: AlwaysScrollableScrollPhysics()),
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onLongPress: () {

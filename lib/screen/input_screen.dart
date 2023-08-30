@@ -644,6 +644,8 @@ void poplog(int n, String m, BuildContext context) {
 }
 
 class MenuWidget extends StatelessWidget {
+  const MenuWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Row(
