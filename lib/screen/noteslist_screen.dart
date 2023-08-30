@@ -971,13 +971,6 @@ class _SearchPageState extends State<SearchPage> {
       poplog(2, '', context);
       return;
     } else {
-      Notes note = Notes(ObjectId(), '', '', '',
-          noteCreatTime: DateTime.now().toString(),
-          noteProject: recordProjectList[0],
-          noteType: '.记录');
-      realm.write(() {
-        realm.add<Notes>(note, update: true);
-      });
       showModalBottomSheet(
         context: context,
         builder: (context) {
