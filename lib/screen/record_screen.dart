@@ -418,20 +418,23 @@ class RecordChangePageState extends State<RecordChangePage> {
                             ),
                           ],
                         ),
-                        ListView.builder(
-                          controller: _scrollController,
-                          itemCount: template.length,
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.all(0),
-                          itemBuilder: (context, index) {
-                            return PropertyCard(
-                              note: widget.note,
-                              template: template,
-                              templateProperty: templateProperty,
-                              index: index,
-                              record: record,
-                            );
-                          },
+                        Expanded(
+                          // height: 500,
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            itemCount: template.length,
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.all(0),
+                            itemBuilder: (context, index) {
+                              return PropertyCard(
+                                note: widget.note,
+                                template: template,
+                                templateProperty: templateProperty,
+                                index: index,
+                                record: record,
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -488,7 +491,7 @@ class PropertyCard extends StatefulWidget {
   final int index;
   final Map record;
 
-  PropertyCard({
+  const PropertyCard({
     super.key,
     required this.note,
     required this.template,
@@ -517,8 +520,10 @@ class _PropertyCardState extends State<PropertyCard> {
     super.initState();
     propertySettings =
         widget.template.values.elementAt(widget.index).split(",");
-    contentController.text =
-        widget.record[widget.template.keys.elementAt(widget.index)].toString();
+    contentController.text = widget
+        .record[widget.template.keys.elementAt(widget.index)]
+        .toString()
+        .replaceAll('    ', '\n');
     if (contentController.text == 'null') {
       contentController.text = '';
     }
@@ -531,7 +536,7 @@ class _PropertyCardState extends State<PropertyCard> {
       case '长文':
         return buildLongTextCard();
       default:
-        return buildLongTextCard();
+        return buildTextCard();
     }
   }
 
@@ -572,10 +577,10 @@ class _PropertyCardState extends State<PropertyCard> {
                   style: textStyle,
                   controller: contentController,
                   decoration: InputDecoration(
-                    border: const UnderlineInputBorder(),
-                    errorText: error,
-                    contentPadding: edgeInsets,
-                  ),
+                      border: InputBorder.none,
+                      errorText: error,
+                      contentPadding: edgeInsets,
+                      fillColor: const Color.fromARGB(255, 60, 52, 52)),
                   keyboardType: TextInputType.number,
                   maxLines: 1,
                   minLines: 1,
@@ -644,6 +649,75 @@ class _PropertyCardState extends State<PropertyCard> {
               padding: edgeInsets,
               child: Container(
                 color: Colors.white,
+                height: 145,
+                child: TextField(
+                  textAlign: TextAlign.start,
+                  style: textStyle,
+                  controller: contentController,
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      errorText: error,
+                      contentPadding: edgeInsets,
+                      fillColor: const Color.fromARGB(255, 60, 52, 52)),
+                  maxLines: 10,
+                  minLines: 5,
+                  onChanged: (value) {
+                    widget.record[
+                            widget.template.keys.elementAt(widget.index)] =
+                        value.replaceAll('\n', '    ').trim();
+                    realm.write(() {
+                      widget.note.noteContext = mapToyaml(widget.record);
+                    });
+                  },
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[3] ?? '',
+              textAlign: TextAlign.left,
+              style: textStyle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTextCard() {
+    return Card(
+      elevation: 0,
+      color: Color.fromARGB(
+          50,
+          widget.templateProperty['color'][0],
+          widget.templateProperty['color'][1],
+          widget.templateProperty['color'][2]),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[0] + ':',
+              textAlign: TextAlign.center,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              propertySettings[2] ?? '',
+              textAlign: TextAlign.right,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: Padding(
+              padding: edgeInsets,
+              child: Container(
+                color: Colors.white,
                 height: 45,
                 child: TextField(
                   textAlign: TextAlign.center,
@@ -654,8 +728,8 @@ class _PropertyCardState extends State<PropertyCard> {
                       errorText: error,
                       contentPadding: edgeInsets,
                       fillColor: const Color.fromARGB(255, 60, 52, 52)),
-                  maxLines: 10,
-                  minLines: 5,
+                  maxLines: 1,
+                  minLines: 1,
                   onChanged: (value) {
                     widget.record[
                         widget.template.keys.elementAt(widget.index)] = value;

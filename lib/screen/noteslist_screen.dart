@@ -724,13 +724,66 @@ class _SearchPageState extends State<SearchPage> {
                     template[noteMapOther.keys.elementAt(index)].split(",");
               }
               if (noteMapOther.values.elementAt(index) != null) {
-                return Text(
-                  '${propertySettings[0] ?? ''}: ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index)}${propertySettings[3] ?? ''}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                );
+                if (propertySettings[1] == '长文') {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${propertySettings[0] ?? ''}: ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color.fromARGB(
+                            255,
+                            templateProperty['color'][0],
+                            templateProperty['color'][1],
+                            templateProperty['color'][2],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n')}${propertySettings[3] ?? ''}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "${propertySettings[0] ?? ''}: ",
+                          style: TextStyle(
+                            fontFamily: 'LXGWWenKai',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color.fromARGB(
+                              255,
+                              templateProperty['color'][0],
+                              templateProperty['color'][1],
+                              templateProperty['color'][2],
+                            ),
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
+                          style: const TextStyle(
+                            fontFamily: 'LXGWWenKai',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
               } else {
                 return const SizedBox(height: 0, width: 0);
               }
