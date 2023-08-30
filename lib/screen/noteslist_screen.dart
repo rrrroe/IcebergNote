@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:clipboard/clipboard.dart';
@@ -684,18 +685,24 @@ class _SearchPageState extends State<SearchPage> {
       //   templateNote.noteContext =
       //       mapToyaml(template) + '\n\n' + mapToyaml(templateProperty);
       // });
-
+      Color backgroundColor = Color.fromARGB(
+        40,
+        templateProperty['color'][0],
+        templateProperty['color'][1],
+        templateProperty['color'][2],
+      );
+      Color fontColor = Color.fromARGB(
+        255,
+        max(0, min(templateProperty['color'][0] - 50, 255)),
+        max(0, min(templateProperty['color'][1] - 50, 255)),
+        max(0, min(templateProperty['color'][2] - 50, 255)),
+      );
       List propertySettings1 = template.values.elementAt(0).split(",");
       return Card(
         margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
         elevation: 0,
         shadowColor: const Color.fromARGB(255, 255, 132, 132),
-        color: Color.fromARGB(
-          40,
-          templateProperty['color'][0],
-          templateProperty['color'][1],
-          templateProperty['color'][2],
-        ),
+        color: backgroundColor,
         child: ListTile(
           title: SizedBox(
             height: 40,
@@ -706,12 +713,7 @@ class _SearchPageState extends State<SearchPage> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
-                color: Color.fromARGB(
-                  255,
-                  templateProperty['color'][0],
-                  templateProperty['color'][1],
-                  templateProperty['color'][2],
-                ),
+                color: fontColor,
               ),
             ),
           ),
@@ -733,12 +735,7 @@ class _SearchPageState extends State<SearchPage> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Color.fromARGB(
-                            255,
-                            templateProperty['color'][0],
-                            templateProperty['color'][1],
-                            templateProperty['color'][2],
-                          ),
+                          color: fontColor,
                         ),
                       ),
                       Expanded(
@@ -762,12 +759,7 @@ class _SearchPageState extends State<SearchPage> {
                             fontFamily: 'LXGWWenKai',
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Color.fromARGB(
-                              255,
-                              templateProperty['color'][0],
-                              templateProperty['color'][1],
-                              templateProperty['color'][2],
-                            ),
+                            color: fontColor,
                           ),
                         ),
                         TextSpan(
