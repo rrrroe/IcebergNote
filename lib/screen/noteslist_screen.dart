@@ -238,6 +238,10 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  Future refreshData() async {
+    refreshList();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -1025,24 +1029,29 @@ class _SearchPageState extends State<SearchPage> {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: searchnotesList.notesList.length,
-              // physics: const BouncingScrollPhysics(
-              //     parent: AlwaysScrollableScrollPhysics()),
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onLongPress: () {
-                    HapticFeedback.heavyImpact();
-                  },
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                  },
-                  child: buildCard(searchnotesList.notesList[index]),
-                );
+            child: RefreshIndicator(
+              onRefresh: () {
+                return refreshData();
               },
+              child: ListView.builder(
+                controller: _scrollController,
+                itemCount: searchnotesList.notesList.length,
+                // physics: const BouncingScrollPhysics(
+                //     parent: AlwaysScrollableScrollPhysics()),
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onLongPress: () {
+                      HapticFeedback.heavyImpact();
+                    },
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                    },
+                    child: buildCard(searchnotesList.notesList[index]),
+                  );
+                },
+              ),
             ),
-          )
+          ),
         ],
       ),
     );

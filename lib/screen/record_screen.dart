@@ -559,7 +559,7 @@ class _PropertyCardState extends State<PropertyCard> {
             ),
           ),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Text(
               propertySettings[2] ?? '',
               textAlign: TextAlign.right,
@@ -570,7 +570,8 @@ class _PropertyCardState extends State<PropertyCard> {
             flex: 6,
             child: Padding(
               padding: edgeInsets,
-              child: SizedBox(
+              child: Container(
+                color: Colors.white,
                 height: 45,
                 child: TextField(
                   textAlign: TextAlign.center,
@@ -636,15 +637,7 @@ class _PropertyCardState extends State<PropertyCard> {
             ),
           ),
           Expanded(
-            flex: 1,
-            child: Text(
-              propertySettings[2] ?? '',
-              textAlign: TextAlign.right,
-              style: textStyle,
-            ),
-          ),
-          Expanded(
-            flex: 6,
+            flex: 10,
             child: Padding(
               padding: edgeInsets,
               child: Container(
@@ -673,14 +666,6 @@ class _PropertyCardState extends State<PropertyCard> {
               ),
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              propertySettings[3] ?? '',
-              textAlign: TextAlign.left,
-              style: textStyle,
-            ),
-          ),
         ],
       ),
     );
@@ -705,7 +690,7 @@ class _PropertyCardState extends State<PropertyCard> {
             ),
           ),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Text(
               propertySettings[2] ?? '',
               textAlign: TextAlign.right,
