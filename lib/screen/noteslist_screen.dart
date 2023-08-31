@@ -701,7 +701,7 @@ class SearchPageState extends State<SearchPage> {
       Map noteMap = loadYaml(note.noteContext) as Map;
       Map noteMapOther = {...noteMap};
       noteMapOther.remove(noteMapOther.keys.first);
-
+      noteMapOther.removeWhere((key, value) => value == null);
       Map template = loadYaml(templateNote.noteContext.substring(
           0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
       Map templateProperty = loadYaml(templateNote.noteContext
@@ -749,6 +749,7 @@ class SearchPageState extends State<SearchPage> {
                   propertySettings =
                       template[noteMapOther.keys.elementAt(index)].split(",");
                 }
+
                 if (noteMapOther.values.elementAt(index) != null) {
                   switch (propertySettings[1]) {
                     case '长文':
@@ -795,54 +796,6 @@ class SearchPageState extends State<SearchPage> {
                         ],
                       );
                     case '单选':
-                      return Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.all(0),
-                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: fontColor,
-                            ),
-                            child: Text(
-                              "${propertySettings[0] ?? ''}",
-                              style: const TextStyle(
-                                fontFamily: 'LXGWWenKai',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            " : ",
-                            style: TextStyle(
-                              fontFamily: 'LXGWWenKai',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: fontColor,
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.all(0),
-                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: fontColor,
-                            ),
-                            child: Text(
-                              '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
-                              style: const TextStyle(
-                                fontFamily: 'LXGWWenKai',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
                     case '多选':
                       List selectedlist = noteMapOther.values
                           .elementAt(index)

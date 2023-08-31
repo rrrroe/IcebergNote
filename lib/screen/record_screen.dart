@@ -648,7 +648,7 @@ class _PropertyCardState extends State<PropertyCard> {
               padding: edgeInsets,
               child: Container(
                 color: Colors.white,
-                height: 120,
+                // height: 120,
                 child: TextField(
                   textAlign: TextAlign.start,
                   style: textStyle,
@@ -709,6 +709,7 @@ class _PropertyCardState extends State<PropertyCard> {
               child: Container(
                 color: Colors.white,
                 height: 33,
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                 child: TextField(
                   textAlign: TextAlign.center,
                   style: textStyle,
