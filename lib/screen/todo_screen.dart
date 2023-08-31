@@ -14,10 +14,10 @@ class TodoPage extends StatefulWidget {
   final int mod;
 
   @override
-  _TodoPageState createState() => _TodoPageState();
+  TodoPageState createState() => TodoPageState();
 }
 
-class _TodoPageState extends State<TodoPage> {
+class TodoPageState extends State<TodoPage> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   var searchnotesList = NotesList();

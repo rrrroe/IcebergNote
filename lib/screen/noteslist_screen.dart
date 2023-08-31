@@ -42,7 +42,6 @@ class BottomPopSheet extends StatelessWidget {
           //   leading: const Icon(Icons.share),
           //   title: const Text('分享'),
           //   onTap: () {
-          //     // TODO:分享逻辑
           //     onDialogClosed();
           //     Navigator.pop(context);
           //   },
@@ -50,9 +49,8 @@ class BottomPopSheet extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.copy),
             title: const Text('复制'),
-            onTap: () async {
-              await FlutterClipboard.copy(
-                  '${note.noteTitle}\n${note.noteContext}');
+            onTap: () {
+              FlutterClipboard.copy('${note.noteTitle}\n${note.noteContext}');
               poplog(1, '复制', context);
               onDialogClosed();
               Navigator.pop(context);
@@ -153,10 +151,10 @@ class TimeBar extends StatefulWidget {
   const TimeBar({super.key});
 
   @override
-  _TimeBarState createState() => _TimeBarState();
+  TimeBarState createState() => TimeBarState();
 }
 
-class _TimeBarState extends State<TimeBar> {
+class TimeBarState extends State<TimeBar> {
   String time = "";
   late Timer timer;
   @override
@@ -199,10 +197,10 @@ class SearchPage extends StatefulWidget {
   final String txt;
   final int mod;
   @override
-  _SearchPageState createState() => _SearchPageState();
+  SearchPageState createState() => SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   var searchnotesList = NotesList();
@@ -731,7 +729,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             child: Text(
                               "${propertySettings[0] ?? ''}",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'LXGWWenKai',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -773,7 +771,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             child: Text(
                               "${propertySettings[0] ?? ''}",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'LXGWWenKai',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -805,7 +803,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             child: Text(
                               "${propertySettings[0] ?? ''}",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'LXGWWenKai',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,

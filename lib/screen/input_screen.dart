@@ -504,8 +504,8 @@ class ChangePageState extends State<ChangePage> {
                       child: const Text('高级'),
                     ),
                     TextButton(
-                      onPressed: () async {
-                        await FlutterClipboard.copy(contentController.text);
+                      onPressed: () {
+                        FlutterClipboard.copy(contentController.text);
                         poplog(1, '复制', context);
                       },
                       child: const Text('复制'),

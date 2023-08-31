@@ -461,8 +461,8 @@ class RecordChangePageState extends State<RecordChangePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextButton(
-                      onPressed: () async {
-                        await FlutterClipboard.copy(contentController.text);
+                      onPressed: () {
+                        FlutterClipboard.copy(contentController.text);
                         poplog(1, '复制', context);
                       },
                       child: const Text('复制'),
@@ -798,12 +798,12 @@ class _PropertyCardState extends State<PropertyCard> {
                       ),
                     );
                   },
-                  menuChildren: typeList.map((Selected) {
+                  menuChildren: typeList.map((selected) {
                     return MenuItemButton(
                       style: selectedContextButtonStyle,
-                      child: Text(Selected),
+                      child: Text(selected),
                       onPressed: () {
-                        switch (Selected) {
+                        switch (selected) {
                           case '清空':
                             setState(() {
                               widget.record[
@@ -846,7 +846,7 @@ class _PropertyCardState extends State<PropertyCard> {
                           default:
                             setState(() {
                               widget.record[template.keys
-                                  .elementAt(widget.index)] = Selected;
+                                  .elementAt(widget.index)] = selected;
                               realm.write(() {
                                 widget.note.noteContext =
                                     mapToyaml(widget.record);
@@ -1452,8 +1452,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextButton(
-                      onPressed: () async {
-                        await FlutterClipboard.copy(contentController.text);
+                      onPressed: () {
+                        FlutterClipboard.copy(contentController.text);
                         poplog(1, '复制', context);
                       },
                       child: const Text('复制'),
