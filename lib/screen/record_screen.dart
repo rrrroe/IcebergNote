@@ -792,7 +792,11 @@ class _PropertyCardState extends State<PropertyCard> {
                       },
                       child: Text(
                         widget.record[template.keys.elementAt(widget.index)]
-                            .toString(),
+                                    .toString() ==
+                                'null'
+                            ? ''
+                            : widget
+                                .record[template.keys.elementAt(widget.index)],
                         style: const TextStyle(color: Colors.black),
                       ),
                     );
@@ -824,7 +828,8 @@ class _PropertyCardState extends State<PropertyCard> {
                                           .templateNote.noteContext
                                           .replaceAll(
                                               propertySettings.join(','),
-                                              '${propertySettings.join(',')}||$text');
+                                              '${propertySettings.join(',')}||$text'
+                                                  .replaceAll(',||', ','));
                                     });
                                     setState(() {
                                       typeList.add(text);
