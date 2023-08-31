@@ -579,7 +579,7 @@ class _PropertyCardState extends State<PropertyCard> {
               padding: edgeInsets,
               child: Container(
                 color: Colors.white,
-                height: 45,
+                height: 33,
                 child: TextField(
                   textAlign: TextAlign.center,
                   style: textStyle,
@@ -649,7 +649,7 @@ class _PropertyCardState extends State<PropertyCard> {
               padding: edgeInsets,
               child: Container(
                 color: Colors.white,
-                height: 145,
+                height: 120,
                 child: TextField(
                   textAlign: TextAlign.start,
                   style: textStyle,
@@ -709,7 +709,7 @@ class _PropertyCardState extends State<PropertyCard> {
               padding: edgeInsets,
               child: Container(
                 color: Colors.white,
-                height: 45,
+                height: 33,
                 child: TextField(
                   textAlign: TextAlign.center,
                   style: textStyle,
@@ -779,7 +779,7 @@ class _PropertyCardState extends State<PropertyCard> {
               padding: edgeInsets,
               child: Container(
                 color: Colors.white,
-                height: 45,
+                height: 33,
                 child: MenuAnchor(
                   builder: (context, controller, child) {
                     return FilledButton.tonal(
