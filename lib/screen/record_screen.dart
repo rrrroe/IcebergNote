@@ -746,7 +746,7 @@ class _PropertyCardState extends State<PropertyCard> {
 
   Widget buildSingleSelectCard() {
     final List<String> typeList =
-        ['新建', '清空'] + propertySettings[4].split("||");
+        ['新建', '清空'] + propertySettings.last.split("||");
     return Card(
       elevation: 0,
       color: Color.fromARGB(

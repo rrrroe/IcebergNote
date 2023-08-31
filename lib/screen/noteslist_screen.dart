@@ -816,12 +816,29 @@ class SearchPageState extends State<SearchPage> {
                             ),
                           ),
                           Text(
-                            ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
+                            " : ",
                             style: TextStyle(
                               fontFamily: 'LXGWWenKai',
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: fontColor,
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.all(0),
+                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: fontColor,
+                            ),
+                            child: Text(
+                              '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
+                              style: const TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],
@@ -851,18 +868,38 @@ class SearchPageState extends State<SearchPage> {
                               ),
                             ),
                           ),
-                          Row(
-                              children:
-                                  List.generate(selectedlist.length, (index) {
-                            return Text(selectedlist[index]);
-                          })),
                           Text(
-                            ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
+                            " : ",
                             style: TextStyle(
                               fontFamily: 'LXGWWenKai',
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: fontColor,
+                            ),
+                          ),
+                          Row(
+                            children: List.generate(
+                              selectedlist.length,
+                              (index) {
+                                return Container(
+                                  margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: fontColor,
+                                  ),
+                                  child: Text(
+                                    selectedlist[index],
+                                    style: const TextStyle(
+                                      fontFamily: 'LXGWWenKai',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ],
