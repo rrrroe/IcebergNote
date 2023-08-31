@@ -705,7 +705,8 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           subtitle: Wrap(
-            spacing: 10,
+            spacing: 5,
+            runSpacing: 5,
             children: List.generate(
               noteMapOther.length,
               (index) {
@@ -718,11 +719,30 @@ class _SearchPageState extends State<SearchPage> {
                   switch (propertySettings[1]) {
                     case '长文':
                       return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.ideographic,
                         children: [
+                          const SizedBox(width: 5),
+                          Container(
+                            margin: const EdgeInsets.all(0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: fontColor,
+                            ),
+                            child: Text(
+                              "${propertySettings[0] ?? ''}",
+                              style: TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                           Text(
-                            '${propertySettings[0] ?? ''}: ',
+                            ": ",
                             style: TextStyle(
+                              fontFamily: 'LXGWWenKai',
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: fontColor,
@@ -731,65 +751,80 @@ class _SearchPageState extends State<SearchPage> {
                           Expanded(
                             child: Text(
                               '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n')}${propertySettings[3] ?? ''}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
+                                color: fontColor,
                               ),
                             ),
                           ),
                         ],
                       );
                     case '单选':
-                      return RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "${propertySettings[0] ?? ''}: ",
+                      return Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          const SizedBox(width: 5),
+                          Container(
+                            margin: const EdgeInsets.all(0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: fontColor,
+                            ),
+                            child: Text(
+                              "${propertySettings[0] ?? ''}",
                               style: TextStyle(
                                 fontFamily: 'LXGWWenKai',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: fontColor,
+                                color: Colors.white,
                               ),
                             ),
-                            TextSpan(
-                              text:
-                                  '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
-                              style: const TextStyle(
-                                fontFamily: 'LXGWWenKai',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
+                          ),
+                          Text(
+                            ': ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
+                            style: TextStyle(
+                              fontFamily: 'LXGWWenKai',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: fontColor,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 5),
+                        ],
                       );
                     default:
-                      return RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "${propertySettings[0] ?? ''}: ",
+                      return Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          const SizedBox(width: 5),
+                          Container(
+                            margin: const EdgeInsets.all(0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: fontColor,
+                            ),
+                            child: Text(
+                              "${propertySettings[0] ?? ''}",
                               style: TextStyle(
                                 fontFamily: 'LXGWWenKai',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: fontColor,
+                                color: Colors.white,
                               ),
                             ),
-                            TextSpan(
-                              text:
-                                  '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString()} ${propertySettings[3] ?? ''}  ',
-                              style: const TextStyle(
-                                fontFamily: 'LXGWWenKai',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
+                          ),
+                          Text(
+                            ': ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
+                            style: TextStyle(
+                              fontFamily: 'LXGWWenKai',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: fontColor,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 5),
+                        ],
                       );
                   }
                 } else {
