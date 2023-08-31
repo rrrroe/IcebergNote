@@ -421,7 +421,6 @@ class RecordChangePageState extends State<RecordChangePage> {
                           ],
                         ),
                         Expanded(
-                          // height: 500,
                           child: ListView.builder(
                             controller: _scrollController,
                             itemCount: template.length,
@@ -747,7 +746,7 @@ class _PropertyCardState extends State<PropertyCard> {
 
   Widget buildSingleSelectCard() {
     final List<String> typeList =
-        ['新建', '清空'] + propertySettings[4].split("//");
+        ['新建', '清空'] + propertySettings[4].split("||");
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -824,10 +823,8 @@ class _PropertyCardState extends State<PropertyCard> {
                                       widget.templateNote.noteContext = widget
                                           .templateNote.noteContext
                                           .replaceAll(
-                                              propertySettings[4],
-                                              propertySettings[4] +
-                                                  '//' +
-                                                  text);
+                                              propertySettings.join(','),
+                                              '${propertySettings.join(',')}||$text');
                                     });
                                     setState(() {
                                       typeList.add(text);

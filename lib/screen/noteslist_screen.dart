@@ -531,6 +531,42 @@ class SearchPageState extends State<SearchPage> {
     }
   }
 
+  bool checkNoteFormat(Notes note) {
+    switch (note.noteType) {
+      case '.记录':
+        var templateNoteList = realm.query<Notes>(
+            "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+            [
+              '.表头',
+              note.noteProject,
+            ]);
+        if (realm.query<Notes>(
+            "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+            [
+              '.表头',
+              note.noteProject,
+            ]).isEmpty) {
+          return false;
+        } else {
+          List textList =
+              note.noteContext.replaceAll(RegExp(r'\n{2,}'), '\n').split('\n');
+          List templateList = templateNoteList[0]
+              .noteContext
+              .replaceAll(RegExp(r'\n{2,}'), '\n')
+              .split('\n');
+          RegExp pattern = RegExp(": ");
+          for (String str in textList + templateList) {
+            if (pattern.allMatches(str).length != 1 && str != '') {
+              return false;
+            }
+          }
+          return true;
+        }
+      default:
+        return true;
+    }
+  }
+
   Widget buildCard(Notes note) {
     if (note.noteType == '.TODO' ||
         note.noteType == '.todo' ||
@@ -648,13 +684,14 @@ class SearchPageState extends State<SearchPage> {
           },
         ),
       );
-    } else if (note.noteType == '.记录') {
+    } else if (note.noteType == '.记录' && checkNoteFormat(note)) {
       var templateNote = realm.query<Notes>(
           "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
           [
             '.表头',
             note.noteProject,
           ])[0];
+
       if (note.noteContext == '') {
         realm.write(() {
           note.noteContext =
