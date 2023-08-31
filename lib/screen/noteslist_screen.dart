@@ -208,7 +208,6 @@ class SearchPageState extends State<SearchPage> {
   List<String> folderList = ['全部'];
   List<String> typeList = ['全部'];
   List<String> projectList = ['全部'];
-  // List<String> finishStateList = ['未完', '已完'];
   String searchType = '';
   String searchProject = '';
   String searchFolder = '';
@@ -779,6 +778,47 @@ class SearchPageState extends State<SearchPage> {
                               ),
                             ),
                           ),
+                          Text(
+                            ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
+                            style: TextStyle(
+                              fontFamily: 'LXGWWenKai',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: fontColor,
+                            ),
+                          ),
+                        ],
+                      );
+                    case '多选':
+                      List selectedlist = noteMapOther.values
+                          .elementAt(index)
+                          .toString()
+                          .split(', ');
+                      return Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.all(0),
+                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: fontColor,
+                            ),
+                            child: Text(
+                              "${propertySettings[0] ?? ''}",
+                              style: const TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          Row(
+                              children:
+                                  List.generate(selectedlist.length, (index) {
+                            return Text(selectedlist[index]);
+                          })),
                           Text(
                             ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
                             style: TextStyle(
