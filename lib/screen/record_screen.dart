@@ -748,6 +748,7 @@ class _PropertyCardState extends State<PropertyCard> {
   Widget buildSingleSelectCard() {
     final List<String> typeList =
         ['新建', '清空'] + propertySettings.last.split("||");
+    typeList.removeWhere((element) => element == '');
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -828,9 +829,8 @@ class _PropertyCardState extends State<PropertyCard> {
                                       widget.templateNote.noteContext = widget
                                           .templateNote.noteContext
                                           .replaceAll(
-                                              propertySettings.join(','),
-                                              '${propertySettings.join(',')}||$text'
-                                                  .replaceAll(',||', ','));
+                                              '${template.keys.elementAt(widget.index)}: ${propertySettings.join(',')}',
+                                              '${template.keys.elementAt(widget.index)}: ${'${propertySettings.join(',')}||$text'.replaceAll(',||', ',')}');
                                     });
                                     setState(() {
                                       typeList.add(text);

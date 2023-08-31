@@ -749,7 +749,6 @@ class SearchPageState extends State<SearchPage> {
                   propertySettings =
                       template[noteMapOther.keys.elementAt(index)].split(",");
                 }
-
                 if (noteMapOther.values.elementAt(index) != null) {
                   switch (propertySettings[1]) {
                     case '长文':
@@ -803,6 +802,7 @@ class SearchPageState extends State<SearchPage> {
                           .split(', ');
                       return Row(
                         mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             margin: const EdgeInsets.all(0),
@@ -830,29 +830,33 @@ class SearchPageState extends State<SearchPage> {
                               color: fontColor,
                             ),
                           ),
-                          Row(
-                            children: List.generate(
-                              selectedlist.length,
-                              (index) {
-                                return Container(
-                                  margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                  padding:
-                                      const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4),
-                                    color: fontColor,
-                                  ),
-                                  child: Text(
-                                    selectedlist[index],
-                                    style: const TextStyle(
-                                      fontFamily: 'LXGWWenKai',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
+                          Expanded(
+                            child: Wrap(
+                              runSpacing: 5,
+                              children: List.generate(
+                                selectedlist.length,
+                                (index) {
+                                  return Container(
+                                    margin:
+                                        const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(4),
+                                      color: fontColor,
                                     ),
-                                  ),
-                                );
-                              },
+                                    child: Text(
+                                      selectedlist[index],
+                                      style: const TextStyle(
+                                        fontFamily: 'LXGWWenKai',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ],
