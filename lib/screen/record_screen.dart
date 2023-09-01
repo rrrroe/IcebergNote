@@ -2,13 +2,16 @@
 
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_pickers/time_picker/model/date_mode.dart';
+import 'package:flutter_pickers/time_picker/model/suffix.dart';
 import 'package:yaml/yaml.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../notes.dart';
 import 'input_screen.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
+import 'package:flutter_pickers/pickers.dart';
+import 'package:flutter_pickers/time_picker/model/pduration.dart';
 
 EdgeInsets edgeInsets = const EdgeInsets.fromLTRB(0, 0, 0, 0);
 TextStyle textStyle =
@@ -552,6 +555,8 @@ class _PropertyCardState extends State<PropertyCard> {
         return buildLongTextCard();
       case '日期':
         return buildDateCard();
+      case '时间':
+        return buildTimeCard();
       default:
         return buildTextCard();
     }
@@ -886,9 +891,6 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildDateCard() {
-    final List<String> typeList =
-        ['新建', '清空'] + propertySettings.last.split("||");
-    typeList.removeWhere((element) => element == '');
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -938,6 +940,82 @@ class _PropertyCardState extends State<PropertyCard> {
                           });
                         });
                       }
+                    },
+                    child: Text(
+                      widget.record[template.keys.elementAt(widget.index)]
+                                  .toString() ==
+                              'null'
+                          ? ''
+                          : widget.record[template.keys.elementAt(widget.index)]
+                              .toString(),
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  )),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[3] ?? '',
+              textAlign: TextAlign.left,
+              style: textStyle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTimeCard() {
+    return Card(
+      elevation: 0,
+      color: Color.fromARGB(
+          50,
+          widget.templateProperty['color'][0],
+          widget.templateProperty['color'][1],
+          widget.templateProperty['color'][2]),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[0] + ':',
+              textAlign: TextAlign.center,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[2] ?? '',
+              textAlign: TextAlign.right,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: Padding(
+              padding: edgeInsets,
+              child: Container(
+                  color: Colors.white,
+                  // height: 30,
+                  child: FilledButton.tonal(
+                    style: selectedContextButtonStyle,
+                    onPressed: () {
+                      Pickers.showDatePicker(
+                        context,
+                        mode: DateMode.HMS,
+                        suffix: Suffix.normal(),
+                        selectDate: PDuration(),
+                        onConfirm: (p) {
+                          setState(() {
+                            widget.record[
+                                    template.keys.elementAt(widget.index)] =
+                                '${p.hour}:${p.minute}:${p.second}';
+                          });
+                        },
+                        // onChanged: (p) => print(p),
+                      );
                     },
                     child: Text(
                       widget.record[template.keys.elementAt(widget.index)]
