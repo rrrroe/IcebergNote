@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:icebergnote/screen/input_screen.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:realm/realm.dart';
 import 'package:yaml/yaml.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../main.dart';
 import '../constants.dart';
@@ -203,6 +205,8 @@ class SearchPage extends StatefulWidget {
 class SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
   var searchnotesList = NotesList();
   String searchText = '';
   List<String> folderList = ['全部'];
@@ -233,10 +237,6 @@ class SearchPageState extends State<SearchPage> {
       }
       _scrollController.jumpTo(scrollPosition);
     });
-  }
-
-  Future refreshData() async {
-    refreshList();
   }
 
   @override
@@ -297,46 +297,48 @@ class SearchPageState extends State<SearchPage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      setState(() {
-        switch (widget.mod) {
-          case 0:
-            searchnotesList.searchall(
-                searchText, 15, searchType, searchProject, searchFolder, '');
-            break;
-          case 1:
-            searchnotesList.search(searchText, 15);
-            break;
-          case 2:
-            searchnotesList.searchDeleted(searchText, 15);
-            break;
-          case 3:
-            searchnotesList.searchTodo(searchText, 15);
-            break;
-        }
-        refreshList();
-      });
-    }
-    if (_scrollController.position.pixels == 0 && widget.mod == 0) {
-      setState(() {
-        switch (widget.mod) {
-          case 0:
-            searchnotesList.searchall(
-                searchText, 0, searchType, searchProject, searchFolder, '');
-            break;
-          case 1:
-            searchnotesList.search(searchText, 0);
-            break;
-          case 2:
-            searchnotesList.searchDeleted(searchText, 0);
-            break;
-          case 3:
-            searchnotesList.searchTodo(searchText, 0);
-            break;
-        }
-      });
-    }
+    if (Platform.isWindows) {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        setState(() {
+          switch (widget.mod) {
+            case 0:
+              searchnotesList.searchall(
+                  searchText, 15, searchType, searchProject, searchFolder, '');
+              break;
+            case 1:
+              searchnotesList.search(searchText, 15);
+              break;
+            case 2:
+              searchnotesList.searchDeleted(searchText, 15);
+              break;
+            case 3:
+              searchnotesList.searchTodo(searchText, 15);
+              break;
+          }
+          refreshList();
+        });
+      }
+      if (_scrollController.position.pixels == 0 && widget.mod == 0) {
+        setState(() {
+          switch (widget.mod) {
+            case 0:
+              searchnotesList.searchall(
+                  searchText, 0, searchType, searchProject, searchFolder, '');
+              break;
+            case 1:
+              searchnotesList.search(searchText, 0);
+              break;
+            case 2:
+              searchnotesList.searchDeleted(searchText, 0);
+              break;
+            case 3:
+              searchnotesList.searchTodo(searchText, 0);
+              break;
+          }
+        });
+      }
+    } else {}
   }
 
   PreferredSizeWidget buildAppBar() {
@@ -1105,6 +1107,56 @@ class SearchPageState extends State<SearchPage> {
     }
   }
 
+  void _onRefresh() async {
+    // monitor network fetch
+    setState(() {
+      switch (widget.mod) {
+        case 0:
+          searchnotesList.searchall(
+              searchText, 0, searchType, searchProject, searchFolder, '');
+          break;
+        case 1:
+          searchnotesList.search(searchText, 0);
+          break;
+        case 2:
+          searchnotesList.searchDeleted(searchText, 0);
+          break;
+        case 3:
+          searchnotesList.searchTodo(searchText, 0);
+          break;
+      }
+    });
+    await Future.delayed(const Duration(milliseconds: 1000));
+    // if failed,use refreshFailed()
+    _refreshController.refreshCompleted();
+  }
+
+  void _onLoading() async {
+    // monitor network fetch
+    setState(() {
+      switch (widget.mod) {
+        case 0:
+          searchnotesList.searchall(
+              searchText, 15, searchType, searchProject, searchFolder, '');
+          break;
+        case 1:
+          searchnotesList.search(searchText, 15);
+          break;
+        case 2:
+          searchnotesList.searchDeleted(searchText, 15);
+          break;
+        case 3:
+          searchnotesList.searchTodo(searchText, 15);
+          break;
+      }
+      refreshList();
+    });
+    await Future.delayed(const Duration(milliseconds: 1000));
+    // if failed,use loadFailed(),if no data return,use LoadNodata()
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1142,11 +1194,17 @@ class SearchPageState extends State<SearchPage> {
       body: Column(
         children: [
           Expanded(
-            child: RefreshIndicator(
-              color: const Color.fromARGB(255, 0, 140, 198),
-              onRefresh: () {
-                return refreshData();
-              },
+            child: SmartRefresher(
+              enablePullDown: true,
+              enablePullUp: true,
+              header: const WaterDropHeader(),
+              footer: const ClassicFooter(
+                loadStyle: LoadStyle.ShowWhenLoading,
+                completeDuration: Duration(milliseconds: 500),
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              onLoading: _onLoading,
               child: ListView.builder(
                 controller: _scrollController,
                 itemCount: searchnotesList.notesList.length,

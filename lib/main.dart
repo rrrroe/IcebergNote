@@ -14,17 +14,35 @@ class NotesList {
   NotesList() {
     notesList = realm.query<Notes>(
         "noteIsDeleted != true SORT(id DESC) LIMIT($visibleItemCount)");
+    if (notesList[0].noteTitle + notesList[0].noteContext == '') {
+      realm.write(() {
+        realm.delete(notesList[0]);
+        visibleItemCount = visibleItemCount - 1;
+      });
+    }
   }
 
   increase(int n) {
     visibleItemCount = notesList.length + n;
     notesList = realm.query<Notes>(
         "noteIsDeleted != true SORT(id DESC) LIMIT($visibleItemCount)");
+    if (notesList[0].noteTitle + notesList[0].noteContext == '') {
+      realm.write(() {
+        realm.delete(notesList[0]);
+        visibleItemCount = visibleItemCount - 1;
+      });
+    }
   }
 
   reinit(int n) {
     notesList = realm.query<Notes>(
         "noteIsDeleted != true SORT(id DESC) LIMIT($visibleItemCount)");
+    if (notesList[0].noteTitle + notesList[0].noteContext == '') {
+      realm.write(() {
+        realm.delete(notesList[0]);
+        visibleItemCount = visibleItemCount - 1;
+      });
+    }
   }
 
   search(String n, int m) {
@@ -54,6 +72,12 @@ class NotesList {
     notesList = realm.query<Notes>(
         "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType CONTAINS[c] \$1 AND noteProject CONTAINS[c] \$2 AND noteFolder CONTAINS[c] \$3 AND noteFinishState CONTAINS[c] \$4 ) AND noteIsDeleted != true SORT(id DESC) LIMIT($visibleItemCount)",
         [n, type, project, folder, finishstate]);
+    if (notesList[0].noteTitle + notesList[0].noteContext == '') {
+      realm.write(() {
+        realm.delete(notesList[0]);
+        visibleItemCount = visibleItemCount - 1;
+      });
+    }
   }
 }
 
