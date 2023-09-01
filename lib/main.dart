@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:realm/realm.dart';
 import 'constants.dart';
 import 'home.dart';
@@ -138,6 +139,14 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', 'US'), // English
+        Locale('zh', 'CN'), // Thai
+      ],
       debugShowCheckedModeBanner: false,
       title: 'Material 3',
       themeMode: themeMode,

@@ -7,6 +7,8 @@ import '../constants.dart';
 import '../main.dart';
 import '../notes.dart';
 import 'input_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 
 EdgeInsets edgeInsets = const EdgeInsets.fromLTRB(0, 0, 0, 0);
 TextStyle textStyle =
@@ -548,6 +550,8 @@ class _PropertyCardState extends State<PropertyCard> {
         return buildSingleSelectCard();
       case '长文':
         return buildLongTextCard();
+      case '日期':
+        return buildDateCard();
       default:
         return buildTextCard();
     }
@@ -866,6 +870,84 @@ class _PropertyCardState extends State<PropertyCard> {
                   }).toList(),
                 ),
               ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[3] ?? '',
+              textAlign: TextAlign.left,
+              style: textStyle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildDateCard() {
+    final List<String> typeList =
+        ['新建', '清空'] + propertySettings.last.split("||");
+    typeList.removeWhere((element) => element == '');
+    return Card(
+      elevation: 0,
+      color: Color.fromARGB(
+          50,
+          widget.templateProperty['color'][0],
+          widget.templateProperty['color'][1],
+          widget.templateProperty['color'][2]),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[0] + ':',
+              textAlign: TextAlign.center,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[2] ?? '',
+              textAlign: TextAlign.right,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: Padding(
+              padding: edgeInsets,
+              child: Container(
+                  color: Colors.white,
+                  // height: 30,
+                  child: FilledButton.tonal(
+                    onPressed: () async {
+                      DateTime? newDateTime = await showRoundedDatePicker(
+                        context: context,
+                        locale: const Locale("zh", "CN"),
+                        theme: ThemeData(primarySwatch: Colors.pink),
+                      );
+                      if (newDateTime != null) {
+                        setState(() {
+                          widget.record[template.keys.elementAt(widget.index)] =
+                              '${newDateTime.year}-${newDateTime.month}-${newDateTime.day}';
+                          realm.write(() {
+                            widget.note.noteContext = mapToyaml(widget.record);
+                          });
+                        });
+                      }
+                    },
+                    child: Text(
+                      widget.record[template.keys.elementAt(widget.index)]
+                                  .toString() ==
+                              'null'
+                          ? ''
+                          : widget.record[template.keys.elementAt(widget.index)]
+                              .toString(),
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  )),
             ),
           ),
           Expanded(
