@@ -505,6 +505,18 @@ class ChangePageState extends State<ChangePage> {
                     ),
                     TextButton(
                       onPressed: () {
+                        realm.write(() {
+                          widget.note.noteContext = contentController.text
+                              .replaceAll(RegExp(r'\n+'), '\n\n');
+                        });
+                        save();
+                        Navigator.pop(context);
+                        widget.onPageClosed();
+                      },
+                      child: const Text('格式'),
+                    ),
+                    TextButton(
+                      onPressed: () {
                         FlutterClipboard.copy(contentController.text);
                         poplog(1, '复制', context);
                       },
@@ -547,8 +559,6 @@ class ChangePageState extends State<ChangePage> {
         realm.delete(widget.note);
       } else {
         widget.note.noteTitle = titleController.text;
-        widget.note.noteContext =
-            contentController.text.replaceAll(RegExp(r'\n+'), '\n\n');
         if (widget.note.noteCreatTime == '') {
           widget.note.noteCreatTime = DateTime.now().toString();
         }
