@@ -954,17 +954,22 @@ class SearchPageState extends State<SearchPage> {
                 Visibility(
                   visible: note.noteTitle != "",
                   child: SizedBox(
-                    height: 35,
                     child: Text(
                       note.noteTitle,
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      textAlign: TextAlign.start,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
                           color: Color.fromARGB(255, 0, 140, 198)),
                     ),
+                  ),
+                ),
+                Visibility(
+                  visible: note.noteTitle != "",
+                  child: const SizedBox(
+                    height: 5,
                   ),
                 ),
                 Visibility(

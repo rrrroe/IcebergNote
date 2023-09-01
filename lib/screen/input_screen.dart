@@ -145,6 +145,8 @@ class ChangePageState extends State<ChangePage> {
                               fontSize: 22,
                               fontWeight: FontWeight.w600,
                             ),
+                            minLines: 1,
+                            maxLines: 2,
                             decoration: const InputDecoration(
                                 labelText: "标题",
                                 labelStyle: TextStyle(
