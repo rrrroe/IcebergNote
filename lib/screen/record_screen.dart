@@ -510,8 +510,15 @@ class _PropertyCardState extends State<PropertyCard> {
   Map template = {};
   TextEditingController contentController = TextEditingController();
   EdgeInsets edgeInsets = const EdgeInsets.fromLTRB(5, 5, 5, 5);
-  TextStyle textStyle =
-      const TextStyle(overflow: TextOverflow.fade, fontSize: 14);
+  TextStyle textStyle = const TextStyle(
+    overflow: TextOverflow.fade,
+    fontSize: 14,
+  );
+  TextStyle errtextStyle = const TextStyle(
+    overflow: TextOverflow.fade,
+    fontSize: 14,
+    color: Colors.red,
+  );
   String error = '';
   @override
   Widget build(BuildContext context) {
@@ -577,17 +584,17 @@ class _PropertyCardState extends State<PropertyCard> {
             child: Padding(
               padding: edgeInsets,
               child: Container(
+                alignment: Alignment.center,
                 color: Colors.white,
-                height: 33,
                 child: TextField(
                   textAlign: TextAlign.center,
-                  style: textStyle,
+                  style: error == '' ? textStyle : errtextStyle,
                   controller: contentController,
                   decoration: InputDecoration(
-                      border: InputBorder.none,
-                      errorText: error,
-                      contentPadding: edgeInsets,
-                      fillColor: const Color.fromARGB(255, 60, 52, 52)),
+                    border: InputBorder.none,
+                    isCollapsed: true,
+                    contentPadding: edgeInsets,
+                  ),
                   keyboardType: TextInputType.number,
                   maxLines: 1,
                   minLines: 1,
@@ -648,16 +655,15 @@ class _PropertyCardState extends State<PropertyCard> {
               padding: edgeInsets,
               child: Container(
                 color: Colors.white,
-                // height: 120,
                 child: TextField(
                   textAlign: TextAlign.start,
                   style: textStyle,
                   controller: contentController,
                   decoration: InputDecoration(
-                      border: InputBorder.none,
-                      errorText: error,
-                      contentPadding: edgeInsets,
-                      fillColor: const Color.fromARGB(255, 60, 52, 52)),
+                    border: InputBorder.none,
+                    isCollapsed: true,
+                    contentPadding: edgeInsets,
+                  ),
                   maxLines: 10,
                   minLines: 5,
                   onChanged: (value) {
@@ -707,19 +713,18 @@ class _PropertyCardState extends State<PropertyCard> {
             child: Padding(
               padding: edgeInsets,
               child: Container(
+                alignment: Alignment.center,
                 color: Colors.white,
-                height: 33,
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                 child: TextField(
                   textAlign: TextAlign.center,
                   style: textStyle,
                   controller: contentController,
                   decoration: InputDecoration(
-                      border: InputBorder.none,
-                      errorText: error,
-                      contentPadding: edgeInsets,
-                      fillColor: const Color.fromARGB(255, 60, 52, 52)),
-                  maxLines: 1,
+                    border: InputBorder.none,
+                    isCollapsed: true,
+                    contentPadding: edgeInsets,
+                  ),
+                  maxLines: 2,
                   minLines: 1,
                   onChanged: (value) {
                     widget.record[template.keys.elementAt(widget.index)] =
@@ -780,7 +785,7 @@ class _PropertyCardState extends State<PropertyCard> {
               padding: edgeInsets,
               child: Container(
                 color: Colors.white,
-                height: 33,
+                // height: 30,
                 child: MenuAnchor(
                   builder: (context, controller, child) {
                     return FilledButton.tonal(
