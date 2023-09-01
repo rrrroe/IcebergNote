@@ -922,11 +922,12 @@ class _PropertyCardState extends State<PropertyCard> {
                   color: Colors.white,
                   // height: 30,
                   child: FilledButton.tonal(
+                    style: selectedContextButtonStyle,
                     onPressed: () async {
                       DateTime? newDateTime = await showRoundedDatePicker(
                         context: context,
                         locale: const Locale("zh", "CN"),
-                        theme: ThemeData(primarySwatch: Colors.pink),
+                        theme: ThemeData(primarySwatch: Colors.lightBlue),
                       );
                       if (newDateTime != null) {
                         setState(() {
