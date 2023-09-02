@@ -464,13 +464,13 @@ class RecordChangePageState extends State<RecordChangePage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    TextButton(
-                      onPressed: () {
-                        FlutterClipboard.copy(contentController.text);
-                        poplog(1, '复制', context);
-                      },
-                      child: const Text('复制'),
-                    ),
+                    // TextButton(
+                    //   onPressed: () {
+                    //     FlutterClipboard.copy(contentController.text);
+                    //     poplog(1, '复制', context);
+                    //   },
+                    //   child: const Text('复制'),
+                    // ),
                     TextButton(
                       onPressed: () {
                         save();
@@ -997,36 +997,53 @@ class _PropertyCardState extends State<PropertyCard> {
             child: Padding(
               padding: edgeInsets,
               child: Container(
-                  color: Colors.white,
-                  // height: 30,
-                  child: FilledButton.tonal(
-                    style: selectedContextButtonStyle,
-                    onPressed: () {
-                      Pickers.showDatePicker(
-                        context,
-                        mode: DateMode.HMS,
-                        suffix: Suffix.normal(),
-                        selectDate: PDuration(),
-                        onConfirm: (p) {
-                          setState(() {
-                            widget.record[
-                                    template.keys.elementAt(widget.index)] =
-                                '${p.hour}:${p.minute}:${p.second}';
-                          });
-                        },
-                        // onChanged: (p) => print(p),
-                      );
-                    },
-                    child: Text(
-                      widget.record[template.keys.elementAt(widget.index)]
-                                  .toString() ==
+                color: Colors.white,
+                // height: 30,
+                child: FilledButton.tonal(
+                  style: selectedContextButtonStyle,
+                  onPressed: () {
+                    Pickers.showDatePicker(
+                      context,
+                      mode: DateMode.HMS,
+                      suffix: Suffix.normal(),
+                      selectDate: widget.record[template.keys.elementAt(widget.index)].toString() !=
                               'null'
-                          ? ''
-                          : widget.record[template.keys.elementAt(widget.index)]
-                              .toString(),
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                  )),
+                          ? PDuration(
+                              hour: int.parse(widget
+                                  .record[template.keys.elementAt(widget.index)]
+                                  .toString()
+                                  .split(':')[0]),
+                              minute: int.parse(widget
+                                  .record[template.keys.elementAt(widget.index)]
+                                  .toString()
+                                  .split(':')[1]),
+                              second: int.parse(widget
+                                  .record[template.keys.elementAt(widget.index)]
+                                  .toString()
+                                  .split(':')[2]))
+                          : PDuration(),
+                      onConfirm: (p) {
+                        setState(() {
+                          widget.record[template.keys.elementAt(widget.index)] =
+                              '${p.hour}:${p.minute}:${p.second}';
+                          realm.write(() {
+                            widget.note.noteContext = mapToyaml(widget.record);
+                          });
+                        });
+                      },
+                    );
+                  },
+                  child: Text(
+                    widget.record[template.keys.elementAt(widget.index)]
+                                .toString()[0] !=
+                            '0'
+                        ? widget.record[template.keys.elementAt(widget.index)]
+                            .toString()
+                        : '${widget.record[template.keys.elementAt(widget.index)].toString().substring(2).replaceAll(':', '′')}″',
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
             ),
           ),
           Expanded(

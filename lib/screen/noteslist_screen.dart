@@ -863,6 +863,43 @@ class SearchPageState extends State<SearchPage> {
                           ),
                         ],
                       );
+                    case '时间':
+                      return Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.all(0),
+                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: fontColor,
+                            ),
+                            child: Text(
+                              "${propertySettings[0] ?? ''}",
+                              style: const TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            noteMapOther.values
+                                        .elementAt(index)
+                                        .toString()[0] !=
+                                    '0'
+                                ? ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString()}${propertySettings[3] ?? ''}'
+                                : ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().substring(2).replaceAll(':', '′')}″${propertySettings[3] ?? ''}',
+                            style: TextStyle(
+                              fontFamily: 'LXGWWenKai',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: fontColor,
+                            ),
+                          ),
+                        ],
+                      );
                     default:
                       return Row(
                         mainAxisSize: MainAxisSize.max,
