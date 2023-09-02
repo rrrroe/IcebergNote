@@ -53,5 +53,5 @@ ButtonStyle selectedContextButtonStyle = ElevatedButton.styleFrom(
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(4),
   ),
-  padding: const EdgeInsets.all(5),
+  padding: const EdgeInsets.all(0),
 );

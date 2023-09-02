@@ -794,7 +794,6 @@ class _PropertyCardState extends State<PropertyCard> {
               padding: edgeInsets,
               child: Container(
                 color: Colors.white,
-                // height: 30,
                 child: MenuAnchor(
                   builder: (context, controller, child) {
                     return FilledButton.tonal(
@@ -927,6 +926,7 @@ class _PropertyCardState extends State<PropertyCard> {
                     style: selectedContextButtonStyle,
                     onPressed: () async {
                       DateTime? newDateTime = await showRoundedDatePicker(
+                        height: 300,
                         context: context,
                         locale: const Locale("zh", "CN"),
                         theme: ThemeData(primarySwatch: Colors.lightBlue),
