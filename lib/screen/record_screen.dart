@@ -1120,6 +1120,9 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildTimeCard() {
+    List<String> timeList = widget.record[template.keys.elementAt(widget.index)]
+        .toString()
+        .split(':');
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -1161,21 +1164,14 @@ class _PropertyCardState extends State<PropertyCard> {
                       context,
                       mode: DateMode.HMS,
                       suffix: Suffix.normal(),
-                      selectDate: widget.record[template.keys.elementAt(widget.index)].toString() !=
+                      selectDate: widget
+                                  .record[template.keys.elementAt(widget.index)]
+                                  .toString() !=
                               'null'
                           ? PDuration(
-                              hour: int.parse(widget
-                                  .record[template.keys.elementAt(widget.index)]
-                                  .toString()
-                                  .split(':')[0]),
-                              minute: int.parse(widget
-                                  .record[template.keys.elementAt(widget.index)]
-                                  .toString()
-                                  .split(':')[1]),
-                              second: int.parse(widget
-                                  .record[template.keys.elementAt(widget.index)]
-                                  .toString()
-                                  .split(':')[2]))
+                              hour: int.parse(timeList[0]),
+                              minute: int.parse(timeList[1]),
+                              second: int.parse(timeList[2]))
                           : PDuration(),
                       onConfirm: (p) {
                         setState(() {
@@ -1189,12 +1185,15 @@ class _PropertyCardState extends State<PropertyCard> {
                     );
                   },
                   child: Text(
-                    widget.record[template.keys.elementAt(widget.index)]
-                                .toString()[0] !=
-                            '0'
-                        ? widget.record[template.keys.elementAt(widget.index)]
-                            .toString()
-                        : '${widget.record[template.keys.elementAt(widget.index)].toString().substring(2).replaceAll(':', '′')}″',
+                    widget.record[template.keys.elementAt(widget.index)] == null
+                        ? '0:0:0'
+                        : widget.record[template.keys.elementAt(widget.index)]
+                                    .toString()[0] !=
+                                '0'
+                            ? widget
+                                .record[template.keys.elementAt(widget.index)]
+                                .toString()
+                            : '${widget.record[template.keys.elementAt(widget.index)].toString().substring(2).replaceAll(':', '′')}″',
                     style: const TextStyle(color: Colors.black),
                   ),
                 ),
