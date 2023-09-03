@@ -1040,6 +1040,14 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildDateCard() {
+    DateTime dateTime = DateTime.now();
+    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+      widget.record[template.keys.elementAt(widget.index)] =
+          '${dateTime.year}-${dateTime.month}-${dateTime.day}';
+      realm.write(() {
+        widget.note.noteContext = mapToyaml(widget.record);
+      });
+    }
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -1120,6 +1128,15 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildTimeCard() {
+    DateTime dateTime = DateTime.now();
+    print(dateTime);
+    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+      widget.record[template.keys.elementAt(widget.index)] =
+          '${dateTime.hour}:${dateTime.minute}:${dateTime.second}';
+      realm.write(() {
+        widget.note.noteContext = mapToyaml(widget.record);
+      });
+    }
     List<String> timeList = widget.record[template.keys.elementAt(widget.index)]
         .toString()
         .split(':');
