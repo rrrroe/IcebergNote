@@ -881,9 +881,7 @@ class _PropertyCardState extends State<PropertyCard> {
                                 widget.templateNote.noteContext =
                                     widget.templateNote.noteContext.replaceAll(
                                         propertySettings.join(','),
-                                        propertySettings.join(',') +
-                                            '||' +
-                                            testList[i]);
+                                        '${propertySettings.join(',')}||${testList[i]}');
                               });
                             }
                           }
@@ -1006,15 +1004,12 @@ class _PropertyCardState extends State<PropertyCard> {
                           List newList =
                               (propertySettings.last.toString().split('||'));
                           for (int i = 0; i < testList.length; i++) {
-                            print(testList[i]);
                             if (!newList.contains(testList[i])) {
                               realm.write(() {
                                 widget.templateNote.noteContext =
                                     widget.templateNote.noteContext.replaceAll(
                                         propertySettings.join(','),
-                                        propertySettings.join(',') +
-                                            '||' +
-                                            testList[i]);
+                                        '${propertySettings.join(',')}||${testList[i]}');
                               });
                             }
                           }
