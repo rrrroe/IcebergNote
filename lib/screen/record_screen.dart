@@ -1074,7 +1074,7 @@ class _PropertyCardState extends State<PropertyCard> {
                     minHeight: 30,
                   ),
                   color: Colors.white,
-                  // height: 30,
+                  height: 30,
                   child: FilledButton.tonal(
                     style: selectedContextButtonStyle,
                     onPressed: () async {
@@ -1156,6 +1156,7 @@ class _PropertyCardState extends State<PropertyCard> {
                 constraints: const BoxConstraints(
                   minHeight: 30,
                 ),
+                height: 30,
                 color: Colors.white,
                 child: FilledButton.tonal(
                   style: selectedContextButtonStyle,
