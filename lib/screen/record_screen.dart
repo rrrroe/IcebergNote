@@ -922,31 +922,37 @@ class _PropertyCardState extends State<PropertyCard> {
               child: GestureDetector(
                 child: Container(
                   alignment: Alignment.center,
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    crossAxisAlignment: WrapCrossAlignment.start,
-                    spacing: 5,
-                    runSpacing: 5,
-                    children: List.generate(currentList.length, (index) {
-                      return Container(
-                        margin: const EdgeInsets.all(0),
-                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
+                  child: currentList.isEmpty
+                      ? Icon(
+                          Icons.add,
+                          size: 15,
                           color: fontColor,
+                        )
+                      : Wrap(
+                          alignment: WrapAlignment.start,
+                          crossAxisAlignment: WrapCrossAlignment.start,
+                          spacing: 5,
+                          runSpacing: 5,
+                          children: List.generate(currentList.length, (index) {
+                            return Container(
+                              margin: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: fontColor,
+                              ),
+                              child: Text(
+                                currentList[index],
+                                style: const TextStyle(
+                                  fontFamily: 'LXGWWenKai',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            );
+                          }),
                         ),
-                        child: Text(
-                          currentList[index],
-                          style: const TextStyle(
-                            fontFamily: 'LXGWWenKai',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
                 ),
                 onTap: () {
                   showDialog(
