@@ -1040,8 +1040,8 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildDateCard() {
-    DateTime dateTime = DateTime.now();
     if (widget.record[template.keys.elementAt(widget.index)] == null) {
+      DateTime dateTime = DateTime.now();
       widget.record[template.keys.elementAt(widget.index)] =
           '${dateTime.year}-${dateTime.month}-${dateTime.day}';
       realm.write(() {
@@ -1128,9 +1128,8 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildTimeCard() {
-    DateTime dateTime = DateTime.now();
-    print(dateTime);
     if (widget.record[template.keys.elementAt(widget.index)] == null) {
+      DateTime dateTime = DateTime.now();
       widget.record[template.keys.elementAt(widget.index)] =
           '${dateTime.hour}:${dateTime.minute}:${dateTime.second}';
       realm.write(() {

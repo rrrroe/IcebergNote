@@ -111,9 +111,9 @@ class TodoPageState extends State<TodoPage> {
         note.noteType == '.Todo') {
       return Card(
         color: note.noteFinishState == '已完'
-            ? const Color.fromARGB(40, 200, 200, 200)
-            : const Color.fromARGB(40, 0, 123, 128),
-        margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+            ? const Color.fromARGB(20, 200, 200, 200)
+            : const Color.fromARGB(20, 0, 123, 128),
+        margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
         elevation: 0,
         shadowColor: Theme.of(context).primaryColor,
         child: ListTile(
