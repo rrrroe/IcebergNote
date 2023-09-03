@@ -872,11 +872,27 @@ class _PropertyCardState extends State<PropertyCard> {
                                   mapToyaml(widget.record);
                             });
                           });
+                          List testList = (text.split(', '));
+                          List newList =
+                              (propertySettings.last.toString().split('||'));
+                          for (int i = 0; i < testList.length; i++) {
+                            if (!newList.contains(testList[i])) {
+                              realm.write(() {
+                                widget.templateNote.noteContext =
+                                    widget.templateNote.noteContext.replaceAll(
+                                        propertySettings.join(','),
+                                        propertySettings.join(',') +
+                                            '||' +
+                                            testList[i]);
+                              });
+                            }
+                          }
                         },
                         currentList: currentList,
                         selectList: selectList,
                         fontColor: fontColor,
                         isMultiSelect: true,
+                        backgroundColor: backgroundColor,
                       );
                     },
                   );
@@ -986,11 +1002,28 @@ class _PropertyCardState extends State<PropertyCard> {
                                   mapToyaml(widget.record);
                             });
                           });
+                          List testList = (text.split(', '));
+                          List newList =
+                              (propertySettings.last.toString().split('||'));
+                          for (int i = 0; i < testList.length; i++) {
+                            print(testList[i]);
+                            if (!newList.contains(testList[i])) {
+                              realm.write(() {
+                                widget.templateNote.noteContext =
+                                    widget.templateNote.noteContext.replaceAll(
+                                        propertySettings.join(','),
+                                        propertySettings.join(',') +
+                                            '||' +
+                                            testList[i]);
+                              });
+                            }
+                          }
                         },
                         currentList: currentList,
                         selectList: selectList,
                         fontColor: fontColor,
                         isMultiSelect: false,
+                        backgroundColor: backgroundColor,
                       );
                     },
                   );
@@ -1867,6 +1900,7 @@ class InputSelectAlertDialog extends StatefulWidget {
   final List<String> selectList;
   final List<String> currentList;
   final Color fontColor;
+  final Color backgroundColor;
   final bool isMultiSelect;
   const InputSelectAlertDialog(
       {super.key,
@@ -1874,7 +1908,8 @@ class InputSelectAlertDialog extends StatefulWidget {
       required this.selectList,
       required this.currentList,
       required this.fontColor,
-      required this.isMultiSelect});
+      required this.isMultiSelect,
+      required this.backgroundColor});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -1961,6 +1996,21 @@ class _InputSelectAlertDialogState extends State<InputSelectAlertDialog> {
               filterSelectList.retainWhere((element) => element.contains(text));
               setState(() {});
             },
+            onSubmitted: (text) {
+              setState(() {
+                if (!widget.isMultiSelect) {
+                  widget.currentList.clear();
+                }
+                if (!widget.selectList.contains(text)) {
+                  widget.selectList.add(text);
+                }
+                if (!widget.currentList.contains(text)) {
+                  widget.currentList.add(text);
+                }
+                _controller.text = '';
+                filterSelectList = List.from(widget.selectList);
+              });
+            },
           ),
           const SizedBox(
             height: 10,
@@ -2043,14 +2093,46 @@ class _InputSelectAlertDialogState extends State<InputSelectAlertDialog> {
       ),
       actions: <Widget>[
         TextButton(
-          child: const Text('取消'),
+          child: Text(
+            '取消',
+            style: TextStyle(color: widget.fontColor),
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        // TextButton(
+        //   child: Text(
+        //     '新建',
+        //     style: TextStyle(color: widget.fontColor),
+        //   ),
+        //   onPressed: () {
+        //     showDialog(
+        //       context: context,
+        //       builder: (ctx) {
+        //         return InputAlertDialog(
+        //           onSubmitted: (text) {
+        //             setState(() {
+        //               if (!widget.isMultiSelect) {
+        //                 widget.currentList.clear();
+        //               }
+        //               widget.selectList.add(text);
+        //               widget.currentList.add(text);
+        //               filterSelectList.add(text);
+        //             });
+        //           },
+        //         );
+        //       },
+        //     );
+        //   },
+        // ),
         TextButton(
           onPressed: _submit,
-          child: const Text('确定'),
+          child: Text(
+            '确定',
+            style: TextStyle(color: widget.fontColor),
+          ),
         ),
       ],
+      actionsAlignment: MainAxisAlignment.spaceAround,
     );
   }
 }
