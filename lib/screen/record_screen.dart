@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls
 
+import 'dart:math';
+
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pickers/time_picker/model/date_mode.dart';
@@ -524,6 +526,8 @@ class _PropertyCardState extends State<PropertyCard> {
     fontSize: 14,
     color: Colors.red,
   );
+  late Color backgroundColor;
+  late Color fontColor;
   String error = '';
   @override
   Widget build(BuildContext context) {
@@ -543,6 +547,18 @@ class _PropertyCardState extends State<PropertyCard> {
     if (contentController.text == 'null') {
       contentController.text = '';
     }
+    backgroundColor = Color.fromARGB(
+      40,
+      widget.templateProperty['color'][0],
+      widget.templateProperty['color'][1],
+      widget.templateProperty['color'][2],
+    );
+    fontColor = Color.fromARGB(
+      255,
+      max(0, min(widget.templateProperty['color'][0] - 50, 255)),
+      max(0, min(widget.templateProperty['color'][1] - 50, 255)),
+      max(0, min(widget.templateProperty['color'][2] - 50, 255)),
+    );
   }
 
   Widget buildCard() {
@@ -557,6 +573,8 @@ class _PropertyCardState extends State<PropertyCard> {
         return buildDateCard();
       case '时间':
         return buildTimeCard();
+      case '多选':
+        return buildMultiSelectCard();
       default:
         return buildTextCard();
     }
@@ -742,6 +760,118 @@ class _PropertyCardState extends State<PropertyCard> {
                       widget.note.noteContext = mapToyaml(widget.record);
                     });
                   },
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[3] ?? '',
+              textAlign: TextAlign.left,
+              style: textStyle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildMultiSelectCard() {
+    List<String> selectList = propertySettings.last.split("||");
+    List<String> currentList = widget
+        .record[template.keys.elementAt(widget.index)]
+        .toString()
+        .split(", ");
+    return Card(
+      elevation: 0,
+      color: Color.fromARGB(
+          50,
+          widget.templateProperty['color'][0],
+          widget.templateProperty['color'][1],
+          widget.templateProperty['color'][2]),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[0] + ':',
+              textAlign: TextAlign.center,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[2] ?? '',
+              textAlign: TextAlign.right,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: Padding(
+              padding: edgeInsets,
+              child: Container(
+                alignment: Alignment.center,
+                child: Wrap(
+                  alignment: WrapAlignment.start,
+                  crossAxisAlignment: WrapCrossAlignment.start,
+                  spacing: 5,
+                  runSpacing: 5,
+                  children: List.generate(currentList.length, (index) {
+                        return Container(
+                          margin: const EdgeInsets.all(0),
+                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            color: fontColor,
+                          ),
+                          child: Text(
+                            currentList[index],
+                            style: const TextStyle(
+                              fontFamily: 'LXGWWenKai',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      }) +
+                      [
+                        Container(
+                          height: 20,
+                          width: 40,
+                          alignment: Alignment.topCenter,
+                          child: IconButton(
+                            icon: const Icon(Icons.add),
+                            color: Colors.white,
+                            padding: const EdgeInsets.all(0),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (ctx) {
+                                  return InputMultiSelectAlertDialog(
+                                    onSubmitted: (text) {
+                                      setState(() {
+                                        widget.record[template.keys
+                                            .elementAt(widget.index)] = text;
+                                        realm.write(() {
+                                          widget.note.noteContext =
+                                              mapToyaml(widget.record);
+                                        });
+                                      });
+                                    },
+                                    currentList: currentList,
+                                    selectList: selectList,
+                                    fontColor: fontColor,
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                 ),
               ),
             ),
@@ -1731,6 +1861,196 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class InputMultiSelectAlertDialog extends StatefulWidget {
+  final Function(String) onSubmitted;
+  final List<String> selectList;
+  final List<String> currentList;
+  final Color fontColor;
+  const InputMultiSelectAlertDialog(
+      {super.key,
+      required this.onSubmitted,
+      required this.selectList,
+      required this.currentList,
+      required this.fontColor});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _InputMultiSelectAlertDialogState createState() =>
+      _InputMultiSelectAlertDialogState();
+}
+
+class _InputMultiSelectAlertDialogState
+    extends State<InputMultiSelectAlertDialog> {
+  late String inputText;
+  final TextEditingController _controller = TextEditingController();
+  List<String> filterSelectList = [];
+  void _submit() {
+    final text = widget.currentList.join(', ');
+    widget.onSubmitted(text);
+    Navigator.of(context).pop();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    filterSelectList = List.from(widget.selectList);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Wrap(
+        alignment: WrapAlignment.start,
+        crossAxisAlignment: WrapCrossAlignment.start,
+        spacing: 5,
+        runSpacing: 5,
+        children: List.generate(
+          widget.currentList.length,
+          (index) {
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  widget.currentList.removeAt(index);
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.all(0),
+                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: widget.fontColor,
+                  border: Border.all(
+                    color: widget.fontColor,
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      widget.currentList[index],
+                      style: const TextStyle(
+                        fontFamily: 'LXGWWenKai',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.close,
+                      size: 15,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _controller,
+            autofocus: true,
+            decoration: const InputDecoration(hintText: '搜索'),
+            onChanged: (text) {
+              filterSelectList = List.from(widget.selectList);
+              filterSelectList.retainWhere((element) => element.contains(text));
+              setState(() {});
+            },
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Container(
+            width: 200,
+            constraints: const BoxConstraints(
+              minHeight: 100,
+              maxHeight: 400,
+            ),
+            color: Colors.white,
+            child: Wrap(
+              alignment: WrapAlignment.start,
+              crossAxisAlignment: WrapCrossAlignment.start,
+              spacing: 5,
+              runSpacing: 5,
+              children: List.generate(
+                filterSelectList.length,
+                (index) {
+                  bool isContain =
+                      widget.currentList.contains(filterSelectList[index]);
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (!widget.currentList
+                            .contains(filterSelectList[index])) {
+                          widget.currentList.add(filterSelectList[index]);
+                        } else {
+                          widget.currentList.remove(filterSelectList[index]);
+                        }
+                      });
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.all(0),
+                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: isContain ? widget.fontColor : Colors.white,
+                        border: Border.all(
+                          color: widget.fontColor,
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            filterSelectList[index],
+                            style: TextStyle(
+                              fontFamily: 'LXGWWenKai',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color:
+                                  isContain ? Colors.white : widget.fontColor,
+                            ),
+                          ),
+                          isContain
+                              ? const Icon(
+                                  Icons.close,
+                                  size: 15,
+                                  color: Colors.white,
+                                )
+                              : Icon(
+                                  Icons.add,
+                                  size: 15,
+                                  color: widget.fontColor,
+                                ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          )
+        ],
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('取消'),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        TextButton(
+          onPressed: _submit,
+          child: const Text('确定'),
+        ),
+      ],
     );
   }
 }
