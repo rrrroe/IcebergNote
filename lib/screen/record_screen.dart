@@ -611,6 +611,9 @@ class _PropertyCardState extends State<PropertyCard> {
             child: Padding(
               padding: edgeInsets,
               child: Container(
+                constraints: const BoxConstraints(
+                  minHeight: 30,
+                ),
                 alignment: Alignment.center,
                 color: Colors.white,
                 child: TextField(
@@ -681,6 +684,9 @@ class _PropertyCardState extends State<PropertyCard> {
             child: Padding(
               padding: edgeInsets,
               child: Container(
+                constraints: const BoxConstraints(
+                  minHeight: 30,
+                ),
                 color: Colors.white,
                 child: TextField(
                   textAlign: TextAlign.start,
@@ -783,8 +789,8 @@ class _PropertyCardState extends State<PropertyCard> {
         .record[template.keys.elementAt(widget.index)]
         .toString()
         .split(", ");
-    selectList.removeWhere((element) => element == '');
-    currentList.removeWhere((element) => element == '');
+    selectList.removeWhere((element) => element == 'null' || element == '');
+    currentList.removeWhere((element) => element == 'null' || element == '');
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -816,32 +822,41 @@ class _PropertyCardState extends State<PropertyCard> {
               padding: edgeInsets,
               child: GestureDetector(
                 child: Container(
-                  alignment: Alignment.center,
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    crossAxisAlignment: WrapCrossAlignment.start,
-                    spacing: 5,
-                    runSpacing: 5,
-                    children: List.generate(currentList.length, (index) {
-                      return Container(
-                        margin: const EdgeInsets.all(0),
-                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: fontColor,
-                        ),
-                        child: Text(
-                          currentList[index],
-                          style: const TextStyle(
-                            fontFamily: 'LXGWWenKai',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      );
-                    }),
+                  constraints: const BoxConstraints(
+                    minHeight: 30,
                   ),
+                  alignment: Alignment.center,
+                  child: currentList.isEmpty
+                      ? Icon(
+                          Icons.add,
+                          size: 20,
+                          color: fontColor,
+                        )
+                      : Wrap(
+                          alignment: WrapAlignment.start,
+                          crossAxisAlignment: WrapCrossAlignment.start,
+                          spacing: 5,
+                          runSpacing: 5,
+                          children: List.generate(currentList.length, (index) {
+                            return Container(
+                              margin: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: fontColor,
+                              ),
+                              child: Text(
+                                currentList[index],
+                                style: const TextStyle(
+                                  fontFamily: 'LXGWWenKai',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
                 ),
                 onTap: () {
                   showDialog(
@@ -921,11 +936,14 @@ class _PropertyCardState extends State<PropertyCard> {
               padding: edgeInsets,
               child: GestureDetector(
                 child: Container(
+                  constraints: const BoxConstraints(
+                    minHeight: 30,
+                  ),
                   alignment: Alignment.center,
                   child: currentList.isEmpty
                       ? Icon(
                           Icons.add,
-                          size: 15,
+                          size: 20,
                           color: fontColor,
                         )
                       : Wrap(
@@ -1024,6 +1042,9 @@ class _PropertyCardState extends State<PropertyCard> {
             child: Padding(
               padding: edgeInsets,
               child: Container(
+                  constraints: const BoxConstraints(
+                    minHeight: 30,
+                  ),
                   color: Colors.white,
                   // height: 30,
                   child: FilledButton.tonal(
@@ -1101,8 +1122,10 @@ class _PropertyCardState extends State<PropertyCard> {
             child: Padding(
               padding: edgeInsets,
               child: Container(
+                constraints: const BoxConstraints(
+                  minHeight: 30,
+                ),
                 color: Colors.white,
-                // height: 30,
                 child: FilledButton.tonal(
                   style: selectedContextButtonStyle,
                   onPressed: () {
