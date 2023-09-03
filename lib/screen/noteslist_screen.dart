@@ -844,7 +844,7 @@ class SearchPageState extends State<SearchPage> {
                                     padding:
                                         const EdgeInsets.fromLTRB(5, 0, 5, 0),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(4),
+                                      borderRadius: BorderRadius.circular(20),
                                       color: fontColor,
                                     ),
                                     child: Text(

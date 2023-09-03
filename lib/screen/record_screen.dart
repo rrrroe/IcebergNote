@@ -783,6 +783,8 @@ class _PropertyCardState extends State<PropertyCard> {
         .record[template.keys.elementAt(widget.index)]
         .toString()
         .split(", ");
+    selectList.removeWhere((element) => element == '');
+    currentList.removeWhere((element) => element == '');
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -812,67 +814,58 @@ class _PropertyCardState extends State<PropertyCard> {
             flex: 6,
             child: Padding(
               padding: edgeInsets,
-              child: Container(
-                alignment: Alignment.center,
-                child: Wrap(
-                  alignment: WrapAlignment.start,
-                  crossAxisAlignment: WrapCrossAlignment.start,
-                  spacing: 5,
-                  runSpacing: 5,
-                  children: List.generate(currentList.length, (index) {
-                        return Container(
-                          margin: const EdgeInsets.all(0),
-                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: fontColor,
-                          ),
-                          child: Text(
-                            currentList[index],
-                            style: const TextStyle(
-                              fontFamily: 'LXGWWenKai',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        );
-                      }) +
-                      [
-                        Container(
-                          height: 20,
-                          width: 40,
-                          alignment: Alignment.topCenter,
-                          child: IconButton(
-                            icon: const Icon(Icons.add),
+              child: GestureDetector(
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    spacing: 5,
+                    runSpacing: 5,
+                    children: List.generate(currentList.length, (index) {
+                      return Container(
+                        margin: const EdgeInsets.all(0),
+                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: fontColor,
+                        ),
+                        child: Text(
+                          currentList[index],
+                          style: const TextStyle(
+                            fontFamily: 'LXGWWenKai',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                             color: Colors.white,
-                            padding: const EdgeInsets.all(0),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) {
-                                  return InputMultiSelectAlertDialog(
-                                    onSubmitted: (text) {
-                                      setState(() {
-                                        widget.record[template.keys
-                                            .elementAt(widget.index)] = text;
-                                        realm.write(() {
-                                          widget.note.noteContext =
-                                              mapToyaml(widget.record);
-                                        });
-                                      });
-                                    },
-                                    currentList: currentList,
-                                    selectList: selectList,
-                                    fontColor: fontColor,
-                                  );
-                                },
-                              );
-                            },
                           ),
                         ),
-                      ],
+                      );
+                    }),
+                  ),
                 ),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) {
+                      return InputSelectAlertDialog(
+                        onSubmitted: (text) {
+                          setState(() {
+                            widget.record[
+                                template.keys.elementAt(widget.index)] = text;
+                            realm.write(() {
+                              widget.note.noteContext =
+                                  mapToyaml(widget.record);
+                            });
+                          });
+                        },
+                        currentList: currentList,
+                        selectList: selectList,
+                        fontColor: fontColor,
+                        isMultiSelect: true,
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ),
@@ -890,9 +883,13 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildSingleSelectCard() {
-    final List<String> typeList =
-        ['新建', '清空'] + propertySettings.last.split("||");
-    typeList.removeWhere((element) => element == '');
+    List<String> selectList = propertySettings.last.split("||");
+    List<String> currentList = widget
+        .record[template.keys.elementAt(widget.index)]
+        .toString()
+        .split(", ");
+    selectList.removeWhere((element) => element == 'null' || element == '');
+    currentList.removeWhere((element) => element == 'null' || element == '');
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -922,87 +919,58 @@ class _PropertyCardState extends State<PropertyCard> {
             flex: 6,
             child: Padding(
               padding: edgeInsets,
-              child: Container(
-                color: Colors.white,
-                child: MenuAnchor(
-                  builder: (context, controller, child) {
-                    return FilledButton.tonal(
-                      style: selectedContextButtonStyle,
-                      onPressed: () {
-                        if (controller.isOpen) {
-                          controller.close();
-                        } else {
-                          controller.open();
-                        }
-                      },
-                      child: Text(
-                        widget.record[template.keys.elementAt(widget.index)]
-                                    .toString() ==
-                                'null'
-                            ? ''
-                            : widget
-                                .record[template.keys.elementAt(widget.index)],
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                    );
-                  },
-                  menuChildren: typeList.map((selected) {
-                    return MenuItemButton(
-                      style: selectedContextButtonStyle,
-                      child: Text(selected),
-                      onPressed: () {
-                        switch (selected) {
-                          case '清空':
-                            setState(() {
-                              widget.record[
-                                  template.keys.elementAt(widget.index)] = '';
-                              realm.write(() {
-                                widget.note.noteContext =
-                                    mapToyaml(widget.record);
-                              });
-                            });
-                            break;
-                          case '新建':
-                            showDialog(
-                              context: context,
-                              builder: (ctx) {
-                                return InputAlertDialog(
-                                  onSubmitted: (text) {
-                                    realm.write(() {
-                                      widget.templateNote.noteContext = widget
-                                          .templateNote.noteContext
-                                          .replaceAll(
-                                              '${template.keys.elementAt(widget.index)}: ${propertySettings.join(',')}',
-                                              '${template.keys.elementAt(widget.index)}: ${'${propertySettings.join(',')}||$text'.replaceAll(',||', ',')}');
-                                    });
-                                    setState(() {
-                                      typeList.add(text);
-                                      widget.record[template.keys
-                                          .elementAt(widget.index)] = text;
-                                      realm.write(() {
-                                        widget.note.noteContext =
-                                            mapToyaml(widget.record);
-                                      });
-                                    });
-                                  },
-                                );
-                              },
-                            );
-                            break;
-                          default:
-                            setState(() {
-                              widget.record[template.keys
-                                  .elementAt(widget.index)] = selected;
-                              realm.write(() {
-                                widget.note.noteContext =
-                                    mapToyaml(widget.record);
-                              });
-                            });
-                        }
-                      },
-                    );
-                  }).toList(),
+              child: GestureDetector(
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    spacing: 5,
+                    runSpacing: 5,
+                    children: List.generate(currentList.length, (index) {
+                      return Container(
+                        margin: const EdgeInsets.all(0),
+                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: fontColor,
+                        ),
+                        child: Text(
+                          currentList[index],
+                          style: const TextStyle(
+                            fontFamily: 'LXGWWenKai',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
                 ),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) {
+                      return InputSelectAlertDialog(
+                        onSubmitted: (text) {
+                          setState(() {
+                            widget.record[
+                                template.keys.elementAt(widget.index)] = text;
+                            realm.write(() {
+                              widget.note.noteContext =
+                                  mapToyaml(widget.record);
+                            });
+                          });
+                        },
+                        currentList: currentList,
+                        selectList: selectList,
+                        fontColor: fontColor,
+                        isMultiSelect: false,
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ),
@@ -1865,26 +1833,26 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
   }
 }
 
-class InputMultiSelectAlertDialog extends StatefulWidget {
+class InputSelectAlertDialog extends StatefulWidget {
   final Function(String) onSubmitted;
   final List<String> selectList;
   final List<String> currentList;
   final Color fontColor;
-  const InputMultiSelectAlertDialog(
+  final bool isMultiSelect;
+  const InputSelectAlertDialog(
       {super.key,
       required this.onSubmitted,
       required this.selectList,
       required this.currentList,
-      required this.fontColor});
+      required this.fontColor,
+      required this.isMultiSelect});
 
   @override
   // ignore: library_private_types_in_public_api
-  _InputMultiSelectAlertDialogState createState() =>
-      _InputMultiSelectAlertDialogState();
+  _InputSelectAlertDialogState createState() => _InputSelectAlertDialogState();
 }
 
-class _InputMultiSelectAlertDialogState
-    extends State<InputMultiSelectAlertDialog> {
+class _InputSelectAlertDialogState extends State<InputSelectAlertDialog> {
   late String inputText;
   final TextEditingController _controller = TextEditingController();
   List<String> filterSelectList = [];
@@ -1921,7 +1889,7 @@ class _InputMultiSelectAlertDialogState
                 margin: const EdgeInsets.all(0),
                 padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(20),
                   color: widget.fontColor,
                   border: Border.all(
                     color: widget.fontColor,
@@ -1988,6 +1956,9 @@ class _InputMultiSelectAlertDialogState
                   return GestureDetector(
                     onTap: () {
                       setState(() {
+                        if (!widget.isMultiSelect) {
+                          widget.currentList.clear();
+                        }
                         if (!widget.currentList
                             .contains(filterSelectList[index])) {
                           widget.currentList.add(filterSelectList[index]);
@@ -2000,7 +1971,7 @@ class _InputMultiSelectAlertDialogState
                       margin: const EdgeInsets.all(0),
                       padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(20),
                         color: isContain ? widget.fontColor : Colors.white,
                         border: Border.all(
                           color: widget.fontColor,
