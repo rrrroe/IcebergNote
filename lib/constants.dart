@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+// import 'package:permission_handler/permission_handler.dart';
 
 // NavigationRail shows if the screen width is greater or equal to
 // narrowScreenWidthThreshold; otherwise, NavigationBar is used for navigation.
@@ -55,3 +59,116 @@ ButtonStyle selectedContextButtonStyle = ElevatedButton.styleFrom(
   ),
   padding: const EdgeInsets.all(0),
 );
+
+enum Toast {
+  /// Show Short toast for 1 sec
+  LENGTH_SHORT,
+
+  /// Show Long toast for 5 sec
+  LENGTH_LONG
+}
+
+enum ToastGravity {
+  TOP,
+  BOTTOM,
+  CENTER,
+  TOP_LEFT,
+  TOP_RIGHT,
+  BOTTOM_LEFT,
+  BOTTOM_RIGHT,
+  CENTER_LEFT,
+  CENTER_RIGHT,
+  SNACKBAR,
+  NONE
+}
+
+/// Plugin to show a toast message on screen
+/// Only for android, ios and Web platforms
+class Fluttertoast {
+  /// [MethodChannel] used to communicate with the platform side.
+  static const MethodChannel _channel =
+      MethodChannel('PonnamKarthik/fluttertoast');
+
+  /// Let say you have an active show
+  /// Use this method to hide the toast immediately
+  static Future<bool?> cancel() async {
+    bool? res = await _channel.invokeMethod("cancel");
+    return res;
+  }
+
+  /// Summons the platform's showToast which will display the message
+  ///
+  /// Wraps the platform's native Toast for android.
+  /// Wraps the Plugin https://github.com/scalessec/Toast for iOS
+  /// Wraps the https://github.com/apvarun/toastify-js for Web
+  ///
+  /// Parameter [msg] is required and all remaining are optional
+  static Future<bool?> showToast({
+    required String msg,
+    Toast? toastLength,
+    int timeInSecForIosWeb = 1,
+    double? fontSize,
+    ToastGravity? gravity,
+    Color? backgroundColor,
+    Color? textColor,
+    bool webShowClose = false,
+    webBgColor = "linear-gradient(to right, #00b09b, #96c93d)",
+    webPosition = "right",
+  }) async {
+    String toast = "short";
+    if (toastLength == Toast.LENGTH_LONG) {
+      toast = "long";
+    }
+
+    String gravityToast = "bottom";
+    if (gravity == ToastGravity.TOP) {
+      gravityToast = "top";
+    } else if (gravity == ToastGravity.CENTER) {
+      gravityToast = "center";
+    } else {
+      gravityToast = "bottom";
+    }
+
+//lines from 78 to 97 have been changed in order to solve issue #328
+    backgroundColor ??= Colors.black;
+    textColor ??= Colors.white;
+    final Map<String, dynamic> params = <String, dynamic>{
+      'msg': msg,
+      'length': toast,
+      'time': timeInSecForIosWeb,
+      'gravity': gravityToast,
+      'bgcolor': backgroundColor.value,
+      'iosBgcolor': backgroundColor.value,
+      'textcolor': textColor.value,
+      'iosTextcolor': textColor.value,
+      'fontSize': fontSize,
+      'webShowClose': webShowClose,
+      'webBgColor': webBgColor,
+      'webPosition': webPosition
+    };
+
+    bool? res = await _channel.invokeMethod('showToast', params);
+    return res;
+  }
+}
+
+// class PermissionUtil {
+//   /// 安卓权限
+//   static List<Permission> androidPermissions = <Permission>[
+//     // 在这里添加需要的权限
+//     Permission.storage
+//   ];
+
+//   /// ios权限
+//   static List<Permission> iosPermissions = <Permission>[
+//     // 在这里添加需要的权限
+//     Permission.storage
+//   ];
+
+//   static Future<Map<Permission, PermissionStatus>> requestAll() async {
+//     if (Platform.isIOS) {
+//       return await iosPermissions.request();
+//     }
+//     return await androidPermissions.request();
+//   }
+// }

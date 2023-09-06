@@ -83,7 +83,6 @@ class NotesList {
 }
 
 var mainnotesList = NotesList();
-
 late Realm realm;
 
 void main() {

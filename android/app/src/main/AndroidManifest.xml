@@ -3,6 +3,8 @@
    <application
         android:label="icebergnote"
         android:name="${applicationName}"
+        android:requestLegacyExternalStorage="true"
+        android:grantUriPermissions="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

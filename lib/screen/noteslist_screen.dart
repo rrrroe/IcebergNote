@@ -5,15 +5,18 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:clipboard/clipboard.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:icebergnote/screen/input_screen.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:realm/realm.dart';
 import 'package:yaml/yaml.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 import '../main.dart';
 import '../constants.dart';
@@ -25,6 +28,39 @@ const tinySpacing = 3.0;
 const smallSpacing = 10.0;
 const double cardWidth = 115;
 const double widthConstraint = 450;
+GlobalKey repaintWidgetKey = GlobalKey();
+
+class Utils {
+  static void toast(String msg) {
+    Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      textColor: Colors.white,
+      fontSize: 16.0,
+      backgroundColor: Colors.black,
+    );
+  }
+}
+
+onScreenshot() async {
+  RenderRepaintBoundary boundary = repaintWidgetKey.currentContext!
+      .findRenderObject() as RenderRepaintBoundary;
+  ui.Image image = await boundary.toImage();
+  ByteData? byteData = await (image.toByteData(
+    format: ui.ImageByteFormat.png,
+  ));
+  Uint8List pngBytes = byteData!.buffer.asUint8List();
+  // final item = DataWriterItem();
+  // item.add(Formats.png.lazy(() => pngBytes));
+  // await ClipboardWriter.instance.write([item]);
+  final result = await ImageGallerySaver.saveImage(
+    byteData.buffer.asUint8List(),
+    quality: 200,
+  );
+  Utils.toast(result.toString());
+}
 
 class BottomPopSheet extends StatelessWidget {
   const BottomPopSheet(
@@ -297,7 +333,7 @@ class SearchPageState extends State<SearchPage> {
   }
 
   void _scrollListener() {
-    if (Platform.isWindows) {
+    if (true) {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         setState(() {
@@ -1231,31 +1267,37 @@ class SearchPageState extends State<SearchPage> {
       body: Column(
         children: [
           Expanded(
-            child: SmartRefresher(
-              enablePullDown: true,
-              enablePullUp: true,
-              header: const WaterDropHeader(),
-              footer: const ClassicFooter(
-                loadStyle: LoadStyle.ShowWhenLoading,
-                completeDuration: Duration(milliseconds: 500),
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              onLoading: _onLoading,
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: searchnotesList.notesList.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onLongPress: () {
-                      HapticFeedback.heavyImpact();
+            child: Container(
+              color: Colors.white,
+              child: SmartRefresher(
+                enablePullDown: true,
+                enablePullUp: true,
+                header: const WaterDropHeader(),
+                footer: const ClassicFooter(
+                  loadStyle: LoadStyle.ShowWhenLoading,
+                  completeDuration: Duration(milliseconds: 500),
+                ),
+                controller: _refreshController,
+                onRefresh: _onRefresh,
+                onLoading: _onLoading,
+                child: RepaintBoundary(
+                  key: repaintWidgetKey,
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: searchnotesList.notesList.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onLongPress: () {
+                          HapticFeedback.heavyImpact();
+                        },
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                        },
+                        child: buildCard(searchnotesList.notesList[index]),
+                      );
                     },
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                    },
-                    child: buildCard(searchnotesList.notesList[index]),
-                  );
-                },
+                  ),
+                ),
               ),
             ),
           ),

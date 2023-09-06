@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'screen/color_palettes_screen.dart';
 import 'screen/noteslist_screen.dart';
@@ -54,6 +56,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       parent: controller,
       curve: const Interval(0.5, 1.0),
     );
+    // PermissionUtil.requestAll();
   }
 
   @override
@@ -168,6 +171,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             handleBrightnessChange: widget.handleBrightnessChange,
             showTooltipBelow: false,
           ),
+          Visibility(
+            visible: Platform.isAndroid,
+            child: IconButton(
+              icon: const Icon(Icons.fit_screen_outlined),
+              onPressed: () {
+                // PermissionUtil.requestAll();
+                onScreenshot();
+              },
+            ),
+          )
           // IconButton(
           //   icon: const Icon(Icons.search),
           //   onPressed: () {
