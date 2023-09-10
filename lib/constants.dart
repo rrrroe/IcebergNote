@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
+// ignore_for_file: constant_identifier_names
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,6 +54,14 @@ ButtonStyle selectButtonStyle = ElevatedButton.styleFrom(
 ButtonStyle selectedContextButtonStyle = ElevatedButton.styleFrom(
   foregroundColor: const Color.fromARGB(255, 0, 0, 0),
   backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(4),
+  ),
+  padding: const EdgeInsets.all(0),
+);
+ButtonStyle transparentContextButtonStyle = ElevatedButton.styleFrom(
+  foregroundColor: const Color.fromARGB(0, 0, 0, 0),
+  backgroundColor: const Color.fromARGB(0, 255, 255, 255),
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(4),
   ),

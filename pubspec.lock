@@ -469,6 +469,14 @@ packages:
       url: "https://mirror.sjtu.edu.cn/dart-pub/"
     source: hosted
     version: "2.3.1"
+  group_button:
+    dependency: "direct main"
+    description:
+      name: group_button
+      sha256: c10e47213b68438eafdc43a483167ed1d3728d1ccf828cd92b9aac867c8a9106
+      url: "https://mirror.sjtu.edu.cn/dart-pub/"
+    source: hosted
+    version: "5.3.3"
   http:
     dependency: transitive
     description:
@@ -582,7 +590,7 @@ packages:
     source: hosted
     version: "0.2.0"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       sha256: a3715e3bc90294e971cb7dc063fbf3cd9ee0ebf8604ffeafabd9e6f16abbdbe6

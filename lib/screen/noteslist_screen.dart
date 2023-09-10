@@ -29,6 +29,42 @@ const smallSpacing = 10.0;
 const double cardWidth = 115;
 const double widthConstraint = 450;
 GlobalKey repaintWidgetKey = GlobalKey();
+var searchnotesList = NotesList();
+bool checkNoteFormat(Notes note) {
+  switch (note.noteType) {
+    case '.记录':
+      var templateNoteList = realm.query<Notes>(
+          "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+          [
+            '.表头',
+            note.noteProject,
+          ]);
+      if (realm.query<Notes>(
+          "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+          [
+            '.表头',
+            note.noteProject,
+          ]).isEmpty) {
+        return false;
+      } else {
+        List textList =
+            note.noteContext.replaceAll(RegExp(r'\n{2,}'), '\n').split('\n');
+        List templateList = templateNoteList[0]
+            .noteContext
+            .replaceAll(RegExp(r'\n{2,}'), '\n')
+            .split('\n');
+        RegExp pattern = RegExp(": ");
+        for (String str in textList + templateList) {
+          if (pattern.allMatches(str).length != 1 && str != '') {
+            return false;
+          }
+        }
+        return true;
+      }
+    default:
+      return true;
+  }
+}
 
 class Utils {
   static void toast(String msg) {
@@ -44,22 +80,166 @@ class Utils {
   }
 }
 
-onScreenshot() async {
+Future<Uint8List> onScreenshot(int index) async {
+  if (index > searchnotesList.noteWidgetKeyList.length) {
+    index = searchnotesList.noteWidgetKeyList.length;
+  }
+
+  // List boundaryList = [];
+  // List<ui.Image> images = [];
+  // List<ByteData?> byteDataList = [];
+  // for (int i = 0; i < index; i++) {
+  //   boundaryList.add(searchnotesList.noteWidgetKeyList[i].currentContext!
+  //       .findRenderObject() as RenderRepaintBoundary);
+  //   ui.Image image = await boundaryList[i].toImage();
+  //   ByteData? byteData = await (image.toByteData(
+  //     format: ui.ImageByteFormat.png,
+  //   ));
+  //   images.add(image);
+
+  //   // final result = await ImageGallerySaver.saveImage(
+  //   //   byteData.buffer.asUint8List(),
+  //   //   quality: 100,
+  //   // );
+  //   // Utils.toast(result.toString());
+  // }
+  // ui.Image finalImage = await combinedImage(images, true, Axis.vertical);
+
+  // ByteData? finalbyteData = await (images[0].toByteData(
+  //   format: ui.ImageByteFormat.png,
+  // ));
+  // Uint8List pngBytes = finalbyteData!.buffer.asUint8List();
+  // final result = await ImageGallerySaver.saveImage(
+  //   finalbyteData.buffer.asUint8List(),
+  //   quality: 100,
+  // );
+  // Utils.toast(result.toString());
   RenderRepaintBoundary boundary = repaintWidgetKey.currentContext!
       .findRenderObject() as RenderRepaintBoundary;
-  ui.Image image = await boundary.toImage();
-  ByteData? byteData = await (image.toByteData(
-    format: ui.ImageByteFormat.png,
-  ));
+  ui.Image image = await boundary.toImage(pixelRatio: 2);
+  ByteData? byteData = await (image.toByteData(format: ui.ImageByteFormat.png));
   Uint8List pngBytes = byteData!.buffer.asUint8List();
   // final item = DataWriterItem();
   // item.add(Formats.png.lazy(() => pngBytes));
   // await ClipboardWriter.instance.write([item]);
-  final result = await ImageGallerySaver.saveImage(
-    byteData.buffer.asUint8List(),
-    quality: 200,
-  );
-  Utils.toast(result.toString());
+  // final result = await ImageGallerySaver.saveImage(
+  //   byteData.buffer.asUint8List(),
+  //   quality: 200,
+  // );
+  // Utils.toast(result.toString());
+
+  return pngBytes;
+}
+
+// combinedImage(List<ui.Image> imageList, bool fit, Axis direction) {
+//   int maxWidth = 0;
+//   int maxHeight = 0;
+//   imageList.forEach((image) {
+//     if (direction == Axis.vertical) {
+//       if (maxWidth < image.width) maxWidth = image.width;
+//     } else {
+//       if (maxHeight < image.height) maxHeight = image.height;
+//     }
+//   });
+
+//   ///建立变量记录总高及总宽
+//   int totalHeight = maxHeight;
+//   int totalWidth = maxWidth;
+//   ui.PictureRecorder recorder = ui.PictureRecorder();
+//   final paint = Paint();
+//   Canvas canvas = Canvas(recorder);
+//   double dx = 0;
+//   double dy = 0;
+//   //draw images into canvas
+//   imageList.forEach((image) {
+//     double scaleDx = dx;
+//     double scaleDy = dy;
+//     double imageHeight = image.height.toDouble();
+//     double imageWidth = image.width.toDouble();
+//     if (fit) {
+//       //scale the image to same width/height
+//       canvas.save();
+//       if (direction == Axis.vertical && image.width != maxWidth) {
+//         canvas.scale(maxWidth / image.width);
+//         scaleDy *= imageWidth / maxWidth;
+//         imageHeight *= maxWidth / imageWidth;
+//       } else if (direction == Axis.horizontal && image.height != maxHeight) {
+//         canvas.scale(maxHeight / image.height);
+//         scaleDx *= imageHeight / maxHeight;
+//         imageWidth *= maxHeight / imageHeight;
+//       }
+//       canvas.drawImage(image, Offset(scaleDx, scaleDy), paint);
+//       canvas.restore();
+//     } else {
+//       //draw directly
+//       canvas.drawImage(image, Offset(dx, dy), paint);
+//     }
+//     //accumulate dx/dy
+//     if (direction == Axis.vertical) {
+//       dy += imageHeight;
+//       totalHeight += imageHeight.floor();
+//     } else {
+//       dx += imageWidth;
+//       totalWidth += imageWidth.floor();
+//     }
+//   });
+//   return recorder.endRecording().toImage(totalWidth, totalHeight);
+// }
+
+class ImagePopup extends StatefulWidget {
+  final Uint8List pngBytes;
+
+  const ImagePopup({super.key, required this.pngBytes});
+
+  @override
+  State<ImagePopup> createState() => _ImagePopupState();
+}
+
+class _ImagePopupState extends State<ImagePopup> {
+  @override
+  Widget build(BuildContext context) {
+    return _buildPopup();
+  }
+
+  Widget _buildPopup() {
+    return Center(
+      child: Material(
+        child: Stack(
+          children: [
+            Image.memory(widget.pngBytes),
+            Positioned(
+                right: 0,
+                bottom: 0,
+                child: Row(children: [
+                  Visibility(
+                    visible: Platform.isAndroid,
+                    child: IconButton.filledTonal(
+                      onPressed: () {
+                        setState(() async {
+                          final result = await ImageGallerySaver.saveImage(
+                            widget.pngBytes.buffer.asUint8List(),
+                            quality: 100,
+                          );
+                          Utils.toast(result.toString());
+                        });
+                      },
+                      style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                          backgroundColor: MaterialStateProperty.all(
+                              const Color.fromARGB(0, 255, 255, 255))),
+                      icon: const Icon(
+                        Icons.download,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  )
+                ]))
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class BottomPopSheet extends StatelessWidget {
@@ -243,7 +423,7 @@ class SearchPageState extends State<SearchPage> {
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  var searchnotesList = NotesList();
+
   String searchText = '';
   List<String> folderList = ['全部'];
   List<String> typeList = ['全部'];
@@ -374,7 +554,7 @@ class SearchPageState extends State<SearchPage> {
           }
         });
       }
-    } else {}
+    }
   }
 
   PreferredSizeWidget buildAppBar() {
@@ -569,157 +749,124 @@ class SearchPageState extends State<SearchPage> {
     }
   }
 
-  bool checkNoteFormat(Notes note) {
-    switch (note.noteType) {
-      case '.记录':
-        var templateNoteList = realm.query<Notes>(
-            "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
-            [
-              '.表头',
-              note.noteProject,
-            ]);
-        if (realm.query<Notes>(
-            "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
-            [
-              '.表头',
-              note.noteProject,
-            ]).isEmpty) {
-          return false;
-        } else {
-          List textList =
-              note.noteContext.replaceAll(RegExp(r'\n{2,}'), '\n').split('\n');
-          List templateList = templateNoteList[0]
-              .noteContext
-              .replaceAll(RegExp(r'\n{2,}'), '\n')
-              .split('\n');
-          RegExp pattern = RegExp(": ");
-          for (String str in textList + templateList) {
-            if (pattern.allMatches(str).length != 1 && str != '') {
-              return false;
-            }
-          }
-          return true;
-        }
-      default:
-        return true;
-    }
-  }
-
-  Widget buildCard(Notes note) {
+  Widget buildCard(Notes note, int index) {
     if (note.noteType == '.TODO' ||
         note.noteType == '.todo' ||
         note.noteType == '.待办' ||
         note.noteType == '.Todo') {
-      return Card(
-        color: note.noteFinishState == '已完'
-            ? const Color.fromARGB(20, 200, 200, 200)
-            : const Color.fromARGB(20, 0, 123, 128),
-        margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-        elevation: 0,
-        shadowColor: Theme.of(context).primaryColor,
-        child: ListTile(
-          minVerticalPadding: 1,
-          title: CheckboxListTile(
-            title: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChangePage(
-                      onPageClosed: () {
-                        refreshList();
-                      },
-                      note: note,
-                      mod: 1,
+      return RepaintBoundary(
+        key: searchnotesList.noteWidgetKeyList[index],
+        child: Card(
+          color: note.noteFinishState == '已完'
+              ? const Color.fromARGB(20, 200, 200, 200)
+              : const Color.fromARGB(20, 0, 123, 128),
+          margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+          elevation: 0,
+          shadowColor: Theme.of(context).primaryColor,
+          child: ListTile(
+            minVerticalPadding: 1,
+            title: CheckboxListTile(
+              title: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChangePage(
+                        onPageClosed: () {
+                          refreshList();
+                        },
+                        note: note,
+                        mod: 1,
+                      ),
                     ),
-                  ),
-                );
-              },
-              child: Text(
-                note.noteTitle,
-                style: TextStyle(
-                  color: note.noteFinishState == '已完'
-                      ? const Color.fromARGB(255, 200, 200, 200)
-                      : const Color.fromARGB(255, 0, 123, 128),
-                  decoration: note.noteFinishState == '已完'
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-            value: note.noteFinishState == '已完',
-            onChanged: (value) {
-              if (value == true) {
-                setState(() {
-                  realm.write(() {
-                    note.noteFinishState = '已完';
-                    note.noteFinishTime = DateTime.now().toString();
-                  });
-                });
-              } else {
-                realm.write(() {
-                  setState(() {
-                    note.noteFinishState = '未完';
-                    note.noteFinishTime = '';
-                  });
-                });
-              }
-            },
-          ),
-          subtitle: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Visibility(
-                visible: note.noteContext != "",
+                  );
+                },
                 child: Text(
-                  note.noteContext,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                  note.noteTitle,
+                  style: TextStyle(
+                    color: note.noteFinishState == '已完'
+                        ? const Color.fromARGB(255, 200, 200, 200)
+                        : const Color.fromARGB(255, 0, 123, 128),
+                    decoration: note.noteFinishState == '已完'
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none,
+                    fontSize: 18,
                   ),
                 ),
               ),
-            ],
-          ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChangePage(
-                  onPageClosed: () {
-                    refreshList();
-                  },
-                  note: note,
-                  mod: 1,
-                ),
-              ),
-            );
-          },
-          onLongPress: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                if (widget.mod == 2) {
-                  return BottomPopSheetDeleted(
-                    note: note,
-                    onDialogClosed: () {
-                      refreshList();
-                    },
-                  );
+              value: note.noteFinishState == '已完',
+              onChanged: (value) {
+                if (value == true) {
+                  setState(() {
+                    realm.write(() {
+                      note.noteFinishState = '已完';
+                      note.noteFinishTime = DateTime.now().toString();
+                    });
+                  });
                 } else {
-                  return BottomPopSheet(
-                    note: note,
-                    onDialogClosed: () {
-                      refreshList();
-                    },
-                  );
+                  realm.write(() {
+                    setState(() {
+                      note.noteFinishState = '未完';
+                      note.noteFinishTime = '';
+                    });
+                  });
                 }
               },
-            );
-          },
+            ),
+            subtitle: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Visibility(
+                  visible: note.noteContext != "",
+                  child: Text(
+                    note.noteContext,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangePage(
+                    onPageClosed: () {
+                      refreshList();
+                    },
+                    note: note,
+                    mod: 1,
+                  ),
+                ),
+              );
+            },
+            onLongPress: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  if (widget.mod == 2) {
+                    return BottomPopSheetDeleted(
+                      note: note,
+                      onDialogClosed: () {
+                        refreshList();
+                      },
+                    );
+                  } else {
+                    return BottomPopSheet(
+                      note: note,
+                      onDialogClosed: () {
+                        refreshList();
+                      },
+                    );
+                  }
+                },
+              );
+            },
+          ),
         ),
       );
     } else if (note.noteType == '.记录' && checkNoteFormat(note)) {
@@ -757,359 +904,367 @@ class SearchPageState extends State<SearchPage> {
         max(0, min(templateProperty['color'][2] - 50, 255)),
       );
       List propertySettings1 = template.values.elementAt(0).split(",");
-      return Card(
-        margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-        elevation: 0,
-        shadowColor: const Color.fromARGB(255, 255, 132, 132),
-        color: backgroundColor,
-        child: ListTile(
-          title: SizedBox(
-            height: 40,
-            child: Text(
-              '${note.noteProject}  ${propertySettings1[2] ?? ''}${noteMap[noteMap.keys.first] ?? ''}${propertySettings1[3] ?? ''}',
-              maxLines: 1,
-              overflow: TextOverflow.fade,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: fontColor,
+      return RepaintBoundary(
+        key: searchnotesList.noteWidgetKeyList[index],
+        child: Card(
+          margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+          elevation: 0,
+          shadowColor: const Color.fromARGB(255, 255, 132, 132),
+          color: backgroundColor,
+          child: ListTile(
+            title: SizedBox(
+              height: 40,
+              child: Text(
+                '${note.noteProject}  ${propertySettings1[2] ?? ''}${noteMap[noteMap.keys.first] ?? ''}${propertySettings1[3] ?? ''}',
+                maxLines: 1,
+                overflow: TextOverflow.fade,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: fontColor,
+                ),
               ),
             ),
-          ),
-          subtitle: Wrap(
-            spacing: 5,
-            runSpacing: 5,
-            children: List.generate(
-              noteMapOther.length,
-              (index) {
-                List propertySettings = ['', '', '', ''];
-                if (template.containsKey(noteMapOther.keys.elementAt(index))) {
-                  propertySettings =
-                      template[noteMapOther.keys.elementAt(index)].split(",");
-                }
-                if (noteMapOther.values.elementAt(index) != null) {
-                  switch (propertySettings[1]) {
-                    case '长文':
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.ideographic,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.all(0),
-                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: fontColor,
-                            ),
-                            child: Text(
-                              "${propertySettings[0] ?? ''}",
-                              style: const TextStyle(
-                                fontFamily: 'LXGWWenKai',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
+            subtitle: Wrap(
+              spacing: 5,
+              runSpacing: 5,
+              children: List.generate(
+                noteMapOther.length,
+                (index) {
+                  List propertySettings = ['', '', '', ''];
+                  if (template
+                      .containsKey(noteMapOther.keys.elementAt(index))) {
+                    propertySettings =
+                        template[noteMapOther.keys.elementAt(index)].split(",");
+                  }
+                  if (noteMapOther.values.elementAt(index) != null) {
+                    switch (propertySettings[1]) {
+                      case '长文':
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.ideographic,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: fontColor,
+                              ),
+                              child: Text(
+                                "${propertySettings[0] ?? ''}",
+                                style: const TextStyle(
+                                  fontFamily: 'LXGWWenKai',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
-                          Text(
-                            " : ",
-                            style: TextStyle(
-                              fontFamily: 'LXGWWenKai',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: fontColor,
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n')}${propertySettings[3] ?? ''}',
+                            Text(
+                              " : ",
                               style: TextStyle(
+                                fontFamily: 'LXGWWenKai',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: fontColor,
                               ),
                             ),
-                          ),
-                        ],
-                      );
-                    case '单选':
-                    case '多选':
-                      List selectedlist = noteMapOther.values
-                          .elementAt(index)
-                          .toString()
-                          .split(', ');
-                      return Row(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.all(0),
-                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: fontColor,
+                            Expanded(
+                              child: Text(
+                                '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n')}${propertySettings[3] ?? ''}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: fontColor,
+                                ),
+                              ),
                             ),
-                            child: Text(
-                              "${propertySettings[0] ?? ''}",
-                              style: const TextStyle(
+                          ],
+                        );
+                      case '单选':
+                      case '多选':
+                        List selectedlist = noteMapOther.values
+                            .elementAt(index)
+                            .toString()
+                            .split(', ');
+                        return Row(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: fontColor,
+                              ),
+                              child: Text(
+                                "${propertySettings[0] ?? ''}",
+                                style: const TextStyle(
+                                  fontFamily: 'LXGWWenKai',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              " : ",
+                              style: TextStyle(
                                 fontFamily: 'LXGWWenKai',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                                color: fontColor,
                               ),
                             ),
-                          ),
-                          Text(
-                            " : ",
-                            style: TextStyle(
-                              fontFamily: 'LXGWWenKai',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: fontColor,
-                            ),
-                          ),
-                          Expanded(
-                            child: Wrap(
-                              runSpacing: 5,
-                              children: List.generate(
-                                selectedlist.length,
-                                (index) {
-                                  return Container(
-                                    margin:
-                                        const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    padding:
-                                        const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: fontColor,
-                                    ),
-                                    child: Text(
-                                      selectedlist[index],
-                                      style: const TextStyle(
-                                        fontFamily: 'LXGWWenKai',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
+                            Expanded(
+                              child: Wrap(
+                                runSpacing: 5,
+                                children: List.generate(
+                                  selectedlist.length,
+                                  (index) {
+                                    return Container(
+                                      margin:
+                                          const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                                      padding:
+                                          const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: fontColor,
                                       ),
-                                    ),
-                                  );
-                                },
+                                      child: Text(
+                                        selectedlist[index],
+                                        style: const TextStyle(
+                                          fontFamily: 'LXGWWenKai',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      );
-                    case '时间':
-                      return Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.all(0),
-                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: fontColor,
+                          ],
+                        );
+                      case '时间':
+                        return Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: fontColor,
+                              ),
+                              child: Text(
+                                "${propertySettings[0] ?? ''}",
+                                style: const TextStyle(
+                                  fontFamily: 'LXGWWenKai',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                            child: Text(
-                              "${propertySettings[0] ?? ''}",
-                              style: const TextStyle(
+                            Text(
+                              noteMapOther.values
+                                          .elementAt(index)
+                                          .toString()[0] !=
+                                      '0'
+                                  ? ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString()}${propertySettings[3] ?? ''}'
+                                  : ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().substring(2).replaceAll(':', '′')}″${propertySettings[3] ?? ''}',
+                              style: TextStyle(
                                 fontFamily: 'LXGWWenKai',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                                color: fontColor,
                               ),
                             ),
-                          ),
-                          Text(
-                            noteMapOther.values
-                                        .elementAt(index)
-                                        .toString()[0] !=
-                                    '0'
-                                ? ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString()}${propertySettings[3] ?? ''}'
-                                : ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().substring(2).replaceAll(':', '′')}″${propertySettings[3] ?? ''}',
-                            style: TextStyle(
-                              fontFamily: 'LXGWWenKai',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: fontColor,
+                          ],
+                        );
+                      default:
+                        return Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: fontColor,
+                              ),
+                              child: Text(
+                                "${propertySettings[0] ?? ''}",
+                                style: const TextStyle(
+                                  fontFamily: 'LXGWWenKai',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    default:
-                      return Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.all(0),
-                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: fontColor,
-                            ),
-                            child: Text(
-                              "${propertySettings[0] ?? ''}",
-                              style: const TextStyle(
+                            Text(
+                              ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
+                              style: TextStyle(
                                 fontFamily: 'LXGWWenKai',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                                color: fontColor,
                               ),
                             ),
-                          ),
-                          Text(
-                            ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
-                            style: TextStyle(
-                              fontFamily: 'LXGWWenKai',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: fontColor,
-                            ),
-                          ),
-                        ],
-                      );
+                          ],
+                        );
+                    }
+                  } else {
+                    return const SizedBox(height: 0, width: 0);
                   }
-                } else {
-                  return const SizedBox(height: 0, width: 0);
-                }
-              },
-            ),
-          ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RecordChangePage(
-                  onPageClosed: () {
-                    refreshList();
-                  },
-                  note: note,
-                  mod: 1,
-                ),
+                },
               ),
-            );
-          },
-          onLongPress: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                if (widget.mod == 2) {
-                  return BottomPopSheetDeleted(
-                    note: note,
-                    onDialogClosed: () {
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RecordChangePage(
+                    onPageClosed: () {
                       refreshList();
                     },
-                  );
-                } else {
-                  return BottomPopSheet(
                     note: note,
-                    onDialogClosed: () {
-                      refreshList();
-                    },
-                  );
-                }
-              },
-            );
-          },
+                    mod: 1,
+                  ),
+                ),
+              );
+            },
+            onLongPress: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  if (widget.mod == 2) {
+                    return BottomPopSheetDeleted(
+                      note: note,
+                      onDialogClosed: () {
+                        refreshList();
+                      },
+                    );
+                  } else {
+                    return BottomPopSheet(
+                      note: note,
+                      onDialogClosed: () {
+                        refreshList();
+                      },
+                    );
+                  }
+                },
+              );
+            },
+          ),
         ),
       );
     } else {
       return GestureDetector(
-        child: Card(
-          margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-          elevation: 0,
-          shadowColor: Colors.grey,
-          color: const Color.fromARGB(20, 0, 140, 198),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Visibility(
-                  visible: note.noteTitle != "",
-                  child: SizedBox(
+        child: RepaintBoundary(
+          key: searchnotesList.noteWidgetKeyList[index],
+          child: Card(
+            margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+            elevation: 0,
+            shadowColor: Colors.grey,
+            color: const Color.fromARGB(20, 0, 140, 198),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Visibility(
+                    visible: note.noteTitle != "",
+                    child: SizedBox(
+                      child: Text(
+                        note.noteTitle,
+                        maxLines: 2,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Color.fromARGB(255, 0, 140, 198)),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: note.noteTitle != "",
+                    child: const SizedBox(
+                      height: 5,
+                    ),
+                  ),
+                  Visibility(
+                    visible: note.noteContext != "",
                     child: Text(
-                      note.noteTitle,
-                      maxLines: 2,
-                      textAlign: TextAlign.start,
+                      note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
                       overflow: TextOverflow.ellipsis,
+                      maxLines: 5,
                       style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color.fromARGB(255, 0, 140, 198)),
+                        fontSize: 16,
+                      ),
                     ),
                   ),
-                ),
-                Visibility(
-                  visible: note.noteTitle != "",
-                  child: const SizedBox(
-                    height: 5,
-                  ),
-                ),
-                Visibility(
-                  visible: note.noteContext != "",
-                  child: Text(
-                    note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 5,
-                    style: const TextStyle(
-                      fontSize: 16,
+                  // Text(
+                  //   '${note.noteContext.length + note.noteTitle.length}${note.noteCreatTime.length > 19 ? '${note.noteCreatTime.substring(0, 19)}创建       ' : note.noteCreatTime}${note.noteUpdateTime.length > 19 ? '${note.noteUpdateTime.substring(0, 19)}修改' : note.noteUpdateTime}',
+                  //   maxLines: 1,
+                  //   style: const TextStyle(
+                  //     fontSize: 10,
+                  //   ),
+                  // ),
+                  Visibility(
+                    visible:
+                        note.noteType + note.noteProject + note.noteFolder !=
+                            "",
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 70,
+                          padding: const EdgeInsets.all(0),
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            note.noteType,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Color.fromARGB(255, 56, 128, 186),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(0),
+                          alignment: Alignment.centerLeft,
+                          width: 79,
+                          child: Text(
+                            note.noteProject,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Color.fromARGB(255, 215, 55, 55),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(0),
+                          alignment: Alignment.centerLeft,
+                          width: 150,
+                          child: Text(
+                            note.noteFolder,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Color.fromARGB(255, 4, 123, 60),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                // Text(
-                //   '${note.noteContext.length + note.noteTitle.length}${note.noteCreatTime.length > 19 ? '${note.noteCreatTime.substring(0, 19)}创建       ' : note.noteCreatTime}${note.noteUpdateTime.length > 19 ? '${note.noteUpdateTime.substring(0, 19)}修改' : note.noteUpdateTime}',
-                //   maxLines: 1,
-                //   style: const TextStyle(
-                //     fontSize: 10,
-                //   ),
-                // ),
-                Visibility(
-                  visible:
-                      note.noteType + note.noteProject + note.noteFolder != "",
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 70,
-                        padding: const EdgeInsets.all(0),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          note.noteType,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color.fromARGB(255, 56, 128, 186),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(0),
-                        alignment: Alignment.centerLeft,
-                        width: 79,
-                        child: Text(
-                          note.noteProject,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color.fromARGB(255, 215, 55, 55),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(0),
-                        alignment: Alignment.centerLeft,
-                        width: 150,
-                        child: Text(
-                          note.noteFolder,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color.fromARGB(255, 4, 123, 60),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -1280,23 +1435,15 @@ class SearchPageState extends State<SearchPage> {
                 controller: _refreshController,
                 onRefresh: _onRefresh,
                 onLoading: _onLoading,
-                child: RepaintBoundary(
-                  key: repaintWidgetKey,
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: searchnotesList.notesList.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onLongPress: () {
-                          HapticFeedback.heavyImpact();
-                        },
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                        },
-                        child: buildCard(searchnotesList.notesList[index]),
-                      );
-                    },
-                  ),
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: searchnotesList.notesList.length,
+                  itemBuilder: (context, index) {
+                    return buildCard(
+                      searchnotesList.notesList[index],
+                      index,
+                    );
+                  },
                 ),
               ),
             ),
@@ -2202,9 +2349,9 @@ const List<NavigationDestination> appBarDestinations = [
   ),
   NavigationDestination(
     tooltip: '',
-    icon: Icon(Icons.format_paint_outlined),
-    label: 'Color',
-    selectedIcon: Icon(Icons.format_paint),
+    icon: Icon(Icons.dashboard_outlined),
+    label: 'Dashboard',
+    selectedIcon: Icon(Icons.dashboard),
   ),
   // NavigationDestination(
   //   tooltip: '',

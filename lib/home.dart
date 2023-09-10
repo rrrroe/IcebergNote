@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'screen/color_palettes_screen.dart';
+import 'package:flutter/services.dart';
 import 'screen/noteslist_screen.dart';
 import 'constants.dart';
+import 'screen/report_screen.dart';
 import 'screen/todo_screen.dart';
 
 int screenIndexGlobal = 0;
@@ -120,7 +119,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ),
         );
       case ScreenSelected.color:
-        return const ColorPalettesScreen();
+        return Expanded(
+          child: OneTwoTransition(
+            animation: railAnimation,
+            one: const ReportScreen(
+              duration: '周报',
+            ),
+            two: SecondComponentList(
+              scaffoldKey: scaffoldKey,
+            ),
+          ),
+        );
       // case ScreenSelected.test:
       //   return const testPage();
       case ScreenSelected.todo:
@@ -172,12 +181,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             showTooltipBelow: false,
           ),
           Visibility(
-            visible: Platform.isAndroid,
+            visible: true,
             child: IconButton(
               icon: const Icon(Icons.fit_screen_outlined),
-              onPressed: () {
+              onPressed: () async {
                 // PermissionUtil.requestAll();
-                onScreenshot();
+                Uint8List pngBytes = await onScreenshot(20);
+                showDialog(
+                  builder: (_) => ImagePopup(pngBytes: pngBytes),
+                  context: context,
+                );
               },
             ),
           )
