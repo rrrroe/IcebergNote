@@ -113,6 +113,12 @@ class _ReportScreenState extends State<ReportScreen>
           child: TabBar(
             controller: tabController,
             tabs: tabs,
+            indicatorSize: TabBarIndicatorSize.tab,
+            indicatorColor: const Color.fromARGB(255, 0, 140, 198),
+            isScrollable: false,
+            labelStyle: TextStyle(fontSize: 16, fontFamily: 'LXGWWenKai'),
+            unselectedLabelStyle:
+                TextStyle(fontSize: 14, fontFamily: 'LXGWWenKai'),
           ),
         ),
       ),
@@ -142,13 +148,16 @@ class _ReportScreenState extends State<ReportScreen>
                 child: Container(
               color: Colors.white,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: buildtitleList() +
-                    buildMenuList() +
-                    buildgraphList() +
-                    buildCardList(),
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '恭喜您，复盘完毕！',
+                    style: TextStyle(
+                        fontSize: 16, color: Color.fromARGB(255, 0, 140, 198)),
+                  ),
+                ],
               ),
             )),
           ),
