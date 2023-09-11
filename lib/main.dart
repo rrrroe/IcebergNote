@@ -12,7 +12,6 @@ import 'notes.dart';
 class NotesList {
   var visibleItemCount = 15;
   late RealmResults<Notes> notesList;
-  List<GlobalKey> noteWidgetKeyList = [];
   NotesList() {
     notesList = realm.query<Notes>(
         "noteIsDeleted != true SORT(id DESC) LIMIT($visibleItemCount)");
@@ -21,12 +20,6 @@ class NotesList {
         realm.delete(notesList[0]);
         visibleItemCount = visibleItemCount - 1;
       });
-    }
-    while (noteWidgetKeyList.length < visibleItemCount) {
-      noteWidgetKeyList.add(GlobalKey());
-    }
-    while (noteWidgetKeyList.length > visibleItemCount) {
-      noteWidgetKeyList.removeLast();
     }
   }
 
@@ -40,12 +33,6 @@ class NotesList {
         visibleItemCount = visibleItemCount - 1;
       });
     }
-    while (noteWidgetKeyList.length < visibleItemCount) {
-      noteWidgetKeyList.add(GlobalKey());
-    }
-    while (noteWidgetKeyList.length > visibleItemCount) {
-      noteWidgetKeyList.removeLast();
-    }
   }
 
   reinit(int n) {
@@ -57,12 +44,6 @@ class NotesList {
         visibleItemCount = visibleItemCount - 1;
       });
     }
-    while (noteWidgetKeyList.length < visibleItemCount) {
-      noteWidgetKeyList.add(GlobalKey());
-    }
-    while (noteWidgetKeyList.length > visibleItemCount) {
-      noteWidgetKeyList.removeLast();
-    }
   }
 
   search(String n, int m) {
@@ -70,12 +51,6 @@ class NotesList {
     notesList = realm.query<Notes>(
         "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND noteIsDeleted != true SORT(id DESC) LIMIT($visibleItemCount)",
         [n]);
-    while (noteWidgetKeyList.length < visibleItemCount) {
-      noteWidgetKeyList.add(GlobalKey());
-    }
-    while (noteWidgetKeyList.length > visibleItemCount) {
-      noteWidgetKeyList.removeLast();
-    }
   }
 
   searchDeleted(String n, int m) {
@@ -83,12 +58,6 @@ class NotesList {
     notesList = realm.query<Notes>(
         "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND noteIsDeleted == true SORT(id DESC) LIMIT($visibleItemCount)",
         [n]);
-    while (noteWidgetKeyList.length < visibleItemCount) {
-      noteWidgetKeyList.add(GlobalKey());
-    }
-    while (noteWidgetKeyList.length > visibleItemCount) {
-      noteWidgetKeyList.removeLast();
-    }
   }
 
   searchTodo(String n, int m) {
@@ -96,12 +65,6 @@ class NotesList {
     notesList = realm.query<Notes>(
         "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType == '.TODO' OR noteType == '.todo' OR noteType == '.Todo' OR noteType == '.待办' ) SORT(id DESC) LIMIT($visibleItemCount)",
         [n]);
-    while (noteWidgetKeyList.length < visibleItemCount) {
-      noteWidgetKeyList.add(GlobalKey());
-    }
-    while (noteWidgetKeyList.length > visibleItemCount) {
-      noteWidgetKeyList.removeLast();
-    }
   }
 
   searchall(String n, int m, String type, String project, String folder,
@@ -116,12 +79,6 @@ class NotesList {
         visibleItemCount = visibleItemCount - 1;
       });
     }
-    while (noteWidgetKeyList.length < visibleItemCount) {
-      noteWidgetKeyList.add(GlobalKey());
-    }
-    while (noteWidgetKeyList.length > visibleItemCount) {
-      noteWidgetKeyList.removeLast();
-    }
   }
 }
 
@@ -131,6 +88,15 @@ late Realm realm;
 void main() {
   final config = Configuration.local([Notes.schema], schemaVersion: 10);
   realm = Realm(config);
+
+  var deleteOvertime = realm.query<Notes>(
+      "noteIsDeleted == true AND noteUpdateTime < \$0 AND noteCreatTime < \$0 SORT(id DESC)",
+      [DateTime.now().add(const Duration(days: -80)).toString()]);
+  for (int i = 0; i < deleteOvertime.length; i++) {
+    realm.write(() {
+      realm.delete(deleteOvertime[i]);
+    });
+  }
   runApp(
     const App(),
   );

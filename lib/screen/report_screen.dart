@@ -55,7 +55,7 @@ class _ReportScreenState extends State<ReportScreen> {
     }
     selectDuration = widget.duration;
     notesList = realm.query<Notes>(
-        "( noteProject == \$0 OR noteProject == \$1 ) AND noteType == '.记录' AND noteIsDeleted != true SORT(id DESC)",
+        "( noteProject == \$0 OR noteProject == \$1 ) AND noteType == '.记录' AND noteIsDeleted != true SORT(id ASC)",
         [currentProject, '$currentProject/']);
     templateNote = realm.query<Notes>(
         "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
