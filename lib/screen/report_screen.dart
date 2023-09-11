@@ -17,7 +17,17 @@ class ReportScreen extends StatefulWidget {
   State<ReportScreen> createState() => _ReportScreenState();
 }
 
-class _ReportScreenState extends State<ReportScreen> {
+class _ReportScreenState extends State<ReportScreen>
+    with SingleTickerProviderStateMixin {
+  final tabs = <Tab>[
+    const Tab(
+      text: "报表",
+    ),
+    const Tab(
+      text: "复盘",
+    ),
+  ];
+  late TabController tabController;
   String currentProject = '';
   String currentReportType = '周报';
   int dateFlag = 0;
@@ -43,6 +53,7 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   void initState() {
     super.initState();
+    tabController = TabController(length: tabs.length, vsync: this);
     List<Notes> recordProjectDistinctList = realm
         .query<Notes>(
             "noteType == '.表头' AND noteProject !='' DISTINCT(noteProject)")
@@ -95,11 +106,39 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: RepaintBoundary(
-            key: repaintWidgetKey,
-            child: Container(
+      appBar: AppBar(
+        title: Container(
+          height: 50,
+          child: TabBar(
+            controller: tabController,
+            tabs: tabs,
+          ),
+        ),
+      ),
+      body: TabBarView(
+        controller: tabController,
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: RepaintBoundary(
+                key: repaintWidgetKey,
+                child: Container(
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: buildtitleList() +
+                        buildMenuList() +
+                        buildgraphList() +
+                        buildCardList(),
+                  ),
+                )),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: RepaintBoundary(
+                child: Container(
               color: Colors.white,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -111,6 +150,8 @@ class _ReportScreenState extends State<ReportScreen> {
                     buildCardList(),
               ),
             )),
+          ),
+        ],
       ),
     );
   }
