@@ -180,20 +180,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             handleBrightnessChange: widget.handleBrightnessChange,
             showTooltipBelow: false,
           ),
-          Visibility(
-            visible: true,
-            child: IconButton(
-              icon: const Icon(Icons.fit_screen_outlined),
-              onPressed: () async {
-                // PermissionUtil.requestAll();
-                Uint8List pngBytes = await onScreenshot(20);
-                showDialog(
-                  builder: (_) => ImagePopup(pngBytes: pngBytes),
-                  context: context,
-                );
-              },
-            ),
-          )
           // IconButton(
           //   icon: const Icon(Icons.search),
           //   onPressed: () {

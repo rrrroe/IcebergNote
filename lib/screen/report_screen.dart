@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:icebergnote/screen/noteslist_screen.dart';
 import 'package:realm/realm.dart';
 import 'package:yaml/yaml.dart';
@@ -193,6 +194,18 @@ class _ReportScreenState extends State<ReportScreen>
                 },
               );
             }).toList(),
+          ),
+          Expanded(child: Container()),
+          IconButton(
+            icon: const Icon(Icons.fit_screen_outlined),
+            onPressed: () async {
+              // PermissionUtil.requestAll();
+              Uint8List pngBytes = await onScreenshot(20);
+              showDialog(
+                builder: (_) => ImagePopup(pngBytes: pngBytes),
+                context: context,
+              );
+            },
           ),
           const SizedBox(width: 15),
         ],
