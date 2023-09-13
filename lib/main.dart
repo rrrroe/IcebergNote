@@ -86,7 +86,7 @@ var mainnotesList = NotesList();
 late Realm realm;
 
 void main() {
-  final config = Configuration.local([Notes.schema], schemaVersion: 10);
+  final config = Configuration.local([Notes.schema], schemaVersion: 11);
   realm = Realm(config);
 
   var deleteOvertime = realm.query<Notes>(

@@ -11,6 +11,8 @@ import '../notes.dart';
 import 'record_screen.dart';
 import 'package:intl/intl.dart';
 
+import 'review_screen.dart';
+
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key, required this.duration});
   final String duration;
@@ -108,7 +110,7 @@ class _ReportScreenState extends State<ReportScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Container(
+        title: SizedBox(
           height: 50,
           child: TabBar(
             controller: tabController,
@@ -116,9 +118,9 @@ class _ReportScreenState extends State<ReportScreen>
             indicatorSize: TabBarIndicatorSize.tab,
             indicatorColor: const Color.fromARGB(255, 0, 140, 198),
             isScrollable: false,
-            labelStyle: TextStyle(fontSize: 16, fontFamily: 'LXGWWenKai'),
+            labelStyle: const TextStyle(fontSize: 16, fontFamily: 'LXGWWenKai'),
             unselectedLabelStyle:
-                TextStyle(fontSize: 14, fontFamily: 'LXGWWenKai'),
+                const TextStyle(fontSize: 14, fontFamily: 'LXGWWenKai'),
           ),
         ),
       ),
@@ -135,38 +137,20 @@ class _ReportScreenState extends State<ReportScreen>
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: buildtitleList() +
+                    children: buildTitleList() +
                         buildMenuList() +
                         buildgraphList() +
                         buildCardList(),
                   ),
                 )),
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: RepaintBoundary(
-                child: Container(
-              color: Colors.white,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    '恭喜您，复盘完毕！',
-                    style: TextStyle(
-                        fontSize: 16, color: Color.fromARGB(255, 0, 140, 198)),
-                  ),
-                ],
-              ),
-            )),
-          ),
+          const ReviewPage(),
         ],
       ),
     );
   }
 
-  List<Widget> buildtitleList() {
+  List<Widget> buildTitleList() {
     List<Widget> titleList = [];
     titleList.add(
       Row(
@@ -210,6 +194,7 @@ class _ReportScreenState extends State<ReportScreen>
             onPressed: () async {
               // PermissionUtil.requestAll();
               Uint8List pngBytes = await onScreenshot(20);
+              // ignore: use_build_context_synchronously
               showDialog(
                 builder: (_) => ImagePopup(pngBytes: pngBytes),
                 context: context,

@@ -37,6 +37,7 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
     String noteFinishState = "",
     String noteFinishTime = "",
     String noteAlarmTime = "",
+    bool noteIsReviewed = false,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<Notes>({
@@ -63,6 +64,7 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
         'noteFinishState': "",
         'noteFinishTime': "",
         'noteAlarmTime': "",
+        'noteIsReviewed': false,
       });
     }
     RealmObjectBase.set(this, 'id', id);
@@ -92,6 +94,7 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'noteFinishState', noteFinishState);
     RealmObjectBase.set(this, 'noteFinishTime', noteFinishTime);
     RealmObjectBase.set(this, 'noteAlarmTime', noteAlarmTime);
+    RealmObjectBase.set(this, 'noteIsReviewed', noteIsReviewed);
   }
 
   Notes._();
@@ -276,6 +279,13 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
       RealmObjectBase.set(this, 'noteAlarmTime', value);
 
   @override
+  bool get noteIsReviewed =>
+      RealmObjectBase.get<bool>(this, 'noteIsReviewed') as bool;
+  @override
+  set noteIsReviewed(bool value) =>
+      RealmObjectBase.set(this, 'noteIsReviewed', value);
+
+  @override
   Stream<RealmObjectChanges<Notes>> get changes =>
       RealmObjectBase.getChanges<Notes>(this);
 
@@ -314,6 +324,7 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('noteFinishState', RealmPropertyType.string),
       SchemaProperty('noteFinishTime', RealmPropertyType.string),
       SchemaProperty('noteAlarmTime', RealmPropertyType.string),
+      SchemaProperty('noteIsReviewed', RealmPropertyType.bool),
     ]);
   }
 }

@@ -31,6 +31,7 @@ class _Notes {
   late String noteFinishState = "";
   late String noteFinishTime = "";
   late String noteAlarmTime = "";
+  late bool noteIsReviewed = false;
 }
 //flutter pub run realm generate，用来生成notes.g.dart
 //   // 将 Notes 表加入到 Realm 中

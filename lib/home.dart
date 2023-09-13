@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'screen/noteslist_screen.dart';
 import 'constants.dart';
 import 'screen/report_screen.dart';
