@@ -4,6 +4,7 @@ import 'package:realm/realm.dart';
 import 'package:swipable_stack/swipable_stack.dart';
 import 'dart:math' as math;
 
+import '../constants.dart';
 import '../notes.dart';
 import 'input_screen.dart';
 import 'noteslist_screen.dart';
@@ -41,7 +42,6 @@ class ReviewPageState extends State<ReviewPage> {
                 "noteIsDeleted != true AND noteIsReviewed == false AND noteIsReviewed == false SORT(id ASC)")
             .toList() +
         blankList;
-    print(reviewList.length);
   }
 
   @override
@@ -79,7 +79,6 @@ class ReviewPageState extends State<ReviewPage> {
                 controller: _controller,
                 stackClipBehaviour: Clip.none,
                 onSwipeCompleted: (index, direction) {
-                  print('$index, $direction');
                   if ((direction == SwipeDirection.right ||
                           direction == SwipeDirection.up) &&
                       reviewList[index].noteTitle != blankTip) {
@@ -94,7 +93,6 @@ class ReviewPageState extends State<ReviewPage> {
                     reviewList.add(Notes(ObjectId(), '', blankTip,
                         math.Random().nextInt(100).toString()));
                   }
-                  print(reviewList[index].noteIsReviewed);
                 },
 
                 horizontalSwipeThreshold: 0.8,
@@ -448,6 +446,48 @@ class ReviewCard extends StatefulWidget {
 }
 
 class _ReviewCardState extends State<ReviewCard> {
+  List<String> typeList = ['新建', '清空'];
+  List<String> folderList = ['新建', '清空'];
+  List<String> projectList = ['新建', '清空'];
+  List<String> finishStateList = [
+    '未完',
+    '已完',
+  ];
+  @override
+  void initState() {
+    super.initState();
+
+    List<Notes> typeDistinctList =
+        realm.query<Notes>("noteType !='' DISTINCT(noteType)").toList();
+
+    for (int i = 0; i < typeDistinctList.length; i++) {
+      typeList.add(typeDistinctList[i].noteType);
+    }
+    List<Notes> folderDistinctList =
+        realm.query<Notes>("noteFolder !='' DISTINCT(noteFolder)").toList();
+
+    for (int i = 0; i < folderDistinctList.length; i++) {
+      folderList.add(folderDistinctList[i].noteFolder);
+    }
+    List<Notes> projectDistinctList =
+        realm.query<Notes>("noteProject !='' DISTINCT(noteProject)").toList();
+
+    for (int i = 0; i < projectDistinctList.length; i++) {
+      projectList.add(projectDistinctList[i].noteProject);
+    }
+    List<Notes> finishStateDistinctList = realm
+        .query<Notes>("noteFinishState !='' DISTINCT(noteFinishState)")
+        .toList();
+
+    for (int i = 0; i < finishStateDistinctList.length; i++) {
+      if ((finishStateDistinctList[i].noteFinishState != '未完') &&
+          (finishStateDistinctList[i].noteFinishState != '已完')) {
+        finishStateList.add(finishStateDistinctList[i].noteFinishState);
+      }
+    }
+    finishStateList.add('新建');
+  }
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -462,90 +502,307 @@ class _ReviewCardState extends State<ReviewCard> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
               children: [
-                Visibility(
-                  visible: widget.note.noteTitle != "",
-                  child: SizedBox(
+                Text(
+                  widget.note.noteTitle,
+                  maxLines: 4,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Color.fromARGB(255, 0, 140, 198)),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  '${widget.note.noteContext.length + widget.note.noteTitle.length}${widget.note.noteCreatTime.length > 19 ? '${widget.note.noteCreatTime.substring(0, 19)}创建       ' : widget.note.noteCreatTime}${widget.note.noteUpdateTime.length > 19 ? '${widget.note.noteUpdateTime.substring(0, 19)}修改' : widget.note.noteUpdateTime}',
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 10,
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Wrap(
+                      direction: Axis.horizontal,
+                      alignment: WrapAlignment.spaceBetween,
+                      runAlignment: WrapAlignment.spaceBetween,
+                      spacing: 8.0,
+                      runSpacing: 8.0,
+                      children: [
+                        MenuAnchor(
+                          builder: (context, controller, child) {
+                            return FilledButton.tonal(
+                              style: selectButtonStyle,
+                              onPressed: () {
+                                if (controller.isOpen) {
+                                  controller.close();
+                                } else {
+                                  controller.open();
+                                }
+                              },
+                              child: Text(
+                                widget.note.noteType == ''
+                                    ? '类型'
+                                    : widget.note.noteType,
+                                style: widget.note.noteType == ''
+                                    ? const TextStyle(color: Colors.grey)
+                                    : const TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 56, 128, 186)),
+                              ),
+                            );
+                          },
+                          menuChildren: typeList.map((type) {
+                            return MenuItemButton(
+                              child: Text(type),
+                              onPressed: () {
+                                switch (type) {
+                                  case '清空':
+                                    setState(() {
+                                      realm.write(() {
+                                        widget.note.noteType = '';
+                                      });
+                                    });
+                                    break;
+                                  case '新建':
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) {
+                                        return InputAlertDialog(
+                                          onSubmitted: (text) {
+                                            setState(() {
+                                              if (!text.startsWith('.')) {
+                                                text = '.$text';
+                                              }
+                                              typeList.add(text);
+                                              realm.write(() {
+                                                widget.note.noteType = text;
+                                              });
+                                            });
+                                          },
+                                        );
+                                      },
+                                    );
+                                    break;
+                                  default:
+                                    setState(() {
+                                      realm.write(() {
+                                        widget.note.noteType = type;
+                                      });
+                                    });
+                                }
+                              },
+                            );
+                          }).toList(),
+                        ),
+                        MenuAnchor(
+                          builder: (context, controller, child) {
+                            return FilledButton.tonal(
+                              style: selectButtonStyle,
+                              onPressed: () {
+                                if (controller.isOpen) {
+                                  controller.close();
+                                } else {
+                                  controller.open();
+                                }
+                              },
+                              child: Text(
+                                widget.note.noteProject == ''
+                                    ? '项目'
+                                    : widget.note.noteProject,
+                                style: widget.note.noteProject == ''
+                                    ? const TextStyle(color: Colors.grey)
+                                    : const TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 215, 55, 55)),
+                              ),
+                            );
+                          },
+                          menuChildren: projectList.map((project) {
+                            return MenuItemButton(
+                              child: Text(project),
+                              onPressed: () {
+                                switch (project) {
+                                  case '清空':
+                                    setState(() {
+                                      realm.write(() {
+                                        widget.note.noteProject = '';
+                                      });
+                                    });
+                                    break;
+                                  case '新建':
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) {
+                                        return InputAlertDialog(
+                                          onSubmitted: (text) {
+                                            setState(() {
+                                              if (!text.startsWith('~')) {
+                                                text = '~$text';
+                                              }
+                                              projectList.add(text);
+                                              realm.write(() {
+                                                widget.note.noteProject = text;
+                                              });
+                                            });
+                                          },
+                                        );
+                                      },
+                                    );
+                                    break;
+                                  default:
+                                    setState(() {
+                                      realm.write(() {
+                                        widget.note.noteProject = project;
+                                      });
+                                    });
+                                }
+                              },
+                            );
+                          }).toList(),
+                        ),
+                        MenuAnchor(
+                          builder: (context, controller, child) {
+                            return FilledButton.tonal(
+                              style: selectButtonStyle,
+                              onPressed: () {
+                                if (controller.isOpen) {
+                                  controller.close();
+                                } else {
+                                  controller.open();
+                                }
+                              },
+                              child: Text(
+                                widget.note.noteFolder == ''
+                                    ? '路径'
+                                    : widget.note.noteFolder,
+                                style: widget.note.noteFolder == ''
+                                    ? const TextStyle(color: Colors.grey)
+                                    : const TextStyle(
+                                        color: Color.fromARGB(255, 4, 123, 60)),
+                              ),
+                            );
+                          },
+                          menuChildren: folderList.map((folder) {
+                            return MenuItemButton(
+                              child: Text(folder),
+                              onPressed: () {
+                                switch (folder) {
+                                  case '清空':
+                                    setState(() {
+                                      realm.write(() {
+                                        widget.note.noteFolder = '';
+                                      });
+                                    });
+                                    break;
+                                  case '新建':
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) {
+                                        return InputAlertDialog(
+                                          onSubmitted: (text) {
+                                            setState(() {
+                                              if (!text.startsWith('/')) {
+                                                text = '/$text';
+                                              }
+                                              folderList.add(text);
+                                              realm.write(() {
+                                                widget.note.noteFolder = text;
+                                              });
+                                            });
+                                          },
+                                        );
+                                      },
+                                    );
+                                    break;
+                                  default:
+                                    setState(() {
+                                      realm.write(() {
+                                        widget.note.noteFolder = folder;
+                                      });
+                                    });
+                                }
+                              },
+                            );
+                          }).toList(),
+                        ),
+                        Visibility(
+                          visible: widget.note.noteType == ".todo",
+                          child: MenuAnchor(
+                            builder: (context, controller, child) {
+                              return FilledButton.tonal(
+                                style: selectButtonStyle,
+                                onPressed: () {
+                                  if (controller.isOpen) {
+                                    controller.close();
+                                  } else {
+                                    controller.open();
+                                  }
+                                },
+                                child: Text(
+                                  widget.note.noteFinishState == ''
+                                      ? '未完'
+                                      : widget.note.noteFinishState,
+                                  style: const TextStyle(
+                                      color: Color.fromARGB(255, 180, 68, 255)),
+                                ),
+                              );
+                            },
+                            menuChildren: finishStateList.map((finishState) {
+                              return MenuItemButton(
+                                child: Text(finishState),
+                                onPressed: () {
+                                  switch (finishState) {
+                                    case '新建':
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) {
+                                          return InputAlertDialog(
+                                            onSubmitted: (text) {
+                                              setState(() {
+                                                finishStateList.add(text);
+                                                realm.write(() {
+                                                  widget.note.noteFinishState =
+                                                      text;
+                                                });
+                                              });
+                                            },
+                                          );
+                                        },
+                                      );
+                                      break;
+                                    default:
+                                      setState(() {
+                                        realm.write(() {
+                                          widget.note.noteFinishState =
+                                              finishState;
+                                        });
+                                      });
+                                  }
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Container(
                     child: Text(
-                      widget.note.noteTitle,
-                      maxLines: 2,
-                      textAlign: TextAlign.start,
+                      widget.note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
                       overflow: TextOverflow.ellipsis,
+                      maxLines: 40,
                       style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color.fromARGB(255, 0, 140, 198)),
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                ),
-                Visibility(
-                  visible: widget.note.noteTitle != "",
-                  child: const SizedBox(
-                    height: 5,
-                  ),
-                ),
-                Visibility(
-                  visible: widget.note.noteContext != "",
-                  child: Text(
-                    widget.note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 5,
-                    style: const TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                // Text(
-                //   '${note.noteContext.length + note.noteTitle.length}${note.noteCreatTime.length > 19 ? '${note.noteCreatTime.substring(0, 19)}创建       ' : note.noteCreatTime}${note.noteUpdateTime.length > 19 ? '${note.noteUpdateTime.substring(0, 19)}修改' : note.noteUpdateTime}',
-                //   maxLines: 1,
-                //   style: const TextStyle(
-                //     fontSize: 10,
-                //   ),
-                // ),
-                Visibility(
-                  visible: widget.note.noteType +
-                          widget.note.noteProject +
-                          widget.note.noteFolder !=
-                      "",
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 70,
-                        padding: const EdgeInsets.all(0),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          widget.note.noteType,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color.fromARGB(255, 56, 128, 186),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(0),
-                        alignment: Alignment.centerLeft,
-                        width: 79,
-                        child: Text(
-                          widget.note.noteProject,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color.fromARGB(255, 215, 55, 55),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(0),
-                        alignment: Alignment.centerLeft,
-                        width: 150,
-                        child: Text(
-                          widget.note.noteFolder,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color.fromARGB(255, 4, 123, 60),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ],
