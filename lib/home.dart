@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:icebergnote/screen/review_screen.dart';
 import 'screen/noteslist_screen.dart';
 import 'constants.dart';
 import 'screen/report_screen.dart';
@@ -178,6 +179,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           _BrightnessButton(
             handleBrightnessChange: widget.handleBrightnessChange,
             showTooltipBelow: false,
+          ),
+          IconButton(
+            icon: const Icon(Icons.rate_review_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ReviewPage()),
+              );
+            },
           ),
           // IconButton(
           //   icon: const Icon(Icons.search),

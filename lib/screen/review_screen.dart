@@ -55,6 +55,7 @@ class ReviewPageState extends State<ReviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text("复盘")),
       body: Stack(
         children: [
           Positioned.fill(
