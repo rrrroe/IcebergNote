@@ -1129,9 +1129,7 @@ class _PropertyCardState extends State<PropertyCard> {
 
   Widget buildTimeCard() {
     if (widget.record[template.keys.elementAt(widget.index)] == null) {
-      DateTime dateTime = DateTime.now();
-      widget.record[template.keys.elementAt(widget.index)] =
-          '${dateTime.hour}:${dateTime.minute}:${dateTime.second}';
+      widget.record[template.keys.elementAt(widget.index)] = '0:0:0';
       realm.write(() {
         widget.note.noteContext = mapToyaml(widget.record);
       });

@@ -47,15 +47,15 @@ ButtonStyle selectButtonStyle = ElevatedButton.styleFrom(
   foregroundColor: const Color.fromARGB(15, 233, 239, 247),
   backgroundColor: const Color.fromARGB(200, 233, 239, 247),
   shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(4),
+    borderRadius: BorderRadius.circular(10),
   ),
-  padding: const EdgeInsets.all(3),
+  padding: const EdgeInsets.all(0),
 );
 ButtonStyle selectedContextButtonStyle = ElevatedButton.styleFrom(
   foregroundColor: const Color.fromARGB(255, 0, 0, 0),
   backgroundColor: const Color.fromARGB(255, 255, 255, 255),
   shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(4),
+    borderRadius: BorderRadius.circular(5),
   ),
   padding: const EdgeInsets.all(0),
 );
@@ -63,7 +63,7 @@ ButtonStyle transparentContextButtonStyle = ElevatedButton.styleFrom(
   foregroundColor: const Color.fromARGB(0, 0, 0, 0),
   backgroundColor: const Color.fromARGB(0, 255, 255, 255),
   shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(4),
+    borderRadius: BorderRadius.circular(5),
   ),
   padding: const EdgeInsets.all(0),
 );

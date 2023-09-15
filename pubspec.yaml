@@ -54,6 +54,7 @@ dependencies:
   group_button: ^5.3.3
   intl: ^0.18.0
   swipable_stack: ^2.0.0
+  dropdown_button2: ^2.3.9
 dev_dependencies:
   flutter_test:
     sdk: flutter
