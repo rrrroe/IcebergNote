@@ -21,6 +21,7 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import '../main.dart';
 import '../constants.dart';
 import 'record_screen.dart';
+import 'search_screen.dart';
 
 const rowDividerincrease = SizedBox(width: 20);
 const colDivider = SizedBox(height: 10);
@@ -1169,16 +1170,33 @@ class SearchPageState extends State<SearchPage> {
                 Visibility(
                   visible: note.noteTitle != "",
                   child: SizedBox(
-                    child: Text(
-                      note.noteTitle,
-                      maxLines: 2,
-                      textAlign: TextAlign.start,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color.fromARGB(255, 0, 140, 198)),
-                    ),
+                    child:
+                        note.noteTitle.contains(searchText) && searchText != ''
+                            ? buildRichText(
+                                note.noteTitle,
+                                searchText,
+                                TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromARGB(255, 0, 140, 198)),
+                                TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: ui.Color.fromARGB(255, 0, 140, 198),
+                                    backgroundColor: Colors.yellow[100],
+                                    fontFamily: 'LXGWWenKai'),
+                              )
+                            : Text(
+                                note.noteTitle,
+                                maxLines: 5,
+                                textAlign: TextAlign.start,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromARGB(255, 0, 140, 198),
+                                    fontFamily: 'LXGWWenKai'),
+                              ),
                   ),
                 ),
                 Visibility(
@@ -1189,14 +1207,29 @@ class SearchPageState extends State<SearchPage> {
                 ),
                 Visibility(
                   visible: note.noteContext != "",
-                  child: Text(
-                    note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 5,
-                    style: const TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
+                  child: note.noteContext.contains(searchText) &&
+                          searchText != ''
+                      ? buildRichText(
+                          note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
+                          searchText,
+                          TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontFamily: 'LXGWWenKai'),
+                          TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              backgroundColor: Colors.yellow[100],
+                              fontFamily: 'LXGWWenKai'),
+                        )
+                      : Text(
+                          note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 5,
+                          style: const TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
                 ),
                 // Text(
                 //   '${note.noteContext.length + note.noteTitle.length}${note.noteCreatTime.length > 19 ? '${note.noteCreatTime.substring(0, 19)}创建       ' : note.noteCreatTime}${note.noteUpdateTime.length > 19 ? '${note.noteUpdateTime.substring(0, 19)}修改' : note.noteUpdateTime}',

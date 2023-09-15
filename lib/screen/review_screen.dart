@@ -78,6 +78,7 @@ class ReviewPageState extends State<ReviewPage> {
                 // },
                 //可以控制最上面一层在不同方向滑动时的叠加的东西
                 controller: _controller,
+                swipeAnchor: SwipeAnchor.bottom,
                 stackClipBehaviour: Clip.none,
                 onSwipeCompleted: (index, direction) {
                   if ((direction == SwipeDirection.right ||

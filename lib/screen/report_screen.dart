@@ -11,7 +11,7 @@ import '../notes.dart';
 import 'record_screen.dart';
 import 'package:intl/intl.dart';
 
-import 'review_screen.dart';
+import 'search_screen.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key, required this.duration});
@@ -108,6 +108,10 @@ class _ReportScreenState extends State<ReportScreen>
 
   @override
   Widget build(BuildContext context) {
+    List tmplist = [];
+    for (int i = 0; i <= 500; i++) {
+      tmplist.add(i);
+    }
     return Scaffold(
       appBar: AppBar(
         title: SizedBox(
@@ -144,6 +148,11 @@ class _ReportScreenState extends State<ReportScreen>
                   ),
                 )),
           ),
+          buildRichText(
+              tmplist.toString(),
+              '299',
+              const TextStyle(color: Colors.black),
+              const TextStyle(color: Colors.yellow)),
           // const ReviewPage(),
         ],
       ),
