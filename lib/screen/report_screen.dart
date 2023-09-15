@@ -10,7 +10,6 @@ import '../main.dart';
 import '../notes.dart';
 import 'record_screen.dart';
 import 'package:intl/intl.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key, required this.duration});
@@ -49,6 +48,7 @@ class _ReportScreenState extends State<ReportScreen>
   late int weekday;
   late DateTime firstDay;
   late DateTime lastDay;
+  int quarter = 1;
   List typeList = ['周报', '月报', '季报', '年报', '自定义'];
   List<String> recordProjectList = [];
   late List<Notes> recordProjectDistinctList;
@@ -107,17 +107,6 @@ class _ReportScreenState extends State<ReportScreen>
 
   @override
   Widget build(BuildContext context) {
-    final List<String> items = [
-      'Item1',
-      'Item2',
-      'Item3',
-      'Item4',
-      'Item5',
-      'Item6',
-      'Item7',
-      'Item8',
-    ];
-    String? selectedValue;
     return Scaffold(
       appBar: AppBar(
         title: SizedBox(
@@ -154,95 +143,7 @@ class _ReportScreenState extends State<ReportScreen>
                   ),
                 )),
           ),
-          Wrap(children: [
-            DropdownButtonHideUnderline(
-              child: DropdownButton2<String>(
-                isExpanded: true,
-                hint: const Row(
-                  children: [
-                    Icon(
-                      Icons.list,
-                      size: 16,
-                      color: Colors.yellow,
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Expanded(
-                      child: Text(
-                        'Select Item',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.yellow,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                items: items
-                    .map((String item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ))
-                    .toList(),
-                value: selectedValue,
-                onChanged: (String? value) {
-                  setState(() {
-                    selectedValue = value;
-                  });
-                },
-                buttonStyleData: ButtonStyleData(
-                  height: 50,
-                  width: 160,
-                  padding: const EdgeInsets.only(left: 14, right: 14),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: Colors.black26,
-                    ),
-                    color: Colors.redAccent,
-                  ),
-                  elevation: 2,
-                ),
-                iconStyleData: const IconStyleData(
-                  icon: Icon(
-                    Icons.arrow_forward_ios_outlined,
-                  ),
-                  iconSize: 14,
-                  iconEnabledColor: Colors.yellow,
-                  iconDisabledColor: Colors.grey,
-                ),
-                dropdownStyleData: DropdownStyleData(
-                  maxHeight: 200,
-                  width: 200,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: Colors.redAccent,
-                  ),
-                  offset: const Offset(-20, 0),
-                  scrollbarTheme: ScrollbarThemeData(
-                    radius: const Radius.circular(40),
-                    thickness: MaterialStateProperty.all<double>(6),
-                    thumbVisibility: MaterialStateProperty.all<bool>(true),
-                  ),
-                ),
-                menuItemStyleData: const MenuItemStyleData(
-                  height: 40,
-                  padding: EdgeInsets.only(left: 14, right: 14),
-                ),
-              ),
-            ),
-          ]),
+          Container(),
         ],
       ),
     );
@@ -341,6 +242,44 @@ class _ReportScreenState extends State<ReportScreen>
                   onPressed: () {
                     setState(() {
                       currentReportType = type;
+                      quarter = ((now.month - 1) ~/ 3) + 1;
+                      switch (currentReportType) {
+                        case '自定义':
+                        case '周报':
+                          firstDay = now.subtract(Duration(days: weekday - 1));
+                          firstDay = DateTime(
+                              firstDay.year, firstDay.month, firstDay.day);
+                          lastDay = now.add(
+                              Duration(days: DateTime.daysPerWeek - weekday));
+                          lastDay = DateTime(
+                              lastDay.year, lastDay.month, lastDay.day);
+                          break;
+                        case '月报':
+                          firstDay = DateTime(now.year, now.month, 1);
+                          lastDay = DateTime(now.year, now.month + 1, 1)
+                              .subtract(const Duration(days: 1));
+                          break;
+                        case '季报':
+                          if (quarter == 1) {
+                            firstDay = DateTime(now.year, 1, 1);
+                            lastDay = DateTime(now.year, 3, 31);
+                          } else if (quarter == 2) {
+                            firstDay = DateTime(now.year, 4, 1);
+                            lastDay = DateTime(now.year, 6, 30);
+                          } else if (quarter == 3) {
+                            firstDay = DateTime(now.year, 7, 1);
+                            lastDay = DateTime(now.year, 9, 30);
+                          } else {
+                            firstDay = DateTime(now.year, 10, 1);
+                            lastDay = DateTime(now.year, 12, 31);
+                          }
+                          break;
+                        case '年报':
+                          firstDay = DateTime(now.year, 1, 1);
+                          lastDay = DateTime(now.year, 12, 31);
+                      }
+                      print(firstDay);
+                      print(lastDay);
                     });
                   },
                 );
@@ -350,9 +289,35 @@ class _ReportScreenState extends State<ReportScreen>
           Expanded(child: Container()),
           IconButton.filledTonal(
             onPressed: () {
+              quarter = ((firstDay.month - 1) ~/ 3) + 1;
               setState(() {
-                firstDay = firstDay.add(const Duration(days: -7));
-                lastDay = lastDay.add(const Duration(days: -7));
+                switch (currentReportType) {
+                  case '自定义':
+                  case '周报':
+                    firstDay = firstDay.add(const Duration(days: -7));
+                    lastDay = lastDay.add(const Duration(days: -7));
+                    break;
+                  case '月报':
+                    lastDay = firstDay.add(const Duration(days: -1));
+                    firstDay = DateTime(lastDay.year, lastDay.month, 1);
+                    break;
+                  case '季报':
+                    lastDay = firstDay.add(const Duration(days: -1));
+                    quarter = ((lastDay.month - 1) ~/ 3) + 1;
+                    if (quarter == 1) {
+                      firstDay = DateTime(lastDay.year, 1, 1);
+                    } else if (quarter == 2) {
+                      firstDay = DateTime(lastDay.year, 4, 1);
+                    } else if (quarter == 3) {
+                      firstDay = DateTime(lastDay.year, 7, 1);
+                    } else {
+                      firstDay = DateTime(lastDay.year, 10, 1);
+                    }
+                    break;
+                  case '年报':
+                    lastDay = firstDay.add(const Duration(days: -1));
+                    firstDay = DateTime(lastDay.year, 1, 1);
+                }
               });
             },
             style: ButtonStyle(
@@ -371,8 +336,34 @@ class _ReportScreenState extends State<ReportScreen>
           IconButton.filledTonal(
             onPressed: () {
               setState(() {
-                firstDay = firstDay.add(const Duration(days: 7));
-                lastDay = lastDay.add(const Duration(days: 7));
+                switch (currentReportType) {
+                  case '自定义':
+                  case '周报':
+                    firstDay = firstDay.add(const Duration(days: 7));
+                    lastDay = lastDay.add(const Duration(days: 7));
+                    break;
+                  case '月报':
+                    firstDay = lastDay.add(const Duration(days: 1));
+                    lastDay = DateTime(firstDay.year, firstDay.month + 1, 1)
+                        .subtract(const Duration(days: 1));
+                    break;
+                  case '季报':
+                    firstDay = lastDay.add(const Duration(days: 1));
+                    quarter = ((firstDay.month - 1) ~/ 3) + 1;
+                    if (quarter == 1) {
+                      lastDay = DateTime(firstDay.year, 3, 31);
+                    } else if (quarter == 2) {
+                      lastDay = DateTime(firstDay.year, 6, 30);
+                    } else if (quarter == 3) {
+                      lastDay = DateTime(firstDay.year, 9, 30);
+                    } else {
+                      lastDay = DateTime(firstDay.year, 12, 31);
+                    }
+                    break;
+                  case '年报':
+                    firstDay = lastDay.add(const Duration(days: 1));
+                    lastDay = DateTime(firstDay.year, 12, 31);
+                }
               });
             },
             style: ButtonStyle(
@@ -407,8 +398,9 @@ class _ReportScreenState extends State<ReportScreen>
       Map recordtmp = loadYaml(notesList[i].noteContext) as YamlMap;
       late DateTime date;
       date = ymd.parse(recordtmp[dateFlag]);
-      if (date.isBefore(lastDay) &&
-          date.isAfter(firstDay.add(const Duration(days: -1)))) {
+
+      if (date.isBefore(lastDay.add(const Duration(hours: 1))) &&
+          date.isAfter(firstDay.add(const Duration(hours: -1)))) {
         filterNoteList.add(notesList[i]);
       }
     }
