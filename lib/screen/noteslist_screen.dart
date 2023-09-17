@@ -471,20 +471,23 @@ class SearchPageState extends State<SearchPage> {
         searchnotesList.searchTodo(searchText, 0);
         break;
     }
-    List<Notes> typeDistinctList =
-        realm.query<Notes>("noteType !='' DISTINCT(noteType)").toList();
+    List<Notes> typeDistinctList = realm
+        .query<Notes>("noteType !='' DISTINCT(noteType) SORT(id DESC)")
+        .toList();
 
     for (int i = 0; i < typeDistinctList.length; i++) {
       typeList.add(typeDistinctList[i].noteType);
     }
-    List<Notes> folderDistinctList =
-        realm.query<Notes>("noteFolder !='' DISTINCT(noteFolder)").toList();
+    List<Notes> folderDistinctList = realm
+        .query<Notes>("noteFolder !='' DISTINCT(noteFolder) SORT(id DESC)")
+        .toList();
 
     for (int i = 0; i < folderDistinctList.length; i++) {
       folderList.add(folderDistinctList[i].noteFolder);
     }
-    List<Notes> projectDistinctList =
-        realm.query<Notes>("noteProject !='' DISTINCT(noteProject)").toList();
+    List<Notes> projectDistinctList = realm
+        .query<Notes>("noteProject !='' DISTINCT(noteProject) SORT(id DESC)")
+        .toList();
 
     for (int i = 0; i < projectDistinctList.length; i++) {
       projectList.add(projectDistinctList[i].noteProject);
@@ -1170,33 +1173,34 @@ class SearchPageState extends State<SearchPage> {
                 Visibility(
                   visible: note.noteTitle != "",
                   child: SizedBox(
-                    child:
-                        note.noteTitle.contains(searchText) && searchText != ''
-                            ? buildRichText(
-                                note.noteTitle,
-                                searchText,
-                                TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color.fromARGB(255, 0, 140, 198)),
-                                TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    color: ui.Color.fromARGB(255, 0, 140, 198),
-                                    backgroundColor: Colors.yellow[100],
-                                    fontFamily: 'LXGWWenKai'),
-                              )
-                            : Text(
-                                note.noteTitle,
-                                maxLines: 5,
-                                textAlign: TextAlign.start,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color.fromARGB(255, 0, 140, 198),
-                                    fontFamily: 'LXGWWenKai'),
-                              ),
+                    child: note.noteTitle.contains(searchText) &&
+                            searchText != ''
+                        ? buildRichText(
+                            note.noteTitle,
+                            searchText,
+                            const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Color.fromARGB(255, 0, 140, 198)),
+                            TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    const ui.Color.fromARGB(255, 0, 140, 198),
+                                backgroundColor: Colors.yellow[100],
+                                fontFamily: 'LXGWWenKai'),
+                          )
+                        : Text(
+                            note.noteTitle,
+                            maxLines: 5,
+                            textAlign: TextAlign.start,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Color.fromARGB(255, 0, 140, 198),
+                                fontFamily: 'LXGWWenKai'),
+                          ),
                   ),
                 ),
                 Visibility(
@@ -1212,7 +1216,7 @@ class SearchPageState extends State<SearchPage> {
                       ? buildRichText(
                           note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
                           searchText,
-                          TextStyle(
+                          const TextStyle(
                               fontSize: 16,
                               color: Colors.black,
                               fontFamily: 'LXGWWenKai'),

@@ -97,7 +97,9 @@ class _ReportScreenState extends State<ReportScreen>
     DateTime now = DateTime.now();
     weekday = now.weekday;
     firstDay = now.subtract(Duration(days: weekday - 1));
+    firstDay = DateTime(firstDay.year, firstDay.month, firstDay.day);
     lastDay = now.add(Duration(days: DateTime.daysPerWeek - weekday));
+    lastDay = DateTime(lastDay.year, lastDay.month, lastDay.day);
     template.forEach((key, value) {
       if (value.toString().split(',')[1] == '日期') {
         dateFlag = key;
@@ -278,8 +280,6 @@ class _ReportScreenState extends State<ReportScreen>
                           firstDay = DateTime(now.year, 1, 1);
                           lastDay = DateTime(now.year, 12, 31);
                       }
-                      print(firstDay);
-                      print(lastDay);
                     });
                   },
                 );
@@ -395,15 +395,22 @@ class _ReportScreenState extends State<ReportScreen>
       if (checkNoteFormat(notesList[i]) == false) {
         continue;
       }
+
       Map recordtmp = loadYaml(notesList[i].noteContext) as YamlMap;
       late DateTime date;
       date = ymd.parse(recordtmp[dateFlag]);
-
-      if (date.isBefore(lastDay.add(const Duration(hours: 1))) &&
-          date.isAfter(firstDay.add(const Duration(hours: -1)))) {
+      if (date.isBefore(lastDay.add(const Duration(days: 1, seconds: -1))) &&
+          date.isAfter(firstDay.add(const Duration(seconds: -1)))) {
         filterNoteList.add(notesList[i]);
       }
     }
+    cardList.add(Row(
+      children: [
+        Text(firstDay.add(const Duration(seconds: -1)).toString() +
+            ' ~ ' +
+            lastDay.add(const Duration(days: 1)).toString()),
+      ],
+    ));
     if (templateProperty.keys.contains(currentReportType)) {
       templateProperty[currentReportType].split(',').forEach((element) {
         List tmp = element.toString().split('-');
