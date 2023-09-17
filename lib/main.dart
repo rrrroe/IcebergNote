@@ -10,7 +10,7 @@ import 'home.dart';
 import 'notes.dart';
 
 class NotesList {
-  var visibleItemCount = 15;
+  var visibleItemCount = 50;
   late RealmResults<Notes> notesList;
   NotesList() {
     notesList =

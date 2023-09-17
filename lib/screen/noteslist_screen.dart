@@ -520,16 +520,16 @@ class SearchPageState extends State<SearchPage> {
           switch (widget.mod) {
             case 0:
               searchnotesList.searchall(
-                  searchText, 15, searchType, searchProject, searchFolder, '');
+                  searchText, 50, searchType, searchProject, searchFolder, '');
               break;
             case 1:
-              searchnotesList.search(searchText, 15);
+              searchnotesList.search(searchText, 50);
               break;
             case 2:
-              searchnotesList.searchDeleted(searchText, 15);
+              searchnotesList.searchDeleted(searchText, 50);
               break;
             case 3:
-              searchnotesList.searchTodo(searchText, 15);
+              searchnotesList.searchTodo(searchText, 50);
               break;
           }
           refreshList();

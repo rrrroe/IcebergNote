@@ -90,7 +90,7 @@ class TodoPageState extends State<TodoPage> {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
       setState(() {
-        searchnotesList.searchall(searchText, 15, '.todo', searchProject,
+        searchnotesList.searchall(searchText, 50, '.todo', searchProject,
             searchFolder, searchFinishState);
 
         refreshList();
