@@ -64,20 +64,23 @@ class ChangePageState extends State<ChangePage> {
     focusNode.addListener(() {
       keyboardManager.updateHeight(MediaQuery.of(context).viewInsets.bottom);
     });
-    List<Notes> typeDistinctList =
-        realm.query<Notes>("noteType !='' DISTINCT(noteType)").toList();
+    List<Notes> typeDistinctList = realm
+        .query<Notes>("noteType !='' DISTINCT(noteType) SORT(id DESC)")
+        .toList();
 
     for (int i = 0; i < typeDistinctList.length; i++) {
       widget.typeList.add(typeDistinctList[i].noteType);
     }
-    List<Notes> folderDistinctList =
-        realm.query<Notes>("noteFolder !='' DISTINCT(noteFolder)").toList();
+    List<Notes> folderDistinctList = realm
+        .query<Notes>("noteFolder !='' DISTINCT(noteFolder) SORT(id DESC)")
+        .toList();
 
     for (int i = 0; i < folderDistinctList.length; i++) {
       widget.folderList.add(folderDistinctList[i].noteFolder);
     }
-    List<Notes> projectDistinctList =
-        realm.query<Notes>("noteProject !='' DISTINCT(noteProject)").toList();
+    List<Notes> projectDistinctList = realm
+        .query<Notes>("noteProject !='' DISTINCT(noteProject) SORT(id DESC)")
+        .toList();
 
     for (int i = 0; i < projectDistinctList.length; i++) {
       widget.projectList.add(projectDistinctList[i].noteProject);

@@ -459,20 +459,23 @@ class _ReviewCardState extends State<ReviewCard> {
   void initState() {
     super.initState();
 
-    List<Notes> typeDistinctList =
-        realm.query<Notes>("noteType !='' DISTINCT(noteType)").toList();
+    List<Notes> typeDistinctList = realm
+        .query<Notes>("noteType !='' DISTINCT(noteType) SORT(id DESC)")
+        .toList();
 
     for (int i = 0; i < typeDistinctList.length; i++) {
       typeList.add(typeDistinctList[i].noteType);
     }
-    List<Notes> folderDistinctList =
-        realm.query<Notes>("noteFolder !='' DISTINCT(noteFolder)").toList();
+    List<Notes> folderDistinctList = realm
+        .query<Notes>("noteFolder !='' DISTINCT(noteFolder) SORT(id DESC)")
+        .toList();
 
     for (int i = 0; i < folderDistinctList.length; i++) {
       folderList.add(folderDistinctList[i].noteFolder);
     }
-    List<Notes> projectDistinctList =
-        realm.query<Notes>("noteProject !='' DISTINCT(noteProject)").toList();
+    List<Notes> projectDistinctList = realm
+        .query<Notes>("noteProject !='' DISTINCT(noteProject) SORT(id DESC)")
+        .toList();
 
     for (int i = 0; i < projectDistinctList.length; i++) {
       projectList.add(projectDistinctList[i].noteProject);
