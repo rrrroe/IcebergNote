@@ -404,19 +404,14 @@ class _ReportScreenState extends State<ReportScreen>
         filterNoteList.add(notesList[i]);
       }
     }
-    cardList.add(Row(
-      children: [
-        Text(firstDay.add(const Duration(seconds: -1)).toString() +
-            ' ~ ' +
-            lastDay.add(const Duration(days: 1)).toString()),
-      ],
-    ));
+
     if (templateProperty.keys.contains(currentReportType)) {
       templateProperty[currentReportType].split(',').forEach((element) {
         List tmp = element.toString().split('-');
         reportSettings[int.tryParse(tmp[0])] = tmp.sublist(1);
       });
     }
+    print(reportSettings);
     filterRecordList = [];
     for (int i = 0; i < filterNoteList.length; i++) {
       filterRecordList.add(loadYaml(filterNoteList[i].noteContext) as YamlMap);
@@ -814,4 +809,16 @@ class _ReportScreenState extends State<ReportScreen>
     }
     return cardList;
   }
+}
+
+Widget graphGenerate(
+    String dataName, String dataType, String graphType, List data) {
+  switch (dataType) {
+    case '数字':
+      switch (graphType) {
+        case '平均数':
+          return Text(dataName);
+      }
+  }
+  return const SizedBox(height: 0, width: 0);
 }

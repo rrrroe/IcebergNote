@@ -1460,6 +1460,8 @@ class SearchPageState extends State<SearchPage> {
                 child: ListView.builder(
                   controller: _scrollController,
                   itemCount: searchnotesList.notesList.length,
+                  addAutomaticKeepAlives: false,
+                  addRepaintBoundaries: false,
                   itemBuilder: (context, index) {
                     return buildCard(
                       searchnotesList.notesList[index],
