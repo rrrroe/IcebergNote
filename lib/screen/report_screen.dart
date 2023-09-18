@@ -704,36 +704,40 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
     List data, Color color, String dataUnit) {
   switch (dataType) {
     case '条目':
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(width: 20),
-          const Text(
-            '共 ',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          Text(
-            data.length.toString(),
-            style: TextStyle(
-              color: color,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const Text(
-            " 条记录",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      );
+      switch (graphSetting[1]) {
+        case '次数':
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(width: 20),
+              const Text(
+                '共 ',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                data.length.toString(),
+                style: TextStyle(
+                  color: color,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Text(
+                " 条记录",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          );
+      }
+      return const SizedBox(height: 0, width: 0);
     case '数字':
       //和、平均数
       switch (graphSetting[1]) {
@@ -830,4 +834,5 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
   }
   return const SizedBox(height: 0, width: 0);
 }
-///数字: x-和,x-平均数
+///条目: 0-次数,
+///数字: x-和,x-平均数,
