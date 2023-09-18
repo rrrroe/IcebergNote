@@ -42,7 +42,7 @@ class _ReportScreenState extends State<ReportScreen>
   late Color backgroundColor = Colors.white;
   late Color fontColor = Colors.black;
   late List propertySettings1;
-  Map reportSettings = {};
+  List graphSettings = [];
   DateFormat ymd = DateFormat('yyyy-MM-dd');
   DateTime now = DateTime.now();
   late int weekday;
@@ -391,6 +391,7 @@ class _ReportScreenState extends State<ReportScreen>
   List<Widget> buildCardList() {
     List<Widget> cardList = [];
     filterNoteList = [];
+    graphSettings = [];
     for (int i = 0; i < notesList.length; i++) {
       if (checkNoteFormat(notesList[i]) == false) {
         continue;
@@ -408,151 +409,39 @@ class _ReportScreenState extends State<ReportScreen>
     if (templateProperty.keys.contains(currentReportType)) {
       templateProperty[currentReportType].split(',').forEach((element) {
         List tmp = element.toString().split('-');
-        reportSettings[int.tryParse(tmp[0])] = tmp.sublist(1);
+        List tmp1 = [];
+        tmp1.add(int.tryParse(tmp[0]));
+        for (int i = 1; i < tmp.length; i++) {
+          tmp1.add(tmp[i]);
+        }
+        graphSettings.add(tmp1);
       });
     }
-    print(reportSettings);
+
     filterRecordList = [];
     for (int i = 0; i < filterNoteList.length; i++) {
       filterRecordList.add(loadYaml(filterNoteList[i].noteContext) as YamlMap);
     }
-    reportSettings.forEach((key, value) {
-      if (key == 0) {
-        cardList.add(Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(width: 20),
-            const Text(
-              '共 ',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Text(
-              filterNoteList.length.toString(),
-              style: TextStyle(
-                color: fontColor,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const Text(
-              " 条记录",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ));
-      } else {
-        List<Widget> subcardList = [];
-        value.forEach((element) {
-          if (element == '和') {
-            double sum = 0;
-            for (int i = 0; i < filterRecordList.length; i++) {
-              if (filterRecordList[i][key] != "null") {
-                sum += filterRecordList[i][key];
-              }
-            }
-            subcardList.add(
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(width: 20),
-                  const Text(
-                    '总',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    '${template[key].toString().split(',')[0]} ',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    sum.toStringAsFixed(2),
-                    style: TextStyle(
-                      color: fontColor,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    ' ${template[key].toString().split(',')[3]}',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-          if (element == '平均数') {
-            double sum = 0;
-            for (int i = 0; i < filterRecordList.length; i++) {
-              if (filterRecordList[i][key] != "null") {
-                sum += filterRecordList[i][key];
-              }
-            }
-            if (filterRecordList.isNotEmpty) {
-              sum = sum / filterRecordList.length;
-            }
 
-            subcardList.add(Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(width: 20),
-                const Text(
-                  '平均',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  '${template[key].toString().split(',')[0]} ',
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  sum.toStringAsFixed(2),
-                  style: TextStyle(
-                    color: fontColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  ' ${template[key].toString().split(',')[3]}',
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ));
-          }
-        });
-        cardList = cardList + subcardList;
+    for (var graphSetting in graphSettings) {
+      List propertySettings = template[graphSetting[0]].toString().split(',');
+      if (graphSetting[0] == 0) {
+        List data = [];
+        for (int i = 0; i < filterRecordList.length; i++) {
+          data.add(1);
+        }
+        cardList
+            .add(graphGenerate('', '条目', graphSetting, data, fontColor, ''));
       }
-    });
+      if (template.containsKey(graphSetting[0])) {
+        List data = [];
+        for (int i = 0; i < filterRecordList.length; i++) {
+          data.add(filterRecordList[i][graphSetting[0]]);
+        }
+        cardList.add(graphGenerate(propertySettings[0], propertySettings[1],
+            graphSetting, data, fontColor, propertySettings[3]));
+      }
+    }
     cardList.add(const SizedBox(height: 5));
     for (int i = 0; i < filterRecordList.length; i++) {
       Map noteMap = filterRecordList[i];
@@ -811,14 +700,134 @@ class _ReportScreenState extends State<ReportScreen>
   }
 }
 
-Widget graphGenerate(
-    String dataName, String dataType, String graphType, List data) {
+Widget graphGenerate(String dataName, String dataType, List graphSetting,
+    List data, Color color, String dataUnit) {
   switch (dataType) {
+    case '条目':
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(width: 20),
+          const Text(
+            '共 ',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Text(
+            data.length.toString(),
+            style: TextStyle(
+              color: color,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const Text(
+            " 条记录",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      );
     case '数字':
-      switch (graphType) {
+      //和、平均数
+      switch (graphSetting[1]) {
+        case '和':
+          //x-和
+          double sum = 0;
+          for (int i = 0; i < data.length; i++) {
+            sum = sum + data[i];
+          }
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(width: 20),
+              const Text(
+                '总',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                '$dataName ',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                sum.toStringAsFixed(2),
+                style: TextStyle(
+                  color: color,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                ' $dataUnit',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          );
+
         case '平均数':
-          return Text(dataName);
+          //x-平均数
+          double sum = 0;
+          for (int i = 0; i < data.length; i++) {
+            sum = sum + data[i];
+          }
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(width: 20),
+              const Text(
+                '平均',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                '$dataName ',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                (sum / data.length).toStringAsFixed(2),
+                style: TextStyle(
+                  color: color,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                ' $dataUnit',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          );
       }
   }
   return const SizedBox(height: 0, width: 0);
 }
+///数字: x-和,x-平均数
