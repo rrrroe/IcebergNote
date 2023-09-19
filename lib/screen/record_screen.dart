@@ -2145,3 +2145,17 @@ class _InputSelectAlertDialogState extends State<InputSelectAlertDialog> {
     );
   }
 }
+
+Map stringToMapTemplate(String str) {
+  Map map = {};
+  str.split('\n').forEach((element) {
+    String key = element.split(': ')[0];
+    String value = element.split(': ')[1];
+    if (int.tryParse(key) == null) {
+      map[key] = value;
+    } else {
+      map[int.tryParse(key)] = value;
+    }
+  });
+  return map;
+}

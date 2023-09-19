@@ -11,6 +11,8 @@ import '../notes.dart';
 import 'record_screen.dart';
 import 'package:intl/intl.dart';
 
+import 'record_table_screen.dart';
+
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key, required this.duration});
   final String duration;
@@ -25,7 +27,7 @@ class _ReportScreenState extends State<ReportScreen>
       text: "报表",
     ),
     const Tab(
-      text: "复盘",
+      text: "总览",
     ),
   ];
   late TabController tabController;
@@ -105,6 +107,17 @@ class _ReportScreenState extends State<ReportScreen>
         dateFlag = key;
       }
     });
+    recordList = [];
+    for (int i = 0; i < notesList.length; i++) {
+      if (checkNoteFormat(notesList[i])) {
+        recordList.add(loadYaml(notesList[i].noteContext) as YamlMap);
+      }
+      if (dateFlag == 0) {
+        dateFlag = 999;
+        recordList[i][dateFlag] =
+            notesList[i].noteCreatTime.toString().substring(0, 10);
+      }
+    }
   }
 
   @override
@@ -145,7 +158,7 @@ class _ReportScreenState extends State<ReportScreen>
                   ),
                 )),
           ),
-          Container(),
+          Text(stringToMapTemplate(templateNote.noteContext).toString()),
         ],
       ),
     );
@@ -390,16 +403,10 @@ class _ReportScreenState extends State<ReportScreen>
 
   List<Widget> buildCardList() {
     List<Widget> cardList = [];
-    filterNoteList = [];
     graphSettings = [];
-    for (int i = 0; i < notesList.length; i++) {
-      if (checkNoteFormat(notesList[i]) == false) {
-        continue;
-      }
-
-      Map recordtmp = loadYaml(notesList[i].noteContext) as YamlMap;
+    for (int i = 0; i < recordList.length; i++) {
       late DateTime date;
-      date = ymd.parse(recordtmp[dateFlag]);
+      date = ymd.parse(recordList[i][dateFlag]);
       if (date.isBefore(lastDay.add(const Duration(days: 1, seconds: -1))) &&
           date.isAfter(firstDay.add(const Duration(seconds: -1)))) {
         filterNoteList.add(notesList[i]);
