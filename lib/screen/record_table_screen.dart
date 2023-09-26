@@ -38,8 +38,6 @@ class _RecordTableState extends State<RecordTable> {
       showList.add(key);
       template[key] = value.toString().split(',');
     });
-    print(showList);
-    print(template);
   }
 
   List<TableRow> buildRow() {
