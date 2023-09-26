@@ -11,6 +11,8 @@ import '../notes.dart';
 import 'record_screen.dart';
 import 'package:intl/intl.dart';
 
+import 'record_table_screen.dart';
+
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key, required this.duration});
   final String duration;
@@ -156,7 +158,7 @@ class _ReportScreenState extends State<ReportScreen>
                   ),
                 )),
           ),
-          Container(),
+          Text(stringToMapTemplate(templateNote.noteContext).toString()),
         ],
       ),
     );
