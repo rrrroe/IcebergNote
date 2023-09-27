@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:icebergnote/screen/review_screen.dart';
+import 'screen/import_screen.dart';
 import 'screen/noteslist_screen.dart';
 import 'constants.dart';
 import 'screen/report_screen.dart';
@@ -172,10 +173,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ],
         ),
         actions: [
-          _ColorSeedButton(
-            handleColorSelect: widget.handleColorSelect,
-            colorSelected: widget.colorSelected,
-          ),
+          // _ColorSeedButton(
+          //   handleColorSelect: widget.handleColorSelect,
+          //   colorSelected: widget.colorSelected,
+          // ),
           _BrightnessButton(
             handleBrightnessChange: widget.handleBrightnessChange,
             showTooltipBelow: false,
@@ -186,6 +187,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const ReviewPage()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.file_download_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ImportPage()),
               );
             },
           ),
