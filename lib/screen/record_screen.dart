@@ -1040,14 +1040,14 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildDateCard() {
-    if (widget.record[template.keys.elementAt(widget.index)] == null) {
-      DateTime dateTime = DateTime.now();
-      widget.record[template.keys.elementAt(widget.index)] =
-          '${dateTime.year}-${dateTime.month}-${dateTime.day}';
-      realm.write(() {
-        widget.note.noteContext = mapToyaml(widget.record);
-      });
-    }
+    // if (widget.record[template.keys.elementAt(widget.index)] == null) {
+    //   DateTime dateTime = DateTime.now();
+    //   widget.record[template.keys.elementAt(widget.index)] =
+    //       '${dateTime.year}-${dateTime.month}-${dateTime.day}';
+    //   realm.write(() {
+    //     widget.note.noteContext = mapToyaml(widget.record);
+    //   });
+    // }
     return Card(
       elevation: 0,
       color: Color.fromARGB(
