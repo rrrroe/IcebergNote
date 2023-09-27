@@ -535,7 +535,7 @@ class ImportPageState extends State<ImportPage> {
                                         j < rowsAsListOfValues[i].length;
                                         j++) {
                                       noteContent =
-                                          '$noteContent${j + 1}: ${rowsAsListOfValues[i][j]},,,,,\n';
+                                          '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString()},,,,,\n';
                                     }
                                     noteContent =
                                         '${noteContent}settings: 1\ncolor: [135, 198, 181]';
