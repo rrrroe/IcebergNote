@@ -1080,6 +1080,38 @@ class SearchPageState extends State<SearchPage> {
                           ),
                         ],
                       );
+                    case '时长':
+                      return Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.all(0),
+                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: fontColor,
+                            ),
+                            child: Text(
+                              "${propertySettings[0] ?? ''}",
+                              style: const TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            ' : ${noteMapOther.values.elementAt(index).toString().replaceAll('d', '天').replaceAll('h', '时').replaceAll('m', '分').replaceAll('s', '秒').replaceAll('0时', '').replaceAll('0秒', '')}',
+                            style: TextStyle(
+                              fontFamily: 'LXGWWenKai',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: fontColor,
+                            ),
+                          ),
+                        ],
+                      );
                     default:
                       return Row(
                         mainAxisSize: MainAxisSize.max,
@@ -3736,5 +3768,115 @@ class ComponentGroupDecoration extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+Duration StringToDuration(String str) {
+  bool isContainD = str.contains('d');
+  bool isContainH = str.contains('h');
+  bool isContainM = str.contains('m');
+  bool isContainS = str.contains('s');
+  if (isContainD && isContainH && isContainM && isContainS) {
+    var regx = RegExp(r'(\d+d)?(\d+h)?(\d+m)?(\d+s)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var d = int.parse(matches[1]?.replaceFirst('d', '') ?? '0');
+      var h = int.parse(matches[2]?.replaceFirst('h', '') ?? '0');
+      var m = int.parse(matches[3]?.replaceFirst('m', '') ?? '0');
+      var s = int.parse(matches[4]?.replaceFirst('s', '') ?? '0');
+      return Duration(days: d, hours: h, minutes: m, seconds: s);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainH && isContainM && isContainS) {
+    var regx = RegExp(r'(\d+h)?(\d+m)?(\d+s)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var h = int.parse(matches[1]?.replaceFirst('h', '') ?? '0');
+      var m = int.parse(matches[2]?.replaceFirst('m', '') ?? '0');
+      var s = int.parse(matches[3]?.replaceFirst('s', '') ?? '0');
+      return Duration(hours: h, minutes: m, seconds: s);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainD && isContainH && isContainM) {
+    var regx = RegExp(r'(\d+d)?(\d+h)?(\d+m)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var d = int.parse(matches[1]?.replaceFirst('d', '') ?? '0');
+      var h = int.parse(matches[2]?.replaceFirst('h', '') ?? '0');
+      var m = int.parse(matches[3]?.replaceFirst('m', '') ?? '0');
+      return Duration(days: d, hours: h, minutes: m);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainD && isContainH) {
+    var regx = RegExp(r'(\d+d)?(\d+h)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var d = int.parse(matches[1]?.replaceFirst('d', '') ?? '0');
+      var h = int.parse(matches[2]?.replaceFirst('h', '') ?? '0');
+      return Duration(days: d, hours: h);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainH && isContainM) {
+    var regx = RegExp(r'(\d+h)?(\d+m)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var h = int.parse(matches[1]?.replaceFirst('h', '') ?? '0');
+      var m = int.parse(matches[2]?.replaceFirst('m', '') ?? '0');
+      return Duration(hours: h, minutes: m);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainM && isContainS) {
+    var regx = RegExp(r'(\d+m)?(\d+s)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var m = int.parse(matches[1]?.replaceFirst('m', '') ?? '0');
+      var s = int.parse(matches[2]?.replaceFirst('s', '') ?? '0');
+      return Duration(minutes: m, seconds: s);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainD) {
+    var regx = RegExp(r'(\d+d)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var d = int.parse(matches[1]?.replaceFirst('d', '') ?? '0');
+      return Duration(days: d);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainH) {
+    var regx = RegExp(r'(\d+h)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var h = int.parse(matches[1]?.replaceFirst('h', '') ?? '0');
+      return Duration(hours: h);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainM) {
+    var regx = RegExp(r'(\d+m)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var m = int.parse(matches[1]?.replaceFirst('m', '') ?? '0');
+      return Duration(minutes: m);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainS) {
+    var regx = RegExp(r'(\d+s)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var s = int.parse(matches[1]?.replaceFirst('s', '') ?? '0');
+      return Duration(seconds: s);
+    } else {
+      return const Duration();
+    }
+  } else {
+    return const Duration();
   }
 }

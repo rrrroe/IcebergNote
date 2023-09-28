@@ -28,7 +28,7 @@ class KeyboardManager extends ChangeNotifier {
   }
 }
 
-List templateTypeList = ['数字', '文本', '单选', '多选', '时间', '日期', '长文'];
+List templateTypeList = ['数字', '文本', '单选', '多选', '时间', '日期', '长文', '时长'];
 
 String mapToyaml(Map map) {
   String yaml = '';
@@ -573,6 +573,8 @@ class _PropertyCardState extends State<PropertyCard> {
         return buildDateCard();
       case '时间':
         return buildTimeCard();
+      case '时长':
+        return buildDurationCard();
       case '多选':
         return buildMultiSelectCard();
       default:
@@ -1209,6 +1211,99 @@ class _PropertyCardState extends State<PropertyCard> {
                                 .record[template.keys.elementAt(widget.index)]
                                 .toString()
                             : '${widget.record[template.keys.elementAt(widget.index)].toString().substring(2).replaceAll(':', '′')}″',
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[3] ?? '',
+              textAlign: TextAlign.left,
+              style: textStyle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildDurationCard() {
+    Duration duration = StringToDuration(
+        widget.record[template.keys.elementAt(widget.index)].toString());
+    return Card(
+      elevation: 0,
+      color: Color.fromARGB(
+          50,
+          widget.templateProperty['color'][0],
+          widget.templateProperty['color'][1],
+          widget.templateProperty['color'][2]),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[0] + ':',
+              textAlign: TextAlign.center,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[2] ?? '',
+              textAlign: TextAlign.right,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: Padding(
+              padding: edgeInsets,
+              child: Container(
+                constraints: const BoxConstraints(
+                  minHeight: 30,
+                ),
+                height: 30,
+                color: Colors.white,
+                child: FilledButton.tonal(
+                  style: selectedContextButtonStyle,
+                  onPressed: () {
+                    Pickers.showDatePicker(
+                      context,
+                      mode: DateMode.HMS,
+                      suffix: Suffix.normal(),
+                      selectDate: widget
+                                  .record[template.keys.elementAt(widget.index)]
+                                  .toString() !=
+                              'null'
+                          ? PDuration(
+                              second: duration.inSeconds % 60,
+                              hour: duration.inHours,
+                              minute: duration.inMinutes % 60)
+                          : PDuration(),
+                      onConfirm: (p) {
+                        setState(() {
+                          widget.record[template.keys.elementAt(widget.index)] =
+                              '${p.hour}h${p.minute}m${p.second}s';
+                          realm.write(() {
+                            widget.note.noteContext = mapToyaml(widget.record);
+                          });
+                        });
+                      },
+                    );
+                  },
+                  child: Text(
+                    widget.record[template.keys.elementAt(widget.index)] == null
+                        ? '0时0分0秒'
+                        : widget.record[template.keys.elementAt(widget.index)]
+                            .toString()
+                            .replaceAll('d', '天')
+                            .replaceAll('h', '时')
+                            .replaceAll('m', '分')
+                            .replaceAll('s', '秒'),
                     style: const TextStyle(color: Colors.black),
                   ),
                 ),
@@ -2158,4 +2253,114 @@ Map stringToMapTemplate(String str) {
     }
   });
   return map;
+}
+
+Duration StringToDuration(String str) {
+  bool isContainD = str.contains('d');
+  bool isContainH = str.contains('h');
+  bool isContainM = str.contains('m');
+  bool isContainS = str.contains('s');
+  if (isContainD && isContainH && isContainM && isContainS) {
+    var regx = RegExp(r'(\d+d)?(\d+h)?(\d+m)?(\d+s)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var d = int.parse(matches[1]?.replaceFirst('d', '') ?? '0');
+      var h = int.parse(matches[2]?.replaceFirst('h', '') ?? '0');
+      var m = int.parse(matches[3]?.replaceFirst('m', '') ?? '0');
+      var s = int.parse(matches[4]?.replaceFirst('s', '') ?? '0');
+      return Duration(days: d, hours: h, minutes: m, seconds: s);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainH && isContainM && isContainS) {
+    var regx = RegExp(r'(\d+h)?(\d+m)?(\d+s)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var h = int.parse(matches[1]?.replaceFirst('h', '') ?? '0');
+      var m = int.parse(matches[2]?.replaceFirst('m', '') ?? '0');
+      var s = int.parse(matches[3]?.replaceFirst('s', '') ?? '0');
+      return Duration(hours: h, minutes: m, seconds: s);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainD && isContainH && isContainM) {
+    var regx = RegExp(r'(\d+d)?(\d+h)?(\d+m)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var d = int.parse(matches[1]?.replaceFirst('d', '') ?? '0');
+      var h = int.parse(matches[2]?.replaceFirst('h', '') ?? '0');
+      var m = int.parse(matches[3]?.replaceFirst('m', '') ?? '0');
+      return Duration(days: d, hours: h, minutes: m);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainD && isContainH) {
+    var regx = RegExp(r'(\d+d)?(\d+h)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var d = int.parse(matches[1]?.replaceFirst('d', '') ?? '0');
+      var h = int.parse(matches[2]?.replaceFirst('h', '') ?? '0');
+      return Duration(days: d, hours: h);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainH && isContainM) {
+    var regx = RegExp(r'(\d+h)?(\d+m)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var h = int.parse(matches[1]?.replaceFirst('h', '') ?? '0');
+      var m = int.parse(matches[2]?.replaceFirst('m', '') ?? '0');
+      return Duration(hours: h, minutes: m);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainM && isContainS) {
+    var regx = RegExp(r'(\d+m)?(\d+s)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var m = int.parse(matches[1]?.replaceFirst('m', '') ?? '0');
+      var s = int.parse(matches[2]?.replaceFirst('s', '') ?? '0');
+      return Duration(minutes: m, seconds: s);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainD) {
+    var regx = RegExp(r'(\d+d)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var d = int.parse(matches[1]?.replaceFirst('d', '') ?? '0');
+      return Duration(days: d);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainH) {
+    var regx = RegExp(r'(\d+h)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var h = int.parse(matches[1]?.replaceFirst('h', '') ?? '0');
+      return Duration(hours: h);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainM) {
+    var regx = RegExp(r'(\d+m)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var m = int.parse(matches[1]?.replaceFirst('m', '') ?? '0');
+      return Duration(minutes: m);
+    } else {
+      return const Duration();
+    }
+  } else if (isContainS) {
+    var regx = RegExp(r'(\d+s)?');
+    var matches = regx.firstMatch(str);
+    if (matches != null) {
+      var s = int.parse(matches[1]?.replaceFirst('s', '') ?? '0');
+      return Duration(seconds: s);
+    } else {
+      return const Duration();
+    }
+  } else {
+    return const Duration();
+  }
 }

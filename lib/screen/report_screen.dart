@@ -635,6 +635,38 @@ class _ReportScreenState extends State<ReportScreen>
                             ),
                           ],
                         );
+                      case '时长':
+                        return Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: fontColor,
+                              ),
+                              child: Text(
+                                "${propertySettings[0] ?? ''}",
+                                style: const TextStyle(
+                                  fontFamily: 'LXGWWenKai',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              ' : ${noteMapOther.values.elementAt(index).toString().replaceAll('d', '天').replaceAll('h', '时').replaceAll('m', '分').replaceAll('s', '秒').replaceAll('0时', '').replaceAll('0秒', '')}',
+                              style: TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: fontColor,
+                              ),
+                            ),
+                          ],
+                        );
                       default:
                         return Row(
                           mainAxisSize: MainAxisSize.max,
