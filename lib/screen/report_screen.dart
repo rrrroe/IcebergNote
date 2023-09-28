@@ -156,7 +156,7 @@ class _ReportScreenState extends State<ReportScreen>
                   ),
                 )),
           ),
-          Text(stringToMapTemplate(templateNote.noteContext).toString()),
+          Container(),
         ],
       ),
     );
@@ -403,8 +403,9 @@ class _ReportScreenState extends State<ReportScreen>
     List<Widget> cardList = [];
     graphSettings = [];
     for (int i = 0; i < recordList.length; i++) {
-      late DateTime date;
-      date = ymd.parse(recordList[i][dateFlag]);
+      DateTime? date;
+      date = ymd.parse(recordList[i][dateFlag].toString());
+
       if (date.isBefore(lastDay.add(const Duration(days: 1, seconds: -1))) &&
           date.isAfter(firstDay.add(const Duration(seconds: -1)))) {
         filterNoteList.add(notesList[i]);
@@ -427,7 +428,6 @@ class _ReportScreenState extends State<ReportScreen>
     for (int i = 0; i < filterNoteList.length; i++) {
       filterRecordList.add(loadYaml(filterNoteList[i].noteContext) as YamlMap);
     }
-
     for (var graphSetting in graphSettings) {
       List propertySettings = template[graphSetting[0]].toString().split(',');
       if (graphSetting[0] == 0) {
@@ -782,7 +782,9 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
           //x-和
           double sum = 0;
           for (int i = 0; i < data.length; i++) {
-            sum = sum + data[i];
+            if (data[i] != null) {
+              sum = sum + data[i];
+            }
           }
           return Row(
             mainAxisSize: MainAxisSize.min,
@@ -827,7 +829,9 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
           //x-平均数
           double sum = 0;
           for (int i = 0; i < data.length; i++) {
-            sum = sum + data[i];
+            if (data[i] != null) {
+              sum = sum + data[i];
+            }
           }
           return Row(
             mainAxisSize: MainAxisSize.min,
@@ -850,7 +854,9 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
                 ),
               ),
               Text(
-                (sum / data.length).toStringAsFixed(2),
+                data.isNotEmpty
+                    ? (sum / data.length).toStringAsFixed(2)
+                    : '0.00',
                 style: TextStyle(
                   color: color,
                   fontSize: 20,

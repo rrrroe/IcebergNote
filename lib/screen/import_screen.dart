@@ -180,7 +180,6 @@ class ImportPageState extends State<ImportPage> {
   }
 
   void _logException(String message) {
-    print(message);
     _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
     _scaffoldMessengerKey.currentState?.showSnackBar(
       SnackBar(
