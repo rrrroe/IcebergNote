@@ -401,6 +401,7 @@ class _ReportScreenState extends State<ReportScreen>
 
   List<Widget> buildCardList() {
     List<Widget> cardList = [];
+    filterNoteList = [];
     graphSettings = [];
     for (int i = 0; i < recordList.length; i++) {
       DateTime? date;
@@ -762,8 +763,6 @@ class _ReportScreenState extends State<ReportScreen>
         }
       }
     }
-    print(graphSettings);
-
     return cardList;
   }
 }
