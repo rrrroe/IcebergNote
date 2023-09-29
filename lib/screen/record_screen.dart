@@ -1231,8 +1231,9 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildDurationCard() {
-    Duration duration = stringToDuration(
+    Duration? duration = stringToDuration(
         widget.record[template.keys.elementAt(widget.index)].toString());
+
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -1280,14 +1281,18 @@ class _PropertyCardState extends State<PropertyCard> {
                                   .toString() !=
                               'null'
                           ? PDuration(
-                              second: duration.inSeconds % 60,
-                              hour: duration.inHours,
-                              minute: duration.inMinutes % 60)
+                              second: duration == null
+                                  ? 0
+                                  : duration.inSeconds % 60,
+                              hour: duration == null ? 0 : duration.inHours,
+                              minute: duration == null
+                                  ? 0
+                                  : duration.inMinutes % 60)
                           : PDuration(),
                       onConfirm: (p) {
                         setState(() {
                           widget.record[template.keys.elementAt(widget.index)] =
-                              '${p.hour}h${p.minute}m${p.second}s';
+                              '${p.hour}:${p.minute}:${p.second}';
                           realm.write(() {
                             widget.note.noteContext = mapToyaml(widget.record);
                           });
@@ -1296,14 +1301,19 @@ class _PropertyCardState extends State<PropertyCard> {
                     );
                   },
                   child: Text(
-                    widget.record[template.keys.elementAt(widget.index)] == null
-                        ? '0时0分0秒'
-                        : widget.record[template.keys.elementAt(widget.index)]
+                    duration == null
+                        ? widget.record[template.keys.elementAt(widget.index)]
                             .toString()
-                            .replaceAll('d', '天')
-                            .replaceAll('h', '时')
-                            .replaceAll('m', '分')
-                            .replaceAll('s', '秒'),
+                        : (duration.inDays == 0 ? '' : '${duration.inDays}天') +
+                            (duration.inHours == 0
+                                ? ''
+                                : '${duration.inHours % 24}时') +
+                            (duration.inMinutes == 0
+                                ? ''
+                                : '${duration.inMinutes % 60}分') +
+                            (duration.inSeconds == 0
+                                ? ''
+                                : '${duration.inSeconds % 60}秒'),
                     style: const TextStyle(color: Colors.black),
                   ),
                 ),
@@ -2255,11 +2265,36 @@ Map stringToMapTemplate(String str) {
   return map;
 }
 
-Duration stringToDuration(String str) {
+Duration? stringToDuration(String str) {
   bool isContainD = str.contains('d');
   bool isContainH = str.contains('h');
   bool isContainM = str.contains('m');
   bool isContainS = str.contains('s');
+  RegExp colonRegExp = RegExp(r":");
+  int colonCount = colonRegExp.allMatches(str).length;
+  if (colonCount == 2) {
+    var tmp = str.replaceAll(' ', '').split(':');
+    if (tmp.length == 3 &&
+        int.tryParse(tmp[0]) != null &&
+        int.tryParse(tmp[1]) != null &&
+        int.tryParse(tmp[2]) != null) {
+      return Duration(
+          hours: int.parse(tmp[0]),
+          minutes: int.parse(tmp[1]),
+          seconds: int.parse(tmp[2]));
+    } else {
+      return null;
+    }
+  } else if (colonCount == 1) {
+    var tmp = str.replaceAll(' ', '').split(':');
+    if (tmp.length == 3 &&
+        int.tryParse(tmp[0]) != null &&
+        int.tryParse(tmp[1]) != null) {
+      return Duration(hours: int.parse(tmp[0]), minutes: int.parse(tmp[1]));
+    } else {
+      return null;
+    }
+  }
   if (isContainD && isContainH && isContainM && isContainS) {
     var regx = RegExp(r'(\d+d)?(\d+h)?(\d+m)?(\d+s)?');
     var matches = regx.firstMatch(str);
@@ -2270,7 +2305,7 @@ Duration stringToDuration(String str) {
       var s = int.parse(matches[4]?.replaceFirst('s', '') ?? '0');
       return Duration(days: d, hours: h, minutes: m, seconds: s);
     } else {
-      return const Duration();
+      return null;
     }
   } else if (isContainH && isContainM && isContainS) {
     var regx = RegExp(r'(\d+h)?(\d+m)?(\d+s)?');
@@ -2281,7 +2316,7 @@ Duration stringToDuration(String str) {
       var s = int.parse(matches[3]?.replaceFirst('s', '') ?? '0');
       return Duration(hours: h, minutes: m, seconds: s);
     } else {
-      return const Duration();
+      return null;
     }
   } else if (isContainD && isContainH && isContainM) {
     var regx = RegExp(r'(\d+d)?(\d+h)?(\d+m)?');
@@ -2292,7 +2327,7 @@ Duration stringToDuration(String str) {
       var m = int.parse(matches[3]?.replaceFirst('m', '') ?? '0');
       return Duration(days: d, hours: h, minutes: m);
     } else {
-      return const Duration();
+      return null;
     }
   } else if (isContainD && isContainH) {
     var regx = RegExp(r'(\d+d)?(\d+h)?');
@@ -2302,7 +2337,7 @@ Duration stringToDuration(String str) {
       var h = int.parse(matches[2]?.replaceFirst('h', '') ?? '0');
       return Duration(days: d, hours: h);
     } else {
-      return const Duration();
+      return null;
     }
   } else if (isContainH && isContainM) {
     var regx = RegExp(r'(\d+h)?(\d+m)?');
@@ -2312,7 +2347,7 @@ Duration stringToDuration(String str) {
       var m = int.parse(matches[2]?.replaceFirst('m', '') ?? '0');
       return Duration(hours: h, minutes: m);
     } else {
-      return const Duration();
+      return null;
     }
   } else if (isContainM && isContainS) {
     var regx = RegExp(r'(\d+m)?(\d+s)?');
@@ -2322,7 +2357,7 @@ Duration stringToDuration(String str) {
       var s = int.parse(matches[2]?.replaceFirst('s', '') ?? '0');
       return Duration(minutes: m, seconds: s);
     } else {
-      return const Duration();
+      return null;
     }
   } else if (isContainD) {
     var regx = RegExp(r'(\d+d)?');
@@ -2331,7 +2366,7 @@ Duration stringToDuration(String str) {
       var d = int.parse(matches[1]?.replaceFirst('d', '') ?? '0');
       return Duration(days: d);
     } else {
-      return const Duration();
+      return null;
     }
   } else if (isContainH) {
     var regx = RegExp(r'(\d+h)?');
@@ -2340,7 +2375,7 @@ Duration stringToDuration(String str) {
       var h = int.parse(matches[1]?.replaceFirst('h', '') ?? '0');
       return Duration(hours: h);
     } else {
-      return const Duration();
+      return null;
     }
   } else if (isContainM) {
     var regx = RegExp(r'(\d+m)?');
@@ -2349,7 +2384,7 @@ Duration stringToDuration(String str) {
       var m = int.parse(matches[1]?.replaceFirst('m', '') ?? '0');
       return Duration(minutes: m);
     } else {
-      return const Duration();
+      return null;
     }
   } else if (isContainS) {
     var regx = RegExp(r'(\d+s)?');
@@ -2358,9 +2393,9 @@ Duration stringToDuration(String str) {
       var s = int.parse(matches[1]?.replaceFirst('s', '') ?? '0');
       return Duration(seconds: s);
     } else {
-      return const Duration();
+      return null;
     }
   } else {
-    return const Duration();
+    return null;
   }
 }
