@@ -814,6 +814,7 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
         case '和':
           //x-和
           double sum = 0;
+
           for (int i = 0; i < data.length; i++) {
             if (data[i] != null) {
               sum = sum + data[i];
@@ -861,9 +862,11 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
         case '平均数':
           //x-平均数
           double sum = 0;
+          int num = 0;
           for (int i = 0; i < data.length; i++) {
             if (data[i] != null) {
               sum = sum + data[i];
+              num++;
             }
           }
           return Row(
@@ -887,9 +890,7 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
                 ),
               ),
               Text(
-                data.isNotEmpty
-                    ? (sum / data.length).toStringAsFixed(2)
-                    : '0.00',
+                num != 0 ? (sum / num).toStringAsFixed(2) : '0.00',
                 style: TextStyle(
                   color: color,
                   fontSize: 20,
