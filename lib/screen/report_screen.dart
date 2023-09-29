@@ -403,34 +403,57 @@ class _ReportScreenState extends State<ReportScreen>
     List<Widget> cardList = [];
     filterNoteList = [];
     graphSettings = [];
-    for (int i = 0; i < recordList.length; i++) {
-      DateTime? date;
-      date = ymd.parse(recordList[i][dateFlag].toString());
-
-      if (date.isBefore(lastDay.add(const Duration(days: 1, seconds: -1))) &&
-          date.isAfter(firstDay.add(const Duration(seconds: -1)))) {
-        filterNoteList.add(notesList[i]);
-      }
-    }
-
+    List<dynamic> filterSelect = [0];
     if (templateProperty.keys.contains(currentReportType)) {
-      templateProperty[currentReportType].split(',').forEach((element) {
-        List tmp = element.toString().split('-');
+      List tmpstr = templateProperty[currentReportType].split(',');
+      for (int index = 0; index < tmpstr.length; index++) {
+        List tmp = tmpstr[index].toString().split('-');
         List tmp1 = [];
         tmp1.add(int.tryParse(tmp[0]));
         for (int i = 1; i < tmp.length; i++) {
           tmp1.add(tmp[i]);
         }
-        graphSettings.add(tmp1);
-      });
+        if (tmp1[1] == '过滤' &&
+            template[tmp1[0]].toString().split(',')[1] == '单选') {
+          filterSelect[0] = tmp1[0];
+          filterSelect.addAll(tmp1[2].toString().split('||'));
+        } else {
+          graphSettings.add(tmp1);
+        }
+      }
+      // print(filterSelect);
     }
 
+    for (int i = 0; i < recordList.length; i++) {
+      DateTime? date;
+      date = ymd.parse(recordList[i][dateFlag].toString());
+      bool arrayCrossFlag = false;
+
+      if (date.isBefore(lastDay.add(const Duration(days: 1, seconds: -1))) &&
+          date.isAfter(firstDay.add(const Duration(seconds: -1)))) {
+        if (filterSelect[0] != 0) {
+          List recordSelectProperty =
+              recordList[i][filterSelect[0]].toString().split(', ');
+          for (int j = 0; j < recordSelectProperty.length; j++) {
+            if (filterSelect.contains(recordSelectProperty[j])) {
+              arrayCrossFlag = true;
+            }
+          }
+          if (arrayCrossFlag) {
+            filterNoteList.add(notesList[i]);
+          }
+        } else {
+          filterNoteList.add(notesList[i]);
+        }
+      }
+    }
     filterRecordList = [];
     for (int i = 0; i < filterNoteList.length; i++) {
       filterRecordList.add(loadYaml(filterNoteList[i].noteContext) as YamlMap);
     }
     for (var graphSetting in graphSettings) {
       List propertySettings = template[graphSetting[0]].toString().split(',');
+
       if (graphSetting[0] == 0) {
         List data = [];
         for (int i = 0; i < filterRecordList.length; i++) {
@@ -454,26 +477,6 @@ class _ReportScreenState extends State<ReportScreen>
           Map noteMapOther = {...noteMap};
           noteMapOther.remove(noteMapOther.keys.first);
           noteMapOther.removeWhere((key, value) => value == null);
-
-          if (graphSetting.length > 1) {
-            String cardSettingFilter = graphSetting[1];
-            if (cardSettingFilter.contains('=')) {
-              List cardSettingFilterList = cardSettingFilter.split('=');
-              int? cardSettingFilterIndex =
-                  int.tryParse(cardSettingFilterList[0]);
-              if (cardSettingFilterIndex != null) {
-                List cardSettingFilterOptions =
-                    cardSettingFilterList[1].toString().split('||');
-
-                if (noteMap.containsKey(cardSettingFilterIndex)) {
-                  if (!cardSettingFilterOptions
-                      .contains(noteMap[cardSettingFilterIndex])) {
-                    continue;
-                  }
-                }
-              }
-            }
-          }
 
           cardList.add(
             Card(
