@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_fields
+
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -20,11 +22,10 @@ class ImportPage extends StatefulWidget {
 
 class ImportPageState extends State<ImportPage> {
   final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-  final _defaultFileNameController = TextEditingController();
+  // final _defaultFileNameController = TextEditingController();
   final _dialogTitleController = TextEditingController();
   final _initialDirectoryController = TextEditingController();
   String? _fileName;
-  String? _saveAsFileName;
   List<PlatformFile>? _paths;
   String? _directoryPath;
   String? _extension;
@@ -80,7 +81,7 @@ class ImportPageState extends State<ImportPage> {
       _paths = (await FilePicker.platform.pickFiles(
         type: _pickingType,
         allowMultiple: _multiPick,
-        onFileLoading: (FilePickerStatus status) => print(status),
+        onFileLoading: (FilePickerStatus status) {},
         allowedExtensions: (_extension?.isNotEmpty ?? false)
             ? _extension?.replaceAll(' ', '').split(',')
             : null,
@@ -106,31 +107,31 @@ class ImportPageState extends State<ImportPage> {
     setState(() {});
   }
 
-  void _clearCachedFiles() async {
-    _resetState();
-    try {
-      bool? result = await FilePicker.platform.clearTemporaryFiles();
-      _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
-      _scaffoldMessengerKey.currentState?.showSnackBar(
-        SnackBar(
-          content: Text(
-            (result!
-                ? 'Temporary files removed with success.'
-                : 'Failed to clean temporary files'),
-            style: const TextStyle(
-              color: Colors.white,
-            ),
-          ),
-        ),
-      );
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation$e');
-    } catch (e) {
-      _logException(e.toString());
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
+  // void _clearCachedFiles() async {
+  //   _resetState();
+  //   try {
+  //     bool? result = await FilePicker.platform.clearTemporaryFiles();
+  //     _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
+  //     _scaffoldMessengerKey.currentState?.showSnackBar(
+  //       SnackBar(
+  //         content: Text(
+  //           (result!
+  //               ? 'Temporary files removed with success.'
+  //               : 'Failed to clean temporary files'),
+  //           style: const TextStyle(
+  //             color: Colors.white,
+  //           ),
+  //         ),
+  //       ),
+  //     );
+  //   } on PlatformException catch (e) {
+  //     _logException('Unsupported operation$e');
+  //   } catch (e) {
+  //     _logException(e.toString());
+  //   } finally {
+  //     setState(() => _isLoading = false);
+  //   }
+  // }
 
   void _selectFolder() async {
     _resetState();
@@ -153,31 +154,30 @@ class ImportPageState extends State<ImportPage> {
     }
   }
 
-  Future<void> _saveFile() async {
-    _resetState();
-    try {
-      String? fileName = await FilePicker.platform.saveFile(
-        allowedExtensions: (_extension?.isNotEmpty ?? false)
-            ? _extension?.replaceAll(' ', '').split(',')
-            : null,
-        type: _pickingType,
-        dialogTitle: _dialogTitleController.text,
-        fileName: _defaultFileNameController.text,
-        initialDirectory: _initialDirectoryController.text,
-        lockParentWindow: _lockParentWindow,
-      );
-      setState(() {
-        _saveAsFileName = fileName;
-        _userAborted = fileName == null;
-      });
-    } on PlatformException catch (e) {
-      _logException('Unsupported operation$e');
-    } catch (e) {
-      _logException(e.toString());
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
+  // Future<void> _saveFile() async {
+  //   _resetState();
+  //   try {
+  //     String? fileName = await FilePicker.platform.saveFile(
+  //       allowedExtensions: (_extension?.isNotEmpty ?? false)
+  //           ? _extension?.replaceAll(' ', '').split(',')
+  //           : null,
+  //       type: _pickingType,
+  //       dialogTitle: _dialogTitleController.text,
+  //       fileName: _defaultFileNameController.text,
+  //       initialDirectory: _initialDirectoryController.text,
+  //       lockParentWindow: _lockParentWindow,
+  //     );
+  //     setState(() {
+  //       _userAborted = fileName == null;
+  //     });
+  //   } on PlatformException catch (e) {
+  //     _logException('Unsupported operation$e');
+  //   } catch (e) {
+  //     _logException(e.toString());
+  //   } finally {
+  //     setState(() => _isLoading = false);
+  //   }
+  // }
 
   void _logException(String message) {
     _scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
@@ -202,7 +202,6 @@ class ImportPageState extends State<ImportPage> {
       _directoryPath = null;
       _fileName = null;
       _paths = null;
-      _saveAsFileName = null;
       _userAborted = false;
     });
   }

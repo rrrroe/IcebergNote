@@ -859,15 +859,15 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
                 ),
               ),
               Visibility(
+                visible: num < data.length,
                 child: Text(
-                  ' (统计缺少' + (data.length - num).toString() + '个数据)',
+                  ' (统计缺少${data.length - num}个数据)',
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                visible: num < data.length,
               ),
             ],
           );
@@ -919,15 +919,15 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
                 ),
               ),
               Visibility(
+                visible: num < data.length,
                 child: Text(
-                  ' (统计缺少' + (data.length - num).toString() + '个数据)',
+                  ' (统计缺少${data.length - num}个数据)',
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                visible: num < data.length,
               ),
             ],
           );

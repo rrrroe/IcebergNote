@@ -1231,7 +1231,7 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildDurationCard() {
-    Duration duration = StringToDuration(
+    Duration duration = stringToDuration(
         widget.record[template.keys.elementAt(widget.index)].toString());
     return Card(
       elevation: 0,
@@ -2255,7 +2255,7 @@ Map stringToMapTemplate(String str) {
   return map;
 }
 
-Duration StringToDuration(String str) {
+Duration stringToDuration(String str) {
   bool isContainD = str.contains('d');
   bool isContainH = str.contains('h');
   bool isContainM = str.contains('m');
