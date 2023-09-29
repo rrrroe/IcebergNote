@@ -860,7 +860,7 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
               ),
               Visibility(
                 child: Text(
-                  ' (缺少' + (data.length - num).toString() + '个数据点)',
+                  ' (统计缺少' + (data.length - num).toString() + '个数据)',
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 12,
@@ -920,7 +920,7 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
               ),
               Visibility(
                 child: Text(
-                  ' (缺少' + (data.length - num).toString() + '个数据点)',
+                  ' (统计缺少' + (data.length - num).toString() + '个数据)',
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 12,
