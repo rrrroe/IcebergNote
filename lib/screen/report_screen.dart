@@ -814,14 +814,16 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
         case '和':
           //x-和
           double sum = 0;
-
+          int num = 0;
           for (int i = 0; i < data.length; i++) {
             if (data[i] != null) {
               sum = sum + data[i];
+              num++;
             }
           }
           return Row(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               const SizedBox(width: 20),
               const Text(
@@ -855,6 +857,17 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                 ),
+              ),
+              Visibility(
+                child: Text(
+                  ' (缺少' + (data.length - num).toString() + '个数据点)',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                visible: num < data.length,
               ),
             ],
           );
@@ -904,6 +917,17 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                 ),
+              ),
+              Visibility(
+                child: Text(
+                  ' (缺少' + (data.length - num).toString() + '个数据点)',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                visible: num < data.length,
               ),
             ],
           );
