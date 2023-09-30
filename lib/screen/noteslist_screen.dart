@@ -1124,7 +1124,42 @@ class SearchPageState extends State<SearchPage> {
                             ),
                           ],
                         );
+                      } else {
+                        return Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: fontColor,
+                              ),
+                              child: Text(
+                                "${propertySettings[0] ?? ''}",
+                                style: const TextStyle(
+                                  fontFamily: 'LXGWWenKai',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              ' : ${duration.inDays == 0 ? '' : '${duration.inDays}天'}${duration.inHours == 0 ? '' : '${duration.inHours % 24}时'}${duration.inMinutes == 0 ? '' : '${duration.inMinutes % 60}分'}${duration.inSeconds == 0 ? '' : '${duration.inSeconds % 60}秒'}',
+                              style: TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: fontColor,
+                              ),
+                            ),
+                          ],
+                        );
                       }
+                    case '数字':
+                      double? number = double.tryParse(
+                          noteMapOther.values.elementAt(index).toString());
                       return Row(
                         mainAxisSize: MainAxisSize.max,
                         children: [
@@ -1146,16 +1181,17 @@ class SearchPageState extends State<SearchPage> {
                             ),
                           ),
                           Text(
-                            ' : ${duration.inDays == 0 ? '' : '${duration.inDays}天'}${duration.inHours == 0 ? '' : '${duration.inHours % 24}时'}${duration.inMinutes == 0 ? '' : '${duration.inMinutes % 60}分'}${duration.inSeconds == 0 ? '' : '${duration.inSeconds % 60}秒'}',
+                            ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
                             style: TextStyle(
                               fontFamily: 'LXGWWenKai',
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: fontColor,
+                              color: number == null ? Colors.red : fontColor,
                             ),
                           ),
                         ],
                       );
+
                     default:
                       return Row(
                         mainAxisSize: MainAxisSize.max,

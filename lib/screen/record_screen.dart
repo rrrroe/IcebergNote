@@ -641,6 +641,11 @@ class _PropertyCardState extends State<PropertyCard> {
                         error = '';
                       });
                     } else {
+                      widget.record[template.keys.elementAt(widget.index)] =
+                          value;
+                      realm.write(() {
+                        widget.note.noteContext = mapToyaml(widget.record);
+                      });
                       setState(() {
                         error = '请输入数字';
                       });
