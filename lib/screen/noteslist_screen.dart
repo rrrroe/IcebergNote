@@ -1115,7 +1115,7 @@ class SearchPageState extends State<SearchPage> {
                             ),
                             Text(
                               noteMapOther.values.elementAt(index).toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'LXGWWenKai',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
