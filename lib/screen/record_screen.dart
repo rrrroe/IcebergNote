@@ -691,6 +691,7 @@ class _PropertyCardState extends State<PropertyCard> {
                 ),
                 color: Colors.white,
                 child: TextField(
+                  keyboardType: TextInputType.multiline,
                   textAlign: TextAlign.start,
                   style: textStyle,
                   controller: contentController,
@@ -751,6 +752,7 @@ class _PropertyCardState extends State<PropertyCard> {
                 alignment: Alignment.center,
                 color: Colors.white,
                 child: TextField(
+                  keyboardType: TextInputType.text,
                   textAlign: TextAlign.center,
                   style: textStyle,
                   controller: contentController,
