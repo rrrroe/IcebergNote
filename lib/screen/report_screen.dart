@@ -998,65 +998,68 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
             ],
           );
 
-        // case '平均数':
-        //   //x-平均数
-        //   Duration sum = const Duration();
-        //   int num = 0;
-        //   for (int i = 0; i < data.length; i++) {
-        //     if (data[i] is Duration && data[i] != null) {
-        //       sum = sum + data[i];
-        //       num++;
-        //     }
-        //   }
-        //   return Row(
-        //     mainAxisSize: MainAxisSize.min,
-        //     children: [
-        //       const SizedBox(width: 20),
-        //       const Text(
-        //         '平均',
-        //         style: TextStyle(
-        //           color: Colors.black,
-        //           fontSize: 20,
-        //           fontWeight: FontWeight.w600,
-        //         ),
-        //       ),
-        //       Text(
-        //         '$dataName ',
-        //         style: const TextStyle(
-        //           color: Colors.black,
-        //           fontSize: 20,
-        //           fontWeight: FontWeight.w600,
-        //         ),
-        //       ),
-        //       Text(
-        //         num != 0 ? (sum / num).toStringAsFixed(2) : '0.00',
-        //         style: TextStyle(
-        //           color: color,
-        //           fontSize: 20,
-        //           fontWeight: FontWeight.w600,
-        //         ),
-        //       ),
-        //       Text(
-        //         ' $dataUnit',
-        //         style: const TextStyle(
-        //           color: Colors.black,
-        //           fontSize: 20,
-        //           fontWeight: FontWeight.w600,
-        //         ),
-        //       ),
-        //       Visibility(
-        //         visible: num < data.length,
-        //         child: Text(
-        //           ' (统计缺少${data.length - num}个数据)',
-        //           style: const TextStyle(
-        //             color: Colors.black,
-        //             fontSize: 12,
-        //             fontWeight: FontWeight.w400,
-        //           ),
-        //         ),
-        //       ),
-        //     ],
-        //   );
+        case '平均数':
+          //x-平均数
+          int sum = 0;
+          int num = 0;
+          for (int i = 0; i < data.length; i++) {
+            Duration? duration = stringToDuration(data[i].toString());
+            if (duration != null) {
+              sum = sum + duration.inSeconds;
+              num++;
+            }
+          }
+          int avg = sum ~/ num;
+          Duration sumDuration = Duration(seconds: avg);
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(width: 20),
+              const Text(
+                '平均',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                '$dataName ',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                ' : ${sumDuration.inDays == 0 ? '' : '${sumDuration.inDays}天'}${sumDuration.inHours == 0 ? '' : '${sumDuration.inHours % 24}时'}${sumDuration.inMinutes == 0 ? '' : '${sumDuration.inMinutes % 60}分'}${sumDuration.inSeconds == 0 ? '' : '${sumDuration.inSeconds % 60}秒'}',
+                style: TextStyle(
+                  color: color,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                ' $dataUnit',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Visibility(
+                visible: num < data.length,
+                child: Text(
+                  ' (统计缺少${data.length - num}个数据)',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+            ],
+          );
       }
       return const SizedBox();
   }
