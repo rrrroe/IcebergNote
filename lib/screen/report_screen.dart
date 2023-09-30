@@ -110,11 +110,6 @@ class _ReportScreenState extends State<ReportScreen>
       if (checkNoteFormat(notesList[i])) {
         recordList.add(loadYaml(notesList[i].noteContext) as YamlMap);
       }
-      if (dateFlag == 0) {
-        dateFlag = 999;
-        recordList[i][dateFlag] =
-            notesList[i].noteCreatTime.toString().substring(0, 10);
-      }
     }
   }
 
@@ -426,24 +421,33 @@ class _ReportScreenState extends State<ReportScreen>
 
     for (int i = 0; i < recordList.length; i++) {
       DateTime? date;
-      date = ymd.parse(recordList[i][dateFlag].toString());
+      if (dateFlag == 0) {
+        date = DateTime.parse("1234-05-06 07:08:09");
+        print(date);
+      } else {
+        if (recordList[i][dateFlag] != null) {
+          date = ymd.parse(recordList[i][dateFlag].toString());
+        }
+      }
       bool arrayCrossFlag = false;
 
-      if (date.isBefore(lastDay.add(const Duration(days: 1, seconds: -1))) &&
-          date.isAfter(firstDay.add(const Duration(seconds: -1)))) {
-        if (filterSelect[0] != 0) {
-          List recordSelectProperty =
-              recordList[i][filterSelect[0]].toString().split(', ');
-          for (int j = 0; j < recordSelectProperty.length; j++) {
-            if (filterSelect.contains(recordSelectProperty[j])) {
-              arrayCrossFlag = true;
+      if (date != null) {
+        if (date.isBefore(lastDay.add(const Duration(days: 1, seconds: -1))) &&
+            date.isAfter(firstDay.add(const Duration(seconds: -1)))) {
+          if (filterSelect[0] != 0) {
+            List recordSelectProperty =
+                recordList[i][filterSelect[0]].toString().split(', ');
+            for (int j = 0; j < recordSelectProperty.length; j++) {
+              if (filterSelect.contains(recordSelectProperty[j])) {
+                arrayCrossFlag = true;
+              }
             }
-          }
-          if (arrayCrossFlag) {
+            if (arrayCrossFlag) {
+              filterNoteList.add(notesList[i]);
+            }
+          } else {
             filterNoteList.add(notesList[i]);
           }
-        } else {
-          filterNoteList.add(notesList[i]);
         }
       }
     }

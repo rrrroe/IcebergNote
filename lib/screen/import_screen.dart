@@ -514,61 +514,85 @@ class ImportPageState extends State<ImportPage> {
                             style: selectButtonStyle,
                             child: const Text('确认导入'),
                             onPressed: () {
-                              if (_paths!.first.name.endsWith('.csv')) {
-                                List<List<dynamic>> rowsAsListOfValues =
-                                    const CsvToListConverter().convert(content);
-                                RealmResults templates = realm.query<Notes>(
-                                    "( noteProject == \$0 AND noteType == '.表头' ) AND noteIsDeleted != true SORT(id DESC)",
-                                    [importProject]);
-                                for (int i = 0;
-                                    i < rowsAsListOfValues.length;
-                                    i++) {
-                                  String noteContent = '';
-                                  String noteCreatTime = '';
-                                  final dateRegex =
-                                      RegExp(r'\d{4}-\d{1,2}-\d{1,2}');
+                              // if (_paths!.first.name.endsWith('.csv')) {
+                              List<List<dynamic>> rowsAsListOfValues =
+                                  const CsvToListConverter().convert(content);
+                              RealmResults templates = realm.query<Notes>(
+                                  "( noteProject == \$0 AND noteType == '.表头' ) AND noteIsDeleted != true SORT(id DESC)",
+                                  [importProject]);
+                              for (int i = 0;
+                                  i < rowsAsListOfValues.length;
+                                  i++) {
+                                String noteContent = '';
+                                String noteCreatTime = '';
+                                final dateRegex =
+                                    RegExp(r'\d{4}-\d{1,2}-\d{1,2}');
 
-                                  if (i == 0 && templates.isEmpty) {
-                                    for (int j = 0;
-                                        j < rowsAsListOfValues[i].length;
-                                        j++) {
+                                if (i == 0) {
+                                  if (templates.isEmpty) {
+                                    for (int j = 0; j < 12; j++) {
                                       noteContent =
                                           '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString()},,,,,\n';
                                     }
                                     noteContent =
                                         '${noteContent}settings: 1\ncolor: [135, 198, 181]';
                                     importType = '.表头';
-                                  } else {
-                                    for (int j = 0;
-                                        j < rowsAsListOfValues[i].length;
-                                        j++) {
+                                  }
+                                } else {
+                                  for (int j = 0; j < 12; j++) {
+                                    if (rowsAsListOfValues[i][j].toString().length > 10 &&
+                                        dateRegex.hasMatch(rowsAsListOfValues[i][j]
+                                            .toString()
+                                            .substring(0, 9))) {
+                                      noteCreatTime =
+                                          '${rowsAsListOfValues[i][j].toString().substring(0, 9)} 00:00:00';
+                                    } else if (int.tryParse(rowsAsListOfValues[i][j]
+                                                .toString()) !=
+                                            null &&
+                                        rowsAsListOfValues[i][j].toString().length ==
+                                            13) {
+                                      DateTime dateTime =
+                                          DateTime.fromMillisecondsSinceEpoch(
+                                              rowsAsListOfValues[i][j]);
+                                      noteContent =
+                                          '$noteContent${j + 1}: ${dateTime.year.toString()}-${dateTime.month.toString()}-${dateTime.day.toString()}\n';
+                                    } else if (j == 7) {
+                                      double? num = double.tryParse(
+                                          rowsAsListOfValues[i][j].toString());
+                                      if (num == null) {
+                                        noteContent =
+                                            '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('\n', '    ')}\n';
+                                      } else {
+                                        int num2 = num.toInt();
+                                        int num3 = (num % 1 * 60).toInt();
+                                        noteContent =
+                                            '$noteContent${j + 1}: ${num2.toString()}:${num3.toString()}:0\n';
+                                      }
+                                    } else if (rowsAsListOfValues[i][j]
+                                                .toString()
+                                                .length ==
+                                            10 &&
+                                        rowsAsListOfValues[i][j][4].toString() ==
+                                            '/' &&
+                                        rowsAsListOfValues[i][j][7].toString() ==
+                                            '/') {
+                                      noteContent =
+                                          '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('/0', '-').replaceAll('/', '-')}\n';
+                                    } else {
                                       noteContent =
                                           '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('\n', '    ')}\n';
-
-                                      if (rowsAsListOfValues[i][j]
-                                              .toString()
-                                              .length >
-                                          10) {
-                                        if (dateRegex.hasMatch(
-                                            rowsAsListOfValues[i][j]
-                                                .toString()
-                                                .substring(0, 9))) {
-                                          noteCreatTime =
-                                              '${rowsAsListOfValues[i][j].toString().substring(0, 9)} 00:00:00';
-                                        }
-                                      }
                                     }
-                                    importType = '.记录';
                                   }
-
-                                  realm.write(() {
-                                    realm.add<Notes>(Notes(ObjectId(),
-                                        importFolder, '', noteContent,
-                                        noteProject: importProject,
-                                        noteType: importType,
-                                        noteCreatTime: noteCreatTime));
-                                  });
+                                  importType = '.记录';
                                 }
+
+                                realm.write(() {
+                                  realm.add<Notes>(Notes(
+                                      ObjectId(), importFolder, '', noteContent,
+                                      noteProject: importProject,
+                                      noteType: importType,
+                                      noteCreatTime: noteCreatTime));
+                                });
                               }
                             },
                           )
