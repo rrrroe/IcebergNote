@@ -816,7 +816,7 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
           double sum = 0;
           int num = 0;
           for (int i = 0; i < data.length; i++) {
-            if (data[i] != null) {
+            if (data[i] is double || data[i] is int) {
               sum = sum + data[i];
               num++;
             }
@@ -877,7 +877,7 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
           double sum = 0;
           int num = 0;
           for (int i = 0; i < data.length; i++) {
-            if (data[i] != null) {
+            if (data[i] is double || data[i] is int) {
               sum = sum + data[i];
               num++;
             }
