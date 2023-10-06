@@ -50,18 +50,21 @@ Widget buildRecordCardOfList(
     shadowColor: const Color.fromARGB(255, 255, 132, 132),
     color: backgroundColor,
     child: ListTile(
-      title: SizedBox(
-        height: 40,
-        child: Text(
-          '${mod == 3 ? '' : '${note.noteProject}  '}${propertySettings1[2] ?? ''}${noteMap[noteMap.keys.first] ?? ''}${propertySettings1[3] ?? ''}',
-          maxLines: 1,
-          overflow: TextOverflow.fade,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: fontColor,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '${mod == 3 ? '' : '${note.noteProject}  '}${propertySettings1[2] ?? ''}${noteMap[noteMap.keys.first] ?? ''}${propertySettings1[3] ?? ''}',
+            maxLines: 3,
+            overflow: TextOverflow.fade,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: fontColor,
+            ),
           ),
-        ),
+          const SizedBox(height: 8)
+        ],
       ),
       subtitle: Wrap(
         spacing: 5,
