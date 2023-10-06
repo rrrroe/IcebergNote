@@ -6,6 +6,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pickers/time_picker/model/date_mode.dart';
 import 'package:flutter_pickers/time_picker/model/suffix.dart';
+import 'package:icebergnote/screen/noteslist_screen.dart';
 import 'package:yaml/yaml.dart';
 import '../constants.dart';
 import '../main.dart';
@@ -583,6 +584,53 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildNumberCard() {
+    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+      if (num.tryParse(propertySettings.last) != null) {
+        widget.record[template.keys.elementAt(widget.index)] =
+            num.tryParse(propertySettings.last);
+        contentController.text = propertySettings.last.toString();
+        // } else if (double.tryParse(propertySettings.last) != null) {
+        //   widget.record[template.keys.elementAt(widget.index)] =
+        //       double.tryParse(propertySettings.last);
+      } else if (propertySettings.last == 'last') {
+        var searchResult = realm.query<Notes>(
+            " noteProject == \$0 AND noteType == '.记录' AND noteIsDeleted != true SORT(id DESC) LIMIT(2)",
+            [widget.note.noteProject]);
+        if (searchResult.length > 1) {
+          if (checkNoteFormat(searchResult[1])) {
+            var lastNoteMap = loadYaml(searchResult[1].noteContext) as YamlMap;
+            contentController.text =
+                lastNoteMap[template.keys.elementAt(widget.index)].toString();
+            widget.record[template.keys.elementAt(widget.index)] =
+                lastNoteMap[template.keys.elementAt(widget.index)];
+          }
+        }
+      } else if (propertySettings.last == 'last+1') {
+        var searchResult = realm.query<Notes>(
+            " noteProject == \$0 AND noteType == '.记录' AND noteIsDeleted != true SORT(id DESC) LIMIT(2)",
+            [widget.note.noteProject]);
+        if (searchResult.length > 1) {
+          if (checkNoteFormat(searchResult[1])) {
+            var lastNoteMap = loadYaml(searchResult[1].noteContext) as YamlMap;
+
+            if (lastNoteMap[template.keys.elementAt(widget.index)]
+                        .runtimeType ==
+                    int ||
+                lastNoteMap[template.keys.elementAt(widget.index)]
+                        .runtimeType ==
+                    double) {
+              var number =
+                  lastNoteMap[template.keys.elementAt(widget.index)] + 1;
+              contentController.text = number.toString();
+              widget.record[template.keys.elementAt(widget.index)] = number;
+            }
+          }
+        }
+      }
+      realm.write(() {
+        widget.note.noteContext = mapToyaml(widget.record);
+      });
+    }
     return Card(
       elevation: 0,
       color: Color.fromARGB(
