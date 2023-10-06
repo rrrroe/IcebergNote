@@ -720,6 +720,13 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildLongTextCard() {
+    widget.record[template.keys.elementAt(widget.index)] =
+        propertySettings.last.toString();
+    realm.write(() {
+      widget.note.noteContext = mapToyaml(widget.record);
+    });
+    contentController.text =
+        propertySettings.last.toString().replaceAll('    ', '\n');
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -775,6 +782,12 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildTextCard() {
+    widget.record[template.keys.elementAt(widget.index)] =
+        propertySettings.last.toString();
+    realm.write(() {
+      widget.note.noteContext = mapToyaml(widget.record);
+    });
+    contentController.text = propertySettings.last.toString();
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -1116,14 +1129,94 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildDateCard() {
-    // if (widget.record[template.keys.elementAt(widget.index)] == null) {
-    //   DateTime dateTime = DateTime.now();
-    //   widget.record[template.keys.elementAt(widget.index)] =
-    //       '${dateTime.year}-${dateTime.month}-${dateTime.day}';
-    //   realm.write(() {
-    //     widget.note.noteContext = mapToyaml(widget.record);
-    //   });
-    // }
+    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+      DateTime now = DateTime.now();
+      DateTime setDay = DateTime.now();
+      switch (propertySettings.last.toString()) {
+        case '今日':
+        case '今天':
+          break;
+        case '昨日':
+        case '昨天':
+          setDay = now.subtract(const Duration(days: 1));
+          break;
+        case '明日':
+        case '明天':
+          setDay = now.add(const Duration(days: 1));
+          break;
+        case '后日':
+        case '后天':
+          setDay = now.subtract(const Duration(days: 2));
+          break;
+        case '前日':
+        case '前天':
+          setDay = now.add(const Duration(days: 2));
+          break;
+        case '周一':
+          setDay = now.subtract(Duration(days: now.weekday - 1));
+          break;
+        case '周二':
+          setDay = now.subtract(Duration(days: now.weekday - 2));
+          break;
+        case '周三':
+          setDay = now.subtract(Duration(days: now.weekday - 3));
+          break;
+        case '周四':
+          setDay = now.subtract(Duration(days: now.weekday - 4));
+          break;
+        case '周五':
+          setDay = now.subtract(Duration(days: now.weekday - 5));
+          break;
+        case '周六':
+          setDay = now.subtract(Duration(days: now.weekday - 6));
+          break;
+        case '周日':
+          setDay = now.subtract(Duration(days: now.weekday - 7));
+          break;
+        case '月初':
+          setDay = DateTime(now.year, now.month, 1);
+          break;
+        case '月末':
+          setDay = DateTime(now.year, now.month + 1, 1)
+              .subtract(const Duration(days: 1));
+          break;
+        case '季初':
+          int quarter = ((now.month - 1) ~/ 3) + 1;
+          if (quarter == 1) {
+            setDay = DateTime(now.year, 1, 1);
+          } else if (quarter == 2) {
+            setDay = DateTime(now.year, 4, 1);
+          } else if (quarter == 3) {
+            setDay = DateTime(now.year, 7, 1);
+          } else {
+            setDay = DateTime(now.year, 10, 1);
+          }
+          break;
+        case '季末':
+          int quarter = ((now.month - 1) ~/ 3) + 1;
+          if (quarter == 1) {
+            setDay = DateTime(now.year, 3, 31);
+          } else if (quarter == 2) {
+            setDay = DateTime(now.year, 6, 30);
+          } else if (quarter == 3) {
+            setDay = DateTime(now.year, 9, 30);
+          } else {
+            setDay = DateTime(now.year, 12, 31);
+          }
+          break;
+        case '年初':
+          setDay = DateTime(now.year, 1, 1);
+          break;
+        case '年末':
+          setDay = DateTime(now.year, 12, 31);
+          break;
+      }
+      widget.record[template.keys.elementAt(widget.index)] =
+          '${setDay.year}-${setDay.month}-${setDay.day}';
+      realm.write(() {
+        widget.note.noteContext = mapToyaml(widget.record);
+      });
+    }
     return Card(
       elevation: 0,
       color: Color.fromARGB(
