@@ -328,7 +328,16 @@ Widget buildRecordCardOfList(
                         ),
                       ),
                       Text(
-                        ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
+                        ' : ',
+                        style: TextStyle(
+                          fontFamily: 'LXGWWenKai',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: fontColor,
+                        ),
+                      ),
+                      Text(
+                        '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
                         style: TextStyle(
                           fontFamily: 'LXGWWenKai',
                           fontSize: 16,
