@@ -1301,15 +1301,29 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildTimeCard() {
+    List<String> timeList = ['0', '0', '0'];
+    Duration? tmpDuration = stringToDuration(propertySettings.last);
     if (widget.record[template.keys.elementAt(widget.index)] == null) {
-      widget.record[template.keys.elementAt(widget.index)] = '0:0:0';
+      if (propertySettings.last == '此刻') {
+        DateTime now = DateTime.now();
+        widget.record[template.keys.elementAt(widget.index)] =
+            '${now.hour}:${now.minute}:${now.second}';
+        timeList = ['${now.hour}', '${now.minute}', '${now.second}'];
+      } else if (tmpDuration != null) {
+        widget.record[template.keys.elementAt(widget.index)] =
+            '${(tmpDuration.inHours)}:${(tmpDuration.inMinutes) % 60}:${(tmpDuration.inSeconds) % 60}';
+        timeList = [
+          '${tmpDuration.inHours}',
+          '${tmpDuration.inMinutes % 60}',
+          '${tmpDuration.inSeconds % 60}'
+        ];
+      } else {
+        widget.record[template.keys.elementAt(widget.index)] = '';
+      }
       realm.write(() {
         widget.note.noteContext = mapToyaml(widget.record);
       });
     }
-    List<String> timeList = widget.record[template.keys.elementAt(widget.index)]
-        .toString()
-        .split(':');
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -1373,7 +1387,11 @@ class _PropertyCardState extends State<PropertyCard> {
                     );
                   },
                   child: Text(
-                    widget.record[template.keys.elementAt(widget.index)] == null
+                    (widget.record[template.keys.elementAt(widget.index)] ==
+                                null ||
+                            widget.record[
+                                    template.keys.elementAt(widget.index)] ==
+                                '')
                         ? '0:0:0'
                         : widget.record[template.keys.elementAt(widget.index)]
                                     .toString()[0] !=
@@ -1404,7 +1422,17 @@ class _PropertyCardState extends State<PropertyCard> {
   Widget buildDurationCard() {
     Duration? duration = stringToDuration(
         widget.record[template.keys.elementAt(widget.index)].toString());
-
+    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+      if (duration != null) {
+        widget.record[template.keys.elementAt(widget.index)] =
+            '${(duration.inHours)}:${(duration.inMinutes) % 60}:${(duration.inSeconds) % 60}';
+      } else {
+        widget.record[template.keys.elementAt(widget.index)] = '';
+      }
+      realm.write(() {
+        widget.note.noteContext = mapToyaml(widget.record);
+      });
+    }
     return Card(
       elevation: 0,
       color: Color.fromARGB(
