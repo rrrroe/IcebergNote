@@ -1313,8 +1313,7 @@ class _PropertyCardState extends State<PropertyCard> {
                   },
                   child: Text(
                     duration == null
-                        ? widget.record[template.keys.elementAt(widget.index)]
-                            .toString()
+                        ? ''
                         : (duration.inDays == 0 ? '' : '${duration.inDays}天') +
                             (duration.inHours == 0
                                 ? ''
