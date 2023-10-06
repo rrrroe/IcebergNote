@@ -65,6 +65,7 @@ class _ReportScreenState extends State<ReportScreen>
         .query<Notes>(
             "noteType == '.表头' AND noteProject !='' DISTINCT(noteProject)")
         .toList();
+    recordProjectList = [];
     for (int i = 0; i < recordProjectDistinctList.length; i++) {
       recordProjectList.add(recordProjectDistinctList[i].noteProject);
     }
