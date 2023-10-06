@@ -627,6 +627,9 @@ class _PropertyCardState extends State<PropertyCard> {
           }
         }
       }
+      if (num.tryParse(contentController.text) == null) {
+        error = '请输入数字';
+      }
       realm.write(() {
         widget.note.noteContext = mapToyaml(widget.record);
       });
@@ -679,7 +682,7 @@ class _PropertyCardState extends State<PropertyCard> {
                   maxLines: 1,
                   minLines: 1,
                   onChanged: (value) {
-                    if (double.tryParse(value) != null) {
+                    if (num.tryParse(value) != null) {
                       widget.record[template.keys.elementAt(widget.index)] =
                           value;
                       realm.write(() {
