@@ -23,14 +23,19 @@ Widget buildRecordCardOfList(
           templateNote.noteContext.replaceAll(RegExp(r': .*'), ': ');
     });
   }
-  Map noteMap = loadYaml(note.noteContext) as Map;
-  Map noteMapOther = {...noteMap};
-  noteMapOther.remove(noteMapOther.keys.first);
-  noteMapOther.removeWhere((key, value) => value == null);
+
   Map template = loadYaml(templateNote.noteContext
       .substring(0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
   Map templateProperty = loadYaml(templateNote.noteContext
       .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
+  Map noteMapInit = loadYaml(note.noteContext) as Map;
+  Map noteMap = template.map((key, value) {
+    MapEntry entry = MapEntry(key, noteMapInit[key]);
+    return entry;
+  });
+  Map noteMapOther = {...noteMap};
+  noteMapOther.remove(noteMapOther.keys.first);
+  noteMapOther.removeWhere((key, value) => value == null);
   Color backgroundColor = Color.fromARGB(
     40,
     templateProperty['color'][0],
