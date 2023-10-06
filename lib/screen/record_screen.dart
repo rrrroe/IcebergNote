@@ -849,6 +849,14 @@ class _PropertyCardState extends State<PropertyCard> {
         .record[template.keys.elementAt(widget.index)]
         .toString()
         .split(", ");
+    if (currentList[0] == 'null') {
+      currentList[0] = selectList[0];
+    }
+    widget.record[template.keys.elementAt(widget.index)] =
+        currentList.join(', ');
+    realm.write(() {
+      widget.note.noteContext = mapToyaml(widget.record);
+    });
     selectList.removeWhere((element) => element == 'null' || element == '');
     currentList.removeWhere((element) => element == 'null' || element == '');
     return Card(
@@ -972,11 +980,19 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildSingleSelectCard() {
-    List<String> selectList = propertySettings.last.split("||");
+    List<String> selectList = propertySettings.last.toString().split("||");
     List<String> currentList = widget
         .record[template.keys.elementAt(widget.index)]
         .toString()
         .split(", ");
+    if (currentList[0] == 'null') {
+      currentList[0] = selectList[0];
+    }
+    widget.record[template.keys.elementAt(widget.index)] =
+        currentList.join(', ');
+    realm.write(() {
+      widget.note.noteContext = mapToyaml(widget.record);
+    });
     selectList.removeWhere((element) => element == 'null' || element == '');
     currentList.removeWhere((element) => element == 'null' || element == '');
     return Card(
