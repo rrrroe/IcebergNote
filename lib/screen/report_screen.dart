@@ -56,6 +56,10 @@ class _ReportScreenState extends State<ReportScreen>
   void initState() {
     super.initState();
     tabController = TabController(length: tabs.length, vsync: this);
+    reportInit();
+  }
+
+  void reportInit() {
     List<Notes> recordProjectDistinctList = realm
         .query<Notes>(
             "noteType == '.表头' AND noteProject !='' DISTINCT(noteProject)")
@@ -100,11 +104,26 @@ class _ReportScreenState extends State<ReportScreen>
     firstDay = DateTime(firstDay.year, firstDay.month, firstDay.day);
     lastDay = now.add(Duration(days: DateTime.daysPerWeek - weekday));
     lastDay = DateTime(lastDay.year, lastDay.month, lastDay.day);
-    template.forEach((key, value) {
-      if (value.toString().split(',')[1] == '日期') {
-        dateFlag = key;
+    // template.forEach((key, value) {
+    //   if (value.toString().split(',')[1] == '日期') {
+    //     dateFlag = key;
+    //   }
+    // });
+    if (templateProperty.keys.contains(currentReportType)) {
+      List tmpstr = templateProperty[currentReportType].split(',');
+      for (int index = 0; index < tmpstr.length; index++) {
+        List tmp = tmpstr[index].toString().split('-');
+        List tmp1 = [];
+        tmp1.add(int.tryParse(tmp[0]));
+        for (int i = 1; i < tmp.length; i++) {
+          tmp1.add(tmp[i]);
+        }
+        if (tmp1[1] == '日期') {
+          dateFlag = tmp1[0];
+        }
       }
-    });
+      // print(filterSelect);
+    }
     recordList = [];
     for (int i = 0; i < notesList.length; i++) {
       if (checkNoteFormat(notesList[i])) {
@@ -190,6 +209,7 @@ class _ReportScreenState extends State<ReportScreen>
                 onPressed: () {
                   setState(() {
                     currentProject = type;
+                    reportInit();
                   });
                 },
               );

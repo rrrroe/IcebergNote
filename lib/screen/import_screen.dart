@@ -529,55 +529,67 @@ class ImportPageState extends State<ImportPage> {
                                     RegExp(r'\d{4}-\d{1,2}-\d{1,2}');
 
                                 if (i == 0) {
-                                  if (templates.isEmpty) {
-                                    for (int j = 0; j < 12; j++) {
-                                      noteContent =
-                                          '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString()},,,,,\n';
-                                    }
+                                  for (int j = 0; j < 12; j++) {
                                     noteContent =
-                                        '${noteContent}settings: 1\ncolor: [135, 198, 181]';
-                                    importType = '.表头';
+                                        '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString()},,,,,\n';
                                   }
+                                  noteContent =
+                                      '${noteContent}settings: 1\ncolor: [135, 198, 181]';
+                                  importType = '.表头';
                                 } else {
                                   for (int j = 0; j < 12; j++) {
-                                    if (rowsAsListOfValues[i][j].toString().length > 10 &&
-                                        dateRegex.hasMatch(rowsAsListOfValues[i][j]
+                                    if (rowsAsListOfValues[i][j]
+                                                .toString()
+                                                .length >
+                                            10 &&
+                                        dateRegex.hasMatch(rowsAsListOfValues[i]
+                                                [j]
                                             .toString()
                                             .substring(0, 9))) {
                                       noteCreatTime =
                                           '${rowsAsListOfValues[i][j].toString().substring(0, 9)} 00:00:00';
-                                    } else if (int.tryParse(rowsAsListOfValues[i][j]
-                                                .toString()) !=
+                                    } else if (int.tryParse(
+                                                rowsAsListOfValues[i][j]
+                                                    .toString()) !=
                                             null &&
-                                        rowsAsListOfValues[i][j].toString().length ==
+                                        rowsAsListOfValues[i][j]
+                                                .toString()
+                                                .length ==
                                             13) {
                                       DateTime dateTime =
                                           DateTime.fromMillisecondsSinceEpoch(
                                               rowsAsListOfValues[i][j]);
+                                      String m = dateTime.month.toString();
+                                      String d = dateTime.day.toString();
+                                      if (dateTime.month < 10) m = '0$m';
+                                      if (dateTime.day < 10) d = '0$d';
                                       noteContent =
-                                          '$noteContent${j + 1}: ${dateTime.year.toString()}-${dateTime.month.toString()}-${dateTime.day.toString()}\n';
-                                    } else if (j == 7) {
-                                      double? num = double.tryParse(
-                                          rowsAsListOfValues[i][j].toString());
-                                      if (num == null) {
-                                        noteContent =
-                                            '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('\n', '    ')}\n';
-                                      } else {
-                                        int num2 = num.toInt();
-                                        int num3 = (num % 1 * 60).toInt();
-                                        noteContent =
-                                            '$noteContent${j + 1}: ${num2.toString()}:${num3.toString()}:0\n';
-                                      }
-                                    } else if (rowsAsListOfValues[i][j]
-                                                .toString()
-                                                .length ==
-                                            10 &&
-                                        rowsAsListOfValues[i][j][4].toString() ==
-                                            '/' &&
-                                        rowsAsListOfValues[i][j][7].toString() ==
-                                            '/') {
-                                      noteContent =
-                                          '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('/0', '-').replaceAll('/', '-')}\n';
+                                          '$noteContent${j + 1}: ${dateTime.year.toString()}-$m-$d\n';
+
+                                      noteCreatTime =
+                                          '${dateTime.year.toString()}-$m-$d 00:00:00.000000';
+                                      // } else if (j == 7) {
+                                      //   double? num = double.tryParse(
+                                      //       rowsAsListOfValues[i][j].toString());
+                                      //   if (num == null) {
+                                      //     noteContent =
+                                      //         '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('\n', '    ')}\n';
+                                      //   } else {
+                                      //     int num2 = num.toInt();
+                                      //     int num3 = (num % 1 * 60).toInt();
+                                      //     noteContent =
+                                      //         '$noteContent${j + 1}: ${num2.toString()}:${num3.toString()}:0\n';
+                                      //   }
+                                      // } else if (rowsAsListOfValues[i][j]
+                                      //             .toString()
+                                      //             .length ==
+                                      //         10 &&
+                                      //     rowsAsListOfValues[i][j][4].toString() ==
+                                      //         '/' &&
+                                      //     rowsAsListOfValues[i][j][7].toString() ==
+                                      //         '/') {
+                                      //   noteContent =
+                                      //       '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('/', '-')}\n';
                                     } else {
                                       noteContent =
                                           '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('\n', '    ')}\n';

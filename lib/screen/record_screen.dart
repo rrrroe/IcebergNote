@@ -1103,8 +1103,12 @@ class _PropertyCardState extends State<PropertyCard> {
                       );
                       if (newDateTime != null) {
                         setState(() {
+                          String m = newDateTime.month.toString();
+                          String d = newDateTime.day.toString();
+                          if (newDateTime.month < 10) m = '0$m';
+                          if (newDateTime.day < 10) d = '0$d';
                           widget.record[template.keys.elementAt(widget.index)] =
-                              '${newDateTime.year}-${newDateTime.month}-${newDateTime.day}';
+                              '${newDateTime.year}-$m-$d';
                           realm.write(() {
                             widget.note.noteContext = mapToyaml(widget.record);
                           });
