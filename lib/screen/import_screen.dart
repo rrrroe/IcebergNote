@@ -517,9 +517,6 @@ class ImportPageState extends State<ImportPage> {
                               // if (_paths!.first.name.endsWith('.csv')) {
                               List<List<dynamic>> rowsAsListOfValues =
                                   const CsvToListConverter().convert(content);
-                              RealmResults templates = realm.query<Notes>(
-                                  "( noteProject == \$0 AND noteType == '.表头' ) AND noteIsDeleted != true SORT(id DESC)",
-                                  [importProject]);
                               for (int i = 0;
                                   i < rowsAsListOfValues.length;
                                   i++) {
