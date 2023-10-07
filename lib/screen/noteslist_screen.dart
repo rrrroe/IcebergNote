@@ -15,6 +15,7 @@ import 'package:icebergnote/notes.dart';
 import 'package:realm/realm.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:yaml/yaml.dart';
 
 import '../main.dart';
 import '../constants.dart';
@@ -866,28 +867,27 @@ class SearchPageState extends State<SearchPage> {
         ),
       );
     } else if (note.noteType == '.记录' && checkNoteFormat(note)) {
-      return buildRecordCardOfList(note, widget.mod, context, refreshList);
-      // var templateNote = realm.query<Notes>(
-      //     "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
-      //     [
-      //       '.表头',
-      //       note.noteProject,
-      //     ])[0];
+      var templateNote = realm.query<Notes>(
+          "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+          [
+            '.表头',
+            note.noteProject,
+          ])[0];
 
-      // if (note.noteContext == '') {
-      //   realm.write(() {
-      //     note.noteContext =
-      //         templateNote.noteContext.replaceAll(RegExp(r': .*'), ': ');
-      //   });
-      // }
+      if (note.noteContext == '') {
+        realm.write(() {
+          note.noteContext =
+              templateNote.noteContext.replaceAll(RegExp(r': .*'), ': ');
+        });
+      }
       // Map noteMap = loadYaml(note.noteContext) as Map;
       // Map noteMapOther = {...noteMap};
       // noteMapOther.remove(noteMapOther.keys.first);
       // noteMapOther.removeWhere((key, value) => value == null);
-      // Map template = loadYaml(templateNote.noteContext.substring(
-      //     0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
-      // Map templateProperty = loadYaml(templateNote.noteContext
-      //     .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
+      Map template = loadYaml(templateNote.noteContext.substring(
+          0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
+      Map templateProperty = loadYaml(templateNote.noteContext
+          .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
       // Color backgroundColor = Color.fromARGB(
       //   40,
       //   templateProperty['color'][0],
@@ -901,6 +901,8 @@ class SearchPageState extends State<SearchPage> {
       //   max(0, min(templateProperty['color'][2] - 50, 255)),
       // );
       // List propertySettings1 = template.values.elementAt(0).split(",");
+      return buildRecordCardOfList(
+          note, widget.mod, context, refreshList, template, templateProperty);
       // return Card(
       //   margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
       //   elevation: 0,

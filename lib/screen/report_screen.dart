@@ -503,8 +503,8 @@ class _ReportScreenState extends State<ReportScreen>
           noteMapOther.remove(noteMapOther.keys.first);
           noteMapOther.removeWhere((key, value) => value == null);
 
-          cardList.add(
-              buildRecordCardOfList(filterNoteList[i], 3, context, reportInit)
+          cardList.add(buildRecordCardOfList(filterNoteList[i], 3, context,
+                  reportInit, template, templateProperty)
               // Card(
               //   margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
               //   elevation: 0,

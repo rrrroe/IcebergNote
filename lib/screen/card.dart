@@ -5,29 +5,28 @@ import 'package:icebergnote/notes.dart';
 import 'package:icebergnote/screen/record_screen.dart';
 import 'package:yaml/yaml.dart';
 
-import '../main.dart';
 import 'noteslist_screen.dart';
 
-Widget buildRecordCardOfList(
-    Notes note, int mod, BuildContext context, VoidCallback refreshList) {
-  var templateNote = realm.query<Notes>(
-      "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
-      [
-        '.表头',
-        note.noteProject,
-      ])[0];
+Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
+    VoidCallback refreshList, Map template, Map templateProperty) {
+  // var templateNote = realm.query<Notes>(
+  //     "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+  //     [
+  //       '.表头',
+  //       note.noteProject,
+  //     ])[0];
 
-  if (note.noteContext == '') {
-    realm.write(() {
-      note.noteContext =
-          templateNote.noteContext.replaceAll(RegExp(r': .*'), ': ');
-    });
-  }
+  // if (note.noteContext == '') {
+  //   realm.write(() {
+  //     note.noteContext =
+  //         templateNote.noteContext.replaceAll(RegExp(r': .*'), ': ');
+  //   });
+  // }
 
-  Map template = loadYaml(templateNote.noteContext
-      .substring(0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
-  Map templateProperty = loadYaml(templateNote.noteContext
-      .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
+  // Map template = loadYaml(templateNote.noteContext
+  //     .substring(0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
+  // Map templateProperty = loadYaml(templateNote.noteContext
+  //     .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
   Map noteMapInit = loadYaml(note.noteContext) as Map;
   Map noteMap = template.map((key, value) {
     MapEntry entry = MapEntry(key, noteMapInit[key]);
