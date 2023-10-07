@@ -2303,7 +2303,7 @@ class _InputSelectAlertDialogState extends State<InputSelectAlertDialog> {
         children: [
           TextField(
             controller: _controller,
-            autofocus: true,
+            autofocus: false,
             decoration: const InputDecoration(hintText: '搜索'),
             onChanged: (text) {
               filterSelectList = List.from(widget.selectList);
@@ -2330,76 +2330,78 @@ class _InputSelectAlertDialogState extends State<InputSelectAlertDialog> {
             height: 10,
           ),
           Container(
-            width: 200,
+            width: 600,
             constraints: const BoxConstraints(
               minHeight: 100,
               maxHeight: 400,
             ),
             color: Colors.white,
-            child: Wrap(
-              alignment: WrapAlignment.start,
-              crossAxisAlignment: WrapCrossAlignment.start,
-              spacing: 5,
-              runSpacing: 5,
-              children: List.generate(
-                filterSelectList.length,
-                (index) {
-                  bool isContain =
-                      widget.currentList.contains(filterSelectList[index]);
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (!widget.isMultiSelect) {
-                          widget.currentList.clear();
-                        }
-                        if (!widget.currentList
-                            .contains(filterSelectList[index])) {
-                          widget.currentList.add(filterSelectList[index]);
-                        } else {
-                          widget.currentList.remove(filterSelectList[index]);
-                        }
-                      });
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.all(0),
-                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: isContain ? widget.fontColor : Colors.white,
-                        border: Border.all(
-                          color: widget.fontColor,
-                          width: 1,
+            child: SingleChildScrollView(
+              child: Wrap(
+                alignment: WrapAlignment.start,
+                crossAxisAlignment: WrapCrossAlignment.start,
+                spacing: 5,
+                runSpacing: 5,
+                children: List.generate(
+                  filterSelectList.length,
+                  (index) {
+                    bool isContain =
+                        widget.currentList.contains(filterSelectList[index]);
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (!widget.isMultiSelect) {
+                            widget.currentList.clear();
+                          }
+                          if (!widget.currentList
+                              .contains(filterSelectList[index])) {
+                            widget.currentList.add(filterSelectList[index]);
+                          } else {
+                            widget.currentList.remove(filterSelectList[index]);
+                          }
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.all(0),
+                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: isContain ? widget.fontColor : Colors.white,
+                          border: Border.all(
+                            color: widget.fontColor,
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              filterSelectList[index],
+                              style: TextStyle(
+                                fontFamily: 'LXGWWenKai',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    isContain ? Colors.white : widget.fontColor,
+                              ),
+                            ),
+                            isContain
+                                ? const Icon(
+                                    Icons.close,
+                                    size: 15,
+                                    color: Colors.white,
+                                  )
+                                : Icon(
+                                    Icons.add,
+                                    size: 15,
+                                    color: widget.fontColor,
+                                  ),
+                          ],
                         ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            filterSelectList[index],
-                            style: TextStyle(
-                              fontFamily: 'LXGWWenKai',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color:
-                                  isContain ? Colors.white : widget.fontColor,
-                            ),
-                          ),
-                          isContain
-                              ? const Icon(
-                                  Icons.close,
-                                  size: 15,
-                                  color: Colors.white,
-                                )
-                              : Icon(
-                                  Icons.add,
-                                  size: 15,
-                                  color: widget.fontColor,
-                                ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           )
