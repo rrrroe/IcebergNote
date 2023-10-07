@@ -592,7 +592,7 @@ class _PropertyCardState extends State<PropertyCard> {
         // } else if (double.tryParse(propertySettings.last) != null) {
         //   widget.record[template.keys.elementAt(widget.index)] =
         //       double.tryParse(propertySettings.last);
-      } else if (propertySettings.last == 'last') {
+      } else if (propertySettings.last == '上次') {
         var searchResult = realm.query<Notes>(
             " noteProject == \$0 AND noteType == '.记录' AND noteIsDeleted != true SORT(id DESC) LIMIT(2)",
             [widget.note.noteProject]);
@@ -605,7 +605,7 @@ class _PropertyCardState extends State<PropertyCard> {
                 lastNoteMap[template.keys.elementAt(widget.index)];
           }
         }
-      } else if (propertySettings.last == 'last+1') {
+      } else if (propertySettings.last == '递增') {
         var searchResult = realm.query<Notes>(
             " noteProject == \$0 AND noteType == '.记录' AND noteIsDeleted != true SORT(id DESC) LIMIT(2)",
             [widget.note.noteProject]);
