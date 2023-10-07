@@ -1211,11 +1211,13 @@ class _PropertyCardState extends State<PropertyCard> {
           setDay = DateTime(now.year, 12, 31);
           break;
       }
-      widget.record[template.keys.elementAt(widget.index)] =
-          '${setDay.year}-${setDay.month}-${setDay.day}';
-      realm.write(() {
-        widget.note.noteContext = mapToyaml(widget.record);
-      });
+      if (propertySettings.last.toString() != '') {
+        widget.record[template.keys.elementAt(widget.index)] =
+            '${setDay.year}-${setDay.month}-${setDay.day}';
+        realm.write(() {
+          widget.note.noteContext = mapToyaml(widget.record);
+        });
+      }
     }
     return Card(
       elevation: 0,
