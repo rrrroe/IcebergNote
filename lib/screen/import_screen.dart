@@ -547,6 +547,16 @@ class ImportPageState extends State<ImportPage> {
                                                 .substring(0, 9))) {
                                       noteCreatTime =
                                           '${rowsAsListOfValues[i][j].toString().substring(0, 9)} 00:00:00.000000';
+                                    } else if (rowsAsListOfValues[i][j]
+                                                .toString()
+                                                .length >
+                                            10 &&
+                                        dateRegex2.hasMatch(
+                                            rowsAsListOfValues[i][j]
+                                                .toString()
+                                                .substring(0, 9))) {
+                                      noteCreatTime =
+                                          '${rowsAsListOfValues[i][j].toString().substring(0, 9).replaceAll('/', '-')} 00:00:00.000000';
                                     } else if (int.tryParse(rowsAsListOfValues[i][j].toString()) !=
                                             null &&
                                         rowsAsListOfValues[i][j]
