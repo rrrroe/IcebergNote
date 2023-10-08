@@ -346,6 +346,52 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                       ),
                     ],
                   );
+                case '日期':
+                  return Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.all(0),
+                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          color: fontColor,
+                        ),
+                        child: Text(
+                          "${propertySettings[0] ?? ''}",
+                          style: const TextStyle(
+                            fontFamily: 'LXGWWenKai',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        ' : ',
+                        style: TextStyle(
+                          fontFamily: 'LXGWWenKai',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: fontColor,
+                        ),
+                      ),
+                      Text(
+                        '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString()}${propertySettings[3] ?? ''}',
+                        style: TextStyle(
+                          fontFamily: 'LXGWWenKai',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: RegExp(r'\d{4}-\d{1,2}-\d{1,2}').hasMatch(
+                                  noteMapOther.values
+                                      .elementAt(index)
+                                      .toString())
+                              ? fontColor
+                              : Colors.red,
+                        ),
+                      ),
+                    ],
+                  );
 
                 default:
                   return Row(

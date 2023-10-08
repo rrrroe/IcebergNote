@@ -1133,9 +1133,12 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildDateCard() {
+    final dateRegex1 = RegExp(r'\d{4}-\d{1,2}-\d{1,2}');
+    DateTime setDay = DateTime.now();
+    bool dateError = false;
     if (widget.record[template.keys.elementAt(widget.index)] == null) {
       DateTime now = DateTime.now();
-      DateTime setDay = DateTime.now();
+
       switch (propertySettings.last.toString()) {
         case '今日':
         case '今天':
@@ -1222,6 +1225,12 @@ class _PropertyCardState extends State<PropertyCard> {
           widget.note.noteContext = mapToyaml(widget.record);
         });
       }
+    } else if (dateRegex1.hasMatch(
+        widget.record[template.keys.elementAt(widget.index)].toString())) {
+      setDay =
+          DateTime.parse(widget.record[template.keys.elementAt(widget.index)]);
+    } else {
+      dateError = true;
     }
     return Card(
       elevation: 0,
@@ -1262,6 +1271,7 @@ class _PropertyCardState extends State<PropertyCard> {
                     style: selectedContextButtonStyle,
                     onPressed: () async {
                       DateTime? newDateTime = await showRoundedDatePicker(
+                        initialDate: setDay,
                         height: 300,
                         context: context,
                         locale: const Locale("zh", "CN"),
@@ -1283,12 +1293,10 @@ class _PropertyCardState extends State<PropertyCard> {
                     },
                     child: Text(
                       widget.record[template.keys.elementAt(widget.index)]
-                                  .toString() ==
-                              'null'
-                          ? ''
-                          : widget.record[template.keys.elementAt(widget.index)]
-                              .toString(),
-                      style: const TextStyle(color: Colors.black),
+                          .toString(),
+                      style: dateError
+                          ? const TextStyle(color: Colors.red)
+                          : const TextStyle(color: Colors.black),
                     ),
                   )),
             ),
