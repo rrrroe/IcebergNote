@@ -1315,21 +1315,23 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildTimeCard() {
-    List<String> timeList = ['0', '0', '0'];
+    List<int> timeList = [0, 0, 0];
     Duration? tmpDuration = stringToDuration(propertySettings.last);
+    Duration? setDuration = stringToDuration(
+        widget.record[template.keys.elementAt(widget.index)].toString());
     if (widget.record[template.keys.elementAt(widget.index)] == null) {
       if (propertySettings.last == '此刻') {
         DateTime now = DateTime.now();
         widget.record[template.keys.elementAt(widget.index)] =
             '${now.hour}:${now.minute}:${now.second}';
-        timeList = ['${now.hour}', '${now.minute}', '${now.second}'];
+        timeList = [now.hour, now.minute, now.second];
       } else if (tmpDuration != null) {
         widget.record[template.keys.elementAt(widget.index)] =
             '${(tmpDuration.inHours)}:${(tmpDuration.inMinutes) % 60}:${(tmpDuration.inSeconds) % 60}';
         timeList = [
-          '${tmpDuration.inHours}',
-          '${tmpDuration.inMinutes % 60}',
-          '${tmpDuration.inSeconds % 60}'
+          tmpDuration.inHours,
+          tmpDuration.inMinutes % 60,
+          tmpDuration.inSeconds % 60
         ];
       } else {
         widget.record[template.keys.elementAt(widget.index)] = '';
@@ -1337,6 +1339,12 @@ class _PropertyCardState extends State<PropertyCard> {
       realm.write(() {
         widget.note.noteContext = mapToyaml(widget.record);
       });
+    } else if (setDuration != null) {
+      timeList = [
+        setDuration.inHours,
+        setDuration.inMinutes % 60,
+        setDuration.inSeconds % 60
+      ];
     }
     return Card(
       elevation: 0,
@@ -1380,15 +1388,10 @@ class _PropertyCardState extends State<PropertyCard> {
                       context,
                       mode: DateMode.HMS,
                       suffix: Suffix.normal(),
-                      selectDate: widget
-                                  .record[template.keys.elementAt(widget.index)]
-                                  .toString() !=
-                              'null'
-                          ? PDuration(
-                              hour: int.parse(timeList[0]),
-                              minute: int.parse(timeList[1]),
-                              second: int.parse(timeList[2]))
-                          : PDuration(),
+                      selectDate: PDuration(
+                          hour: timeList[0],
+                          minute: timeList[1],
+                          second: timeList[2]),
                       onConfirm: (p) {
                         setState(() {
                           widget.record[template.keys.elementAt(widget.index)] =
