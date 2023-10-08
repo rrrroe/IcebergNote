@@ -441,6 +441,7 @@ class RecordChangePageState extends State<RecordChangePage> {
                                 templateProperty: templateProperty,
                                 index: index,
                                 record: record,
+                                mod: widget.mod,
                               );
                             },
                           ),
@@ -499,6 +500,7 @@ class PropertyCard extends StatefulWidget {
   final Map templateProperty;
   final int index;
   final Map record;
+  final int mod;
 
   const PropertyCard({
     super.key,
@@ -507,6 +509,7 @@ class PropertyCard extends StatefulWidget {
     required this.templateProperty,
     required this.index,
     required this.record,
+    required this.mod,
   });
 
   @override
@@ -584,7 +587,8 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildNumberCard() {
-    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+    if (widget.record[template.keys.elementAt(widget.index)] == null &&
+        widget.mod == 0) {
       if (num.tryParse(propertySettings.last) != null) {
         widget.record[template.keys.elementAt(widget.index)] =
             num.tryParse(propertySettings.last);
@@ -720,7 +724,8 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildLongTextCard() {
-    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+    if (widget.record[template.keys.elementAt(widget.index)] == null &&
+        widget.mod == 0) {
       widget.record[template.keys.elementAt(widget.index)] =
           propertySettings.last.toString();
       realm.write(() {
@@ -784,7 +789,8 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildTextCard() {
-    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+    if (widget.record[template.keys.elementAt(widget.index)] == null &&
+        widget.mod == 0) {
       widget.record[template.keys.elementAt(widget.index)] =
           propertySettings.last.toString();
       realm.write(() {
@@ -866,14 +872,15 @@ class _PropertyCardState extends State<PropertyCard> {
         .record[template.keys.elementAt(widget.index)]
         .toString()
         .split(", ");
-    if (currentList[0] == 'null') {
+    if (currentList[0] == '' && widget.mod == 0) {
       currentList[0] = selectList[0];
+      widget.record[template.keys.elementAt(widget.index)] =
+          currentList.join(', ');
+      realm.write(() {
+        widget.note.noteContext = mapToyaml(widget.record);
+      });
     }
-    widget.record[template.keys.elementAt(widget.index)] =
-        currentList.join(', ');
-    realm.write(() {
-      widget.note.noteContext = mapToyaml(widget.record);
-    });
+
     selectList.removeWhere((element) => element == 'null' || element == '');
     currentList.removeWhere((element) => element == 'null' || element == '');
     return Card(
@@ -1002,14 +1009,15 @@ class _PropertyCardState extends State<PropertyCard> {
         .record[template.keys.elementAt(widget.index)]
         .toString()
         .split(", ");
-    if (currentList[0] == 'null') {
+    if (currentList[0] == '' && widget.mod == 0) {
       currentList[0] = selectList[0];
+      widget.record[template.keys.elementAt(widget.index)] =
+          currentList.join(', ');
+      realm.write(() {
+        widget.note.noteContext = mapToyaml(widget.record);
+      });
     }
-    widget.record[template.keys.elementAt(widget.index)] =
-        currentList.join(', ');
-    realm.write(() {
-      widget.note.noteContext = mapToyaml(widget.record);
-    });
+
     selectList.removeWhere((element) => element == 'null' || element == '');
     currentList.removeWhere((element) => element == 'null' || element == '');
     return Card(
@@ -1136,7 +1144,8 @@ class _PropertyCardState extends State<PropertyCard> {
     final dateRegex1 = RegExp(r'\d{4}-\d{1,2}-\d{1,2}');
     DateTime setDay = DateTime.now();
     bool dateError = false;
-    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+    if (widget.record[template.keys.elementAt(widget.index)] == null &&
+        widget.mod == 0) {
       DateTime now = DateTime.now();
 
       switch (propertySettings.last.toString()) {
@@ -1319,7 +1328,8 @@ class _PropertyCardState extends State<PropertyCard> {
     Duration? tmpDuration = stringToDuration(propertySettings.last);
     Duration? setDuration = stringToDuration(
         widget.record[template.keys.elementAt(widget.index)].toString());
-    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+    if (widget.record[template.keys.elementAt(widget.index)] == null &&
+        widget.mod == 0) {
       if (propertySettings.last == '此刻') {
         DateTime now = DateTime.now();
         widget.record[template.keys.elementAt(widget.index)] =
@@ -1432,7 +1442,8 @@ class _PropertyCardState extends State<PropertyCard> {
   Widget buildDurationCard() {
     Duration? duration = stringToDuration(
         widget.record[template.keys.elementAt(widget.index)].toString());
-    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+    if (widget.record[template.keys.elementAt(widget.index)] == null &&
+        widget.mod == 0) {
       if (duration != null) {
         widget.record[template.keys.elementAt(widget.index)] =
             '${(duration.inHours)}:${(duration.inMinutes) % 60}:${(duration.inSeconds) % 60}';
