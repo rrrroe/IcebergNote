@@ -1404,20 +1404,13 @@ class _PropertyCardState extends State<PropertyCard> {
                     );
                   },
                   child: Text(
-                    (widget.record[template.keys.elementAt(widget.index)] ==
-                                null ||
-                            widget.record[
-                                    template.keys.elementAt(widget.index)] ==
-                                '')
-                        ? '0:0:0'
-                        : widget.record[template.keys.elementAt(widget.index)]
-                                    .toString()[0] !=
-                                '0'
-                            ? widget
-                                .record[template.keys.elementAt(widget.index)]
-                                .toString()
-                            : '${widget.record[template.keys.elementAt(widget.index)].toString().substring(2).replaceAll(':', '′')}″',
-                    style: const TextStyle(color: Colors.black),
+                    setDuration == null
+                        ? widget.record[template.keys.elementAt(widget.index)]
+                            .toString()
+                        : '${timeList[0] == 0 ? '' : '${timeList[0]}时'}${timeList[1]}分${timeList[2] == 0 ? '' : '${timeList[2]}秒'}',
+                    style: setDuration == null
+                        ? const TextStyle(color: Colors.red)
+                        : const TextStyle(color: Colors.black),
                   ),
                 ),
               ),

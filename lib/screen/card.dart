@@ -192,6 +192,12 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                     ],
                   );
                 case '时间':
+                  Duration? setDuration = stringToDuration(
+                      noteMapOther.values.elementAt(index).toString());
+                  List<String> timeList = noteMapOther.values
+                      .elementAt(index)
+                      .toString()
+                      .split(':');
                   return Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -213,15 +219,23 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                         ),
                       ),
                       Text(
-                        noteMapOther.values.elementAt(index).toString()[0] !=
-                                '0'
-                            ? ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString()}${propertySettings[3] ?? ''}'
-                            : ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().substring(2).replaceAll(':', '′')}″${propertySettings[3] ?? ''}',
+                        " : ",
                         style: TextStyle(
                           fontFamily: 'LXGWWenKai',
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: fontColor,
+                        ),
+                      ),
+                      Text(
+                        setDuration == null
+                            ? noteMapOther.values.elementAt(index).toString()
+                            : '${timeList[0] == '0' ? '' : '${timeList[0]}时'}${timeList[1]}分${timeList[2] == '0' ? '' : '${timeList[2]}秒'}',
+                        style: TextStyle(
+                          fontFamily: 'LXGWWenKai',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: setDuration == null ? Colors.red : fontColor,
                         ),
                       ),
                     ],
