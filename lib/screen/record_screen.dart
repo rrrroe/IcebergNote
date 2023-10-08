@@ -1141,7 +1141,8 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildDateCard() {
-    final dateRegex1 = RegExp(r'\d{4}-\d{1,2}-\d{1,2}');
+    DateTime? tmpDate = DateTime.tryParse(
+        widget.record[template.keys.elementAt(widget.index)].toString());
     DateTime setDay = DateTime.now();
     bool dateError = false;
     if (widget.record[template.keys.elementAt(widget.index)] == null &&
@@ -1228,16 +1229,18 @@ class _PropertyCardState extends State<PropertyCard> {
           break;
       }
       if (propertySettings.last.toString() != '') {
+        String m = setDay.month.toString();
+        String d = setDay.day.toString();
+        if (setDay.month < 10) m = '0$m';
+        if (setDay.day < 10) d = '0$d';
         widget.record[template.keys.elementAt(widget.index)] =
-            '${setDay.year}-${setDay.month}-${setDay.day}';
+            '${setDay.year}-$m-$d';
         realm.write(() {
           widget.note.noteContext = mapToyaml(widget.record);
         });
       }
-    } else if (dateRegex1.hasMatch(
-        widget.record[template.keys.elementAt(widget.index)].toString())) {
-      setDay =
-          DateTime.parse(widget.record[template.keys.elementAt(widget.index)]);
+    } else if (tmpDate != null) {
+      setDay = tmpDate;
     } else {
       dateError = true;
     }
@@ -1301,8 +1304,11 @@ class _PropertyCardState extends State<PropertyCard> {
                       }
                     },
                     child: Text(
-                      widget.record[template.keys.elementAt(widget.index)]
-                          .toString(),
+                      widget.record[template.keys.elementAt(widget.index)] ==
+                              null
+                          ? ''
+                          : widget.record[template.keys.elementAt(widget.index)]
+                              .toString(),
                       style: dateError
                           ? const TextStyle(color: Colors.red)
                           : const TextStyle(color: Colors.black),
@@ -1415,8 +1421,13 @@ class _PropertyCardState extends State<PropertyCard> {
                   },
                   child: Text(
                     setDuration == null
-                        ? widget.record[template.keys.elementAt(widget.index)]
-                            .toString()
+                        ? widget.record[
+                                    template.keys.elementAt(widget.index)] ==
+                                null
+                            ? ''
+                            : widget
+                                .record[template.keys.elementAt(widget.index)]
+                                .toString()
                         : '${timeList[0] == 0 ? '' : '${timeList[0]}时'}${timeList[1]}分${timeList[2] == 0 ? '' : '${timeList[2]}秒'}',
                     style: setDuration == null
                         ? const TextStyle(color: Colors.red)
