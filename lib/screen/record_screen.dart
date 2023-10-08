@@ -720,13 +720,15 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildLongTextCard() {
-    widget.record[template.keys.elementAt(widget.index)] =
-        propertySettings.last.toString();
-    realm.write(() {
-      widget.note.noteContext = mapToyaml(widget.record);
-    });
-    contentController.text =
-        propertySettings.last.toString().replaceAll('    ', '\n');
+    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+      widget.record[template.keys.elementAt(widget.index)] =
+          propertySettings.last.toString();
+      realm.write(() {
+        widget.note.noteContext = mapToyaml(widget.record);
+      });
+      contentController.text =
+          propertySettings.last.toString().replaceAll('    ', '\n');
+    }
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -782,12 +784,14 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildTextCard() {
-    widget.record[template.keys.elementAt(widget.index)] =
-        propertySettings.last.toString();
-    realm.write(() {
-      widget.note.noteContext = mapToyaml(widget.record);
-    });
-    contentController.text = propertySettings.last.toString();
+    if (widget.record[template.keys.elementAt(widget.index)] == null) {
+      widget.record[template.keys.elementAt(widget.index)] =
+          propertySettings.last.toString();
+      realm.write(() {
+        widget.note.noteContext = mapToyaml(widget.record);
+      });
+      contentController.text = propertySettings.last.toString();
+    }
     return Card(
       elevation: 0,
       color: Color.fromARGB(

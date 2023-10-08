@@ -517,16 +517,18 @@ class ImportPageState extends State<ImportPage> {
                               // if (_paths!.first.name.endsWith('.csv')) {
                               List<List<dynamic>> rowsAsListOfValues =
                                   const CsvToListConverter().convert(content);
+                              int length = rowsAsListOfValues[0].length;
                               for (int i = 0;
                                   i < rowsAsListOfValues.length;
                                   i++) {
                                 String noteContent = '';
                                 String noteCreatTime = '';
-                                final dateRegex =
+                                final dateRegex1 =
                                     RegExp(r'\d{4}-\d{1,2}-\d{1,2}');
-
+                                final dateRegex2 =
+                                    RegExp(r'\d{4}/\d{1,2}/\d{1,2}');
                                 if (i == 0) {
-                                  for (int j = 0; j < 12; j++) {
+                                  for (int j = 0; j < length; j++) {
                                     noteContent =
                                         '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString()},,,,,\n';
                                   }
@@ -534,20 +536,18 @@ class ImportPageState extends State<ImportPage> {
                                       '${noteContent}settings: 1\ncolor: [135, 198, 181]';
                                   importType = '.表头';
                                 } else {
-                                  for (int j = 0; j < 12; j++) {
+                                  for (int j = 0; j < length; j++) {
                                     if (rowsAsListOfValues[i][j]
                                                 .toString()
                                                 .length >
                                             10 &&
-                                        dateRegex.hasMatch(rowsAsListOfValues[i]
-                                                [j]
-                                            .toString()
-                                            .substring(0, 9))) {
+                                        dateRegex1.hasMatch(
+                                            rowsAsListOfValues[i][j]
+                                                .toString()
+                                                .substring(0, 9))) {
                                       noteCreatTime =
-                                          '${rowsAsListOfValues[i][j].toString().substring(0, 9)} 00:00:00';
-                                    } else if (int.tryParse(
-                                                rowsAsListOfValues[i][j]
-                                                    .toString()) !=
+                                          '${rowsAsListOfValues[i][j].toString().substring(0, 9)} 00:00:00.000000';
+                                    } else if (int.tryParse(rowsAsListOfValues[i][j].toString()) !=
                                             null &&
                                         rowsAsListOfValues[i][j]
                                                 .toString()
@@ -577,16 +577,18 @@ class ImportPageState extends State<ImportPage> {
                                       //     noteContent =
                                       //         '$noteContent${j + 1}: ${num2.toString()}:${num3.toString()}:0\n';
                                       //   }
-                                      // } else if (rowsAsListOfValues[i][j]
-                                      //             .toString()
-                                      //             .length ==
-                                      //         10 &&
-                                      //     rowsAsListOfValues[i][j][4].toString() ==
-                                      //         '/' &&
-                                      //     rowsAsListOfValues[i][j][7].toString() ==
-                                      //         '/') {
-                                      //   noteContent =
-                                      //       '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('/', '-')}\n';
+                                    } else if (rowsAsListOfValues[i][j]
+                                                .toString()
+                                                .length ==
+                                            10 &&
+                                        rowsAsListOfValues[i][j][4].toString() ==
+                                            '/' &&
+                                        rowsAsListOfValues[i][j][7].toString() ==
+                                            '/') {
+                                      noteContent =
+                                          '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('/', '-')}\n';
+                                      noteCreatTime =
+                                          '${rowsAsListOfValues[i][j].toString().substring(0, 9).replaceAll('/', '-')} 00:00:00.000000';
                                     } else {
                                       noteContent =
                                           '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('\n', '    ')}\n';
