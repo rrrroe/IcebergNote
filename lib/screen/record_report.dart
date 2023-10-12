@@ -9,7 +9,8 @@ import '../constants.dart';
 import '../main.dart';
 import '../notes.dart';
 import 'card.dart';
-import 'record_graph.dart';
+import 'record_graph_bar.dart';
+import 'record_graph_line.dart';
 import 'record_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -532,7 +533,7 @@ class _ReportScreenState extends State<ReportScreen>
                   data.add(dateMap[i]);
                 }
             }
-            cardList.add(LineChartSample(
+            cardList.add(BarChartSample3(
               fontColor: fontColor,
               dataList: data,
               currentReportDurationType: currentReportDurationType,
