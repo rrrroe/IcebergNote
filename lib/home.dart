@@ -7,7 +7,7 @@ import 'package:icebergnote/screen/review_screen.dart';
 import 'screen/import_screen.dart';
 import 'screen/noteslist_screen.dart';
 import 'constants.dart';
-import 'screen/report_screen.dart';
+import 'screen/record_report.dart';
 import 'screen/todo_screen.dart';
 
 int screenIndexGlobal = 0;

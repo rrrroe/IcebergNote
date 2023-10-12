@@ -9,8 +9,10 @@ import '../constants.dart';
 import '../main.dart';
 import '../notes.dart';
 import 'card.dart';
+import 'record_graph.dart';
 import 'record_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key, required this.duration});
@@ -31,7 +33,7 @@ class _ReportScreenState extends State<ReportScreen>
   ];
   late TabController tabController;
   String currentProject = '';
-  String currentReportType = '周报';
+  String currentReportDurationType = '周报';
   int dateFlag = 0;
   String selectDuration = '';
   late RealmResults<Notes> notesList;
@@ -111,8 +113,8 @@ class _ReportScreenState extends State<ReportScreen>
     //     dateFlag = key;
     //   }
     // });
-    if (templateProperty.keys.contains(currentReportType)) {
-      List tmpstr = templateProperty[currentReportType].split(',');
+    if (templateProperty.keys.contains(currentReportDurationType)) {
+      List tmpstr = templateProperty[currentReportDurationType].split(',');
       for (int index = 0; index < tmpstr.length; index++) {
         List tmp = tmpstr[index].toString().split('-');
         List tmp1 = [];
@@ -258,7 +260,7 @@ class _ReportScreenState extends State<ReportScreen>
                     }
                   },
                   child: Text(
-                    currentReportType,
+                    currentReportDurationType,
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -271,9 +273,9 @@ class _ReportScreenState extends State<ReportScreen>
                   child: Text(type),
                   onPressed: () {
                     setState(() {
-                      currentReportType = type;
+                      currentReportDurationType = type;
                       quarter = ((now.month - 1) ~/ 3) + 1;
-                      switch (currentReportType) {
+                      switch (currentReportDurationType) {
                         case '自定义':
                         case '周报':
                           firstDay = now.subtract(Duration(days: weekday - 1));
@@ -319,7 +321,7 @@ class _ReportScreenState extends State<ReportScreen>
             onPressed: () {
               quarter = ((firstDay.month - 1) ~/ 3) + 1;
               setState(() {
-                switch (currentReportType) {
+                switch (currentReportDurationType) {
                   case '自定义':
                   case '周报':
                     firstDay = firstDay.add(const Duration(days: -7));
@@ -364,7 +366,7 @@ class _ReportScreenState extends State<ReportScreen>
           IconButton.filledTonal(
             onPressed: () {
               setState(() {
-                switch (currentReportType) {
+                switch (currentReportDurationType) {
                   case '自定义':
                   case '周报':
                     firstDay = firstDay.add(const Duration(days: 7));
@@ -421,8 +423,8 @@ class _ReportScreenState extends State<ReportScreen>
     filterNoteList = [];
     graphSettings = [];
     List<dynamic> filterSelect = [0];
-    if (templateProperty.keys.contains(currentReportType)) {
-      List tmpstr = templateProperty[currentReportType].split(',');
+    if (templateProperty.keys.contains(currentReportDurationType)) {
+      List tmpstr = templateProperty[currentReportDurationType].split(',');
       for (int index = 0; index < tmpstr.length; index++) {
         List tmp = tmpstr[index].toString().split('-');
         List tmp1 = [];
@@ -484,16 +486,74 @@ class _ReportScreenState extends State<ReportScreen>
         for (int i = 0; i < filterRecordList.length; i++) {
           data.add(1);
         }
-        cardList
-            .add(graphGenerate('', '条目', graphSetting, data, fontColor, ''));
+        cardList.add(
+            statisticsGenerate('', '条目', graphSetting, data, fontColor, ''));
       }
       if (template.containsKey(graphSetting[0])) {
-        List data = [];
-        for (int i = 0; i < filterRecordList.length; i++) {
-          data.add(filterRecordList[i][graphSetting[0]]);
+        if (graphSetting[1] == '折线图') {
+          if (template[graphSetting[0]].toString().split(',')[1] == '数字') {
+            List<num?> data = [];
+            Map dateMap = {};
+            for (int i = 0; i < filterRecordList.length; i++) {
+              if (filterRecordList[i][graphSetting[0]] != null) {
+                dateMap[DateTime.parse(filterRecordList[i][dateFlag]).weekday -
+                    1] = filterRecordList[i][graphSetting[0]];
+              }
+            }
+
+            switch (currentReportDurationType) {
+              case '周报':
+                for (int i = 0; i < 7; i++) {
+                  data.add(dateMap[i]);
+                }
+            }
+            cardList.add(LineChartSample(
+              fontColor: fontColor,
+              dataList: data,
+              currentReportDurationType: currentReportDurationType,
+              title: '',
+              unit: propertySettings[3],
+            ));
+          }
+        } else if (graphSetting[1] == '柱状图') {
+          if (template[graphSetting[0]].toString().split(',')[1] == '数字') {
+            List<num?> data = [];
+            Map dateMap = {};
+            for (int i = 0; i < filterRecordList.length; i++) {
+              if (filterRecordList[i][graphSetting[0]] != null) {
+                dateMap[DateTime.parse(filterRecordList[i][dateFlag]).weekday -
+                    1] = filterRecordList[i][graphSetting[0]];
+              }
+            }
+
+            switch (currentReportDurationType) {
+              case '周报':
+                for (int i = 0; i < 7; i++) {
+                  data.add(dateMap[i]);
+                }
+            }
+            cardList.add(LineChartSample(
+              fontColor: fontColor,
+              dataList: data,
+              currentReportDurationType: currentReportDurationType,
+              title: '',
+              unit: propertySettings[3],
+            ));
+          }
+        } else {
+          List data = [];
+          for (int i = 0; i < filterRecordList.length; i++) {
+            data.add(filterRecordList[i][graphSetting[0]]);
+          }
+
+          cardList.add(statisticsGenerate(
+              propertySettings[0],
+              propertySettings[1],
+              graphSetting,
+              data,
+              fontColor,
+              propertySettings[3]));
         }
-        cardList.add(graphGenerate(propertySettings[0], propertySettings[1],
-            graphSetting, data, fontColor, propertySettings[3]));
       }
       if (graphSetting[0] == 1111) {
         cardList.add(const SizedBox(height: 5));
@@ -796,7 +856,7 @@ class _ReportScreenState extends State<ReportScreen>
   }
 }
 
-Widget graphGenerate(String dataName, String dataType, List graphSetting,
+Widget statisticsGenerate(String dataName, String dataType, List graphSetting,
     List data, Color color, String dataUnit) {
   switch (dataType) {
     case '条目':
@@ -957,6 +1017,10 @@ Widget graphGenerate(String dataName, String dataType, List graphSetting,
               ),
             ],
           );
+        case '折线图':
+          return LineChart(LineChartData(
+              titlesData: const FlTitlesData(),
+              backgroundColor: Colors.white70));
       }
       return const SizedBox();
     case '时长':
