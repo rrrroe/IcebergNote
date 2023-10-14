@@ -11,7 +11,7 @@ class BarChartSample3 extends StatefulWidget {
       required this.title,
       required this.unit});
   final Color fontColor;
-  final List<num?> dataList;
+  final List<num> dataList;
   final String currentReportDurationType;
   final String title;
   final String unit;
@@ -34,41 +34,35 @@ class BarChartSample3State extends State<BarChartSample3> {
       widget.fontColor,
       widget.fontColor,
     ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    spotList = [];
+    maxX = 20;
+    minX = 0;
+    maxY = 5;
+    minY = 0;
+    scaleYList = [];
     for (int i = 0; i < widget.dataList.length; i++) {
-      if (widget.dataList[i] != null) {
-        spotList.add(
-          BarChartGroupData(
-            x: i,
-            barsSpace: 20,
-            barRods: [
-              BarChartRodData(
-                toY: widget.dataList[i]!.toDouble(),
-                gradient: _barsGradient,
-              )
-            ],
-            showingTooltipIndicators: [0],
-          ),
-        );
-        while (maxY < widget.dataList[i]!) {
-          maxY = maxY + 5;
-        }
-        while (minY > widget.dataList[i]!) {
-          minY = minY - 5;
-        }
-      } else {
-        spotList.add(
-          BarChartGroupData(
-            x: i,
-            barsSpace: 20,
-            barRods: [
-              BarChartRodData(
-                toY: 0,
-                gradient: _barsGradient,
-              )
-            ],
-            showingTooltipIndicators: [0],
-          ),
-        );
+      spotList.add(
+        BarChartGroupData(
+          x: i,
+          barsSpace: 20,
+          barRods: [
+            BarChartRodData(
+              toY: double.parse(widget.dataList[i].toStringAsFixed(2)),
+              gradient: _barsGradient,
+            )
+          ],
+          showingTooltipIndicators: [0],
+        ),
+      );
+      while (maxY < widget.dataList[i]) {
+        maxY = maxY + 5;
+      }
+      while (minY > widget.dataList[i]) {
+        minY = minY - 5;
       }
     }
     scaleYList = [
@@ -84,10 +78,6 @@ class BarChartSample3State extends State<BarChartSample3> {
       case '周报':
         maxX = 6;
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1.6,
       child: BarChart(
@@ -192,13 +182,16 @@ class BarChartSample3State extends State<BarChartSample3> {
             getTitlesWidget: bottomTitleWidgets,
           ),
         ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 25,
-            getTitlesWidget: leftTitleWidgets,
-          ),
+        leftTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
         ),
+        // leftTitles: AxisTitles(
+        //   sideTitles: SideTitles(
+        //     showTitles: true,
+        //     reservedSize: 25,
+        //     getTitlesWidget: leftTitleWidgets,
+        //   ),
+        // ),
         topTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),

@@ -10,7 +10,7 @@ class LineChartSample extends StatefulWidget {
       required this.title,
       required this.unit});
   final Color fontColor;
-  final List<num?> dataList;
+  final List<num> dataList;
   final String currentReportDurationType;
   final String title;
   final String unit;
@@ -33,19 +33,26 @@ class _LineChartSampleState extends State<LineChartSample> {
       widget.fontColor,
       widget.fontColor,
     ];
+  }
+
+  bool showAvg = false;
+
+  @override
+  Widget build(BuildContext context) {
+    spotList = [];
+    maxX = 6;
+    minX = 0;
+    maxY = 5;
+    minY = 0;
+    scaleYList = [];
     for (int i = 0; i < widget.dataList.length; i++) {
-      if (widget.dataList[i] != null) {
-        spotList.add(FlSpot(i.toDouble(), widget.dataList[i]!.toDouble()));
-        // maxY = max(maxY, widget.dataList[i]!.toInt() + 1).toDouble();
-        // minY = min(minY, widget.dataList[i]!.toInt() - 1).toDouble();
-        while (maxY < widget.dataList[i]!) {
-          maxY = maxY + 5;
-        }
-        while (minY > widget.dataList[i]!) {
-          minY = minY - 5;
-        }
-      } else {
-        spotList.add(FlSpot(i.toDouble(), 0));
+      spotList.add(FlSpot(
+          i.toDouble(), double.parse(widget.dataList[i].toStringAsFixed(2))));
+      while (maxY < widget.dataList[i]) {
+        maxY = maxY + 5;
+      }
+      while (minY > widget.dataList[i]) {
+        minY = minY - 5;
       }
     }
     scaleYList = [
@@ -61,12 +68,6 @@ class _LineChartSampleState extends State<LineChartSample> {
       case '周报':
         maxX = 6;
     }
-  }
-
-  bool showAvg = false;
-
-  @override
-  Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
         AspectRatio(
@@ -79,7 +80,7 @@ class _LineChartSampleState extends State<LineChartSample> {
               bottom: 12,
             ),
             child: LineChart(
-              showAvg ? avgData() : mainData(),
+              mainData(),
             ),
           ),
         ),

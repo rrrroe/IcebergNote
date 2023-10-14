@@ -13,7 +13,6 @@ import 'record_graph_bar.dart';
 import 'record_graph_line.dart';
 import 'record_screen.dart';
 import 'package:intl/intl.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key, required this.duration});
@@ -55,15 +54,18 @@ class _ReportScreenState extends State<ReportScreen>
   int quarter = 1;
   List typeList = ['周报', '月报', '季报', '年报', '自定义'];
   List<String> recordProjectList = [];
+  List<num?> graphDataList = [];
   late List<Notes> recordProjectDistinctList;
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: tabs.length, vsync: this);
-    reportInit();
-  }
-
-  void reportInit() {
+    DateTime now = DateTime.now();
+    weekday = now.weekday;
+    firstDay = now.subtract(Duration(days: weekday - 1));
+    firstDay = DateTime(firstDay.year, firstDay.month, firstDay.day);
+    lastDay = now.add(Duration(days: DateTime.daysPerWeek - weekday));
+    lastDay = DateTime(lastDay.year, lastDay.month, lastDay.day);
     List<Notes> recordProjectDistinctList = realm
         .query<Notes>(
             "noteType == '.表头' AND noteProject !='' DISTINCT(noteProject)")
@@ -103,12 +105,7 @@ class _ReportScreenState extends State<ReportScreen>
     );
 
     propertySettings1 = template.values.elementAt(0).split(",");
-    DateTime now = DateTime.now();
-    weekday = now.weekday;
-    firstDay = now.subtract(Duration(days: weekday - 1));
-    firstDay = DateTime(firstDay.year, firstDay.month, firstDay.day);
-    lastDay = now.add(Duration(days: DateTime.daysPerWeek - weekday));
-    lastDay = DateTime(lastDay.year, lastDay.month, lastDay.day);
+
     // template.forEach((key, value) {
     //   if (value.toString().split(',')[1] == '日期') {
     //     dateFlag = key;
@@ -135,6 +132,70 @@ class _ReportScreenState extends State<ReportScreen>
         recordList.add(loadYaml(notesList[i].noteContext) as YamlMap);
       }
     }
+    reportInit();
+  }
+
+  void reportInit() {
+    filterNoteList = [];
+    graphSettings = [];
+
+    List<dynamic> filterSelect = [0];
+    if (templateProperty.keys.contains(currentReportDurationType)) {
+      List tmpstr = templateProperty[currentReportDurationType].split(',');
+      for (int index = 0; index < tmpstr.length; index++) {
+        List tmp = tmpstr[index].toString().split('-');
+        List tmp1 = [];
+        tmp1.add(int.tryParse(tmp[0]));
+        for (int i = 1; i < tmp.length; i++) {
+          tmp1.add(tmp[i]);
+        }
+        if (tmp1[1] == '过滤' &&
+            template[tmp1[0]].toString().split(',')[1] == '单选') {
+          filterSelect[0] = tmp1[0];
+          filterSelect.addAll(tmp1[2].toString().split('||'));
+        } else {
+          graphSettings.add(tmp1);
+        }
+      }
+      // print(filterSelect);
+    }
+
+    for (int i = 0; i < recordList.length; i++) {
+      DateTime? date;
+      if (dateFlag == 0) {
+        date = DateTime.parse("1234-05-06 07:08:09");
+      } else {
+        if (recordList[i][dateFlag] != null) {
+          date = ymd.parse(recordList[i][dateFlag].toString());
+        }
+      }
+      bool arrayCrossFlag = false;
+
+      if (date != null) {
+        if (date.isBefore(lastDay.add(const Duration(days: 1, seconds: -1))) &&
+            date.isAfter(firstDay.add(const Duration(seconds: -1)))) {
+          if (filterSelect[0] != 0) {
+            List recordSelectProperty =
+                recordList[i][filterSelect[0]].toString().split(', ');
+            for (int j = 0; j < recordSelectProperty.length; j++) {
+              if (filterSelect.contains(recordSelectProperty[j])) {
+                arrayCrossFlag = true;
+              }
+            }
+            if (arrayCrossFlag) {
+              filterNoteList.add(notesList[i]);
+            }
+          } else {
+            filterNoteList.add(notesList[i]);
+          }
+        }
+      }
+    }
+    filterRecordList = [];
+    for (int i = 0; i < filterNoteList.length; i++) {
+      filterRecordList.add(loadYaml(filterNoteList[i].noteContext) as YamlMap);
+    }
+    graphDataList = [];
   }
 
   @override
@@ -311,6 +372,7 @@ class _ReportScreenState extends State<ReportScreen>
                           firstDay = DateTime(now.year, 1, 1);
                           lastDay = DateTime(now.year, 12, 31);
                       }
+                      reportInit();
                     });
                   },
                 );
@@ -349,6 +411,7 @@ class _ReportScreenState extends State<ReportScreen>
                     lastDay = firstDay.add(const Duration(days: -1));
                     firstDay = DateTime(lastDay.year, 1, 1);
                 }
+                reportInit();
               });
             },
             style: ButtonStyle(
@@ -395,6 +458,7 @@ class _ReportScreenState extends State<ReportScreen>
                     firstDay = lastDay.add(const Duration(days: 1));
                     lastDay = DateTime(firstDay.year, 12, 31);
                 }
+                reportInit();
               });
             },
             style: ButtonStyle(
@@ -421,64 +485,7 @@ class _ReportScreenState extends State<ReportScreen>
 
   List<Widget> buildCardList() {
     List<Widget> cardList = [];
-    filterNoteList = [];
-    graphSettings = [];
-    List<dynamic> filterSelect = [0];
-    if (templateProperty.keys.contains(currentReportDurationType)) {
-      List tmpstr = templateProperty[currentReportDurationType].split(',');
-      for (int index = 0; index < tmpstr.length; index++) {
-        List tmp = tmpstr[index].toString().split('-');
-        List tmp1 = [];
-        tmp1.add(int.tryParse(tmp[0]));
-        for (int i = 1; i < tmp.length; i++) {
-          tmp1.add(tmp[i]);
-        }
-        if (tmp1[1] == '过滤' &&
-            template[tmp1[0]].toString().split(',')[1] == '单选') {
-          filterSelect[0] = tmp1[0];
-          filterSelect.addAll(tmp1[2].toString().split('||'));
-        } else {
-          graphSettings.add(tmp1);
-        }
-      }
-      // print(filterSelect);
-    }
 
-    for (int i = 0; i < recordList.length; i++) {
-      DateTime? date;
-      if (dateFlag == 0) {
-        date = DateTime.parse("1234-05-06 07:08:09");
-      } else {
-        if (recordList[i][dateFlag] != null) {
-          date = ymd.parse(recordList[i][dateFlag].toString());
-        }
-      }
-      bool arrayCrossFlag = false;
-
-      if (date != null) {
-        if (date.isBefore(lastDay.add(const Duration(days: 1, seconds: -1))) &&
-            date.isAfter(firstDay.add(const Duration(seconds: -1)))) {
-          if (filterSelect[0] != 0) {
-            List recordSelectProperty =
-                recordList[i][filterSelect[0]].toString().split(', ');
-            for (int j = 0; j < recordSelectProperty.length; j++) {
-              if (filterSelect.contains(recordSelectProperty[j])) {
-                arrayCrossFlag = true;
-              }
-            }
-            if (arrayCrossFlag) {
-              filterNoteList.add(notesList[i]);
-            }
-          } else {
-            filterNoteList.add(notesList[i]);
-          }
-        }
-      }
-    }
-    filterRecordList = [];
-    for (int i = 0; i < filterNoteList.length; i++) {
-      filterRecordList.add(loadYaml(filterNoteList[i].noteContext) as YamlMap);
-    }
     for (var graphSetting in graphSettings) {
       List propertySettings = template[graphSetting[0]].toString().split(',');
 
@@ -492,20 +499,18 @@ class _ReportScreenState extends State<ReportScreen>
       }
       if (template.containsKey(graphSetting[0])) {
         if (graphSetting[1] == '折线图') {
+          List<num> data = [];
           if (template[graphSetting[0]].toString().split(',')[1] == '数字') {
-            List<num?> data = [];
-            Map dateMap = {};
-            for (int i = 0; i < filterRecordList.length; i++) {
-              if (filterRecordList[i][graphSetting[0]] != null) {
-                dateMap[DateTime.parse(filterRecordList[i][dateFlag]).weekday -
-                    1] = filterRecordList[i][graphSetting[0]];
-              }
-            }
-
             switch (currentReportDurationType) {
               case '周报':
-                for (int i = 0; i < 7; i++) {
-                  data.add(dateMap[i]);
+                data = [0, 0, 0, 0, 0, 0, 0];
+                for (int i = 0; i < filterRecordList.length; i++) {
+                  if (filterRecordList[i][graphSetting[0]].runtimeType == int ||
+                      filterRecordList[i][graphSetting[0]].runtimeType ==
+                          double) {
+                    data[DateTime.parse(filterRecordList[i][dateFlag]).weekday -
+                        1] += filterRecordList[i][graphSetting[0]];
+                  }
                 }
             }
             cardList.add(LineChartSample(
@@ -517,22 +522,21 @@ class _ReportScreenState extends State<ReportScreen>
             ));
           }
         } else if (graphSetting[1] == '柱状图') {
+          List<num> data = [];
           if (template[graphSetting[0]].toString().split(',')[1] == '数字') {
-            List<num?> data = [];
-            Map dateMap = {};
-            for (int i = 0; i < filterRecordList.length; i++) {
-              if (filterRecordList[i][graphSetting[0]] != null) {
-                dateMap[DateTime.parse(filterRecordList[i][dateFlag]).weekday -
-                    1] = filterRecordList[i][graphSetting[0]];
-              }
-            }
-
             switch (currentReportDurationType) {
               case '周报':
-                for (int i = 0; i < 7; i++) {
-                  data.add(dateMap[i]);
+                data = [0, 0, 0, 0, 0, 0, 0];
+                for (int i = 0; i < filterRecordList.length; i++) {
+                  if (filterRecordList[i][graphSetting[0]].runtimeType == int ||
+                      filterRecordList[i][graphSetting[0]].runtimeType ==
+                          double) {
+                    data[DateTime.parse(filterRecordList[i][dateFlag]).weekday -
+                        1] += filterRecordList[i][graphSetting[0]];
+                  }
                 }
             }
+            cardList.add(const SizedBox(height: 25));
             cardList.add(BarChartSample3(
               fontColor: fontColor,
               dataList: data,
@@ -1018,10 +1022,6 @@ Widget statisticsGenerate(String dataName, String dataType, List graphSetting,
               ),
             ],
           );
-        case '折线图':
-          return LineChart(LineChartData(
-              titlesData: const FlTitlesData(),
-              backgroundColor: Colors.white70));
       }
       return const SizedBox();
     case '时长':
