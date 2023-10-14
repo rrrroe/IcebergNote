@@ -66,6 +66,11 @@ class _ReportScreenState extends State<ReportScreen>
     firstDay = DateTime(firstDay.year, firstDay.month, firstDay.day);
     lastDay = now.add(Duration(days: DateTime.daysPerWeek - weekday));
     lastDay = DateTime(lastDay.year, lastDay.month, lastDay.day);
+
+    reportInit();
+  }
+
+  void reportInit() {
     List<Notes> recordProjectDistinctList = realm
         .query<Notes>(
             "noteType == '.表头' AND noteProject !='' DISTINCT(noteProject)")
@@ -132,10 +137,6 @@ class _ReportScreenState extends State<ReportScreen>
         recordList.add(loadYaml(notesList[i].noteContext) as YamlMap);
       }
     }
-    reportInit();
-  }
-
-  void reportInit() {
     filterNoteList = [];
     graphSettings = [];
 
