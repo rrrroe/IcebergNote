@@ -130,7 +130,7 @@ class BarChartSample3State extends State<BarChartSample3> {
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
       color: Colors.black,
-      fontWeight: FontWeight.bold,
+      // fontWeight: FontWeight.bold,
       fontSize: 14,
     );
     String text;

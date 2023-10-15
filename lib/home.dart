@@ -181,37 +181,52 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             handleBrightnessChange: widget.handleBrightnessChange,
             showTooltipBelow: false,
           ),
-          IconButton(
-            icon: const Icon(Icons.rate_review_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ReviewPage()),
-              );
+          PopupMenuButton(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              switch (value) {
+                case 1:
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ReviewPage()),
+                  );
+                  break;
+                case 2:
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ImportPage()),
+                  );
+                  break;
+                case 3:
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SearchPage(
+                              mod: 1,
+                              txt: '',
+                            )),
+                  );
+                  break;
+                default:
+              }
             },
-          ),
-          IconButton(
-            icon: const Icon(Icons.file_download_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ImportPage()),
-              );
+            itemBuilder: (context) {
+              return [
+                const PopupMenuItem(
+                  value: 1,
+                  child: Text('复盘'),
+                ),
+                const PopupMenuItem(
+                  value: 2,
+                  child: Text("导入"),
+                ),
+                const PopupMenuItem(
+                  value: 3,
+                  child: Text("搜索"),
+                ),
+              ];
             },
-          ),
-          // IconButton(
-          //   icon: const Icon(Icons.search),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(
-          //           builder: (context) => const SearchPage(
-          //                 mod: 1,
-          //                 txt: '',
-          //               )),
-          //     );
-          //   },
-          // ),
+          )
         ]);
   }
 

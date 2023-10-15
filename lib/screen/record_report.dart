@@ -545,7 +545,6 @@ class _ReportScreenState extends State<ReportScreen>
                 }
                 break;
             }
-            print(data);
             if (graphSetting[1] == '折线图') {
               cardList.add(
                 LineChartSample(
