@@ -530,9 +530,22 @@ class _ReportScreenState extends State<ReportScreen>
                         1] += filterRecordList[i][graphSetting[0]];
                   }
                 }
-                print(data);
+                break;
+              case '年报':
+                for (int i = 0; i < 12; i++) {
+                  data.add(0);
+                }
+                for (int i = 0; i < filterRecordList.length; i++) {
+                  if (filterRecordList[i][graphSetting[0]].runtimeType == int ||
+                      filterRecordList[i][graphSetting[0]].runtimeType ==
+                          double) {
+                    data[DateTime.parse(filterRecordList[i][dateFlag]).month -
+                        1] += filterRecordList[i][graphSetting[0]];
+                  }
+                }
                 break;
             }
+            print(data);
             if (graphSetting[1] == '折线图') {
               cardList.add(
                 LineChartSample(
@@ -546,7 +559,6 @@ class _ReportScreenState extends State<ReportScreen>
               );
             }
             if (graphSetting[1] == '柱状图') {
-              cardList.add(const SizedBox(height: 25));
               cardList.add(
                 BarChartSample3(
                   fontColor: fontColor,

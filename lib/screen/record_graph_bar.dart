@@ -75,17 +75,20 @@ class BarChartSample3State extends State<BarChartSample3> {
       0
     ];
 
-    return AspectRatio(
-      aspectRatio: 1.6,
-      child: BarChart(
-        BarChartData(
-          barTouchData: barTouchData,
-          titlesData: titlesData,
-          borderData: borderData,
-          barGroups: spotList,
-          gridData: const FlGridData(show: false),
-          alignment: BarChartAlignment.spaceAround,
-          maxY: maxY.toDouble(),
+    return Container(
+      margin: const EdgeInsets.only(left: 25, right: 25, top: 25, bottom: 0),
+      child: AspectRatio(
+        aspectRatio: 1.6,
+        child: BarChart(
+          BarChartData(
+            barTouchData: barTouchData,
+            titlesData: titlesData,
+            borderData: borderData,
+            barGroups: spotList,
+            gridData: const FlGridData(show: false),
+            alignment: BarChartAlignment.spaceAround,
+            maxY: maxY.toDouble(),
+          ),
         ),
       ),
     );
@@ -163,17 +166,22 @@ class BarChartSample3State extends State<BarChartSample3> {
         break;
       case '月报':
         switch (value.toInt()) {
+          case 0:
           case 4:
           case 9:
           case 14:
           case 19:
           case 24:
+          case 29:
             text = (value.toInt() + 1).toString();
             break;
           default:
             text = '';
             break;
         }
+        break;
+      case '年报':
+        text = (value.toInt() + 1).toString();
         break;
       default:
         text = value.toInt().toString();
@@ -187,19 +195,7 @@ class BarChartSample3State extends State<BarChartSample3> {
   }
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-    );
-
-    String text;
-    if (scaleYList.contains(value.toInt())) {
-      text = value.toInt().toString();
-    } else {
-      text = '';
-    }
-
-    return Text(text, style: style, textAlign: TextAlign.center);
+    return const SizedBox();
   }
 
   FlTitlesData get titlesData => FlTitlesData(
@@ -217,7 +213,7 @@ class BarChartSample3State extends State<BarChartSample3> {
         // leftTitles: AxisTitles(
         //   sideTitles: SideTitles(
         //     showTitles: true,
-        //     reservedSize: 25,
+        //     reservedSize: 30,
         //     getTitlesWidget: leftTitleWidgets,
         //   ),
         // ),
