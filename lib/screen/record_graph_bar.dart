@@ -9,12 +9,15 @@ class BarChartSample3 extends StatefulWidget {
       required this.dataList,
       required this.currentReportDurationType,
       required this.title,
-      required this.unit});
+      required this.unit,
+      required this.length});
   final Color fontColor;
   final List<num> dataList;
   final String currentReportDurationType;
   final String title;
   final String unit;
+  final int length;
+
   @override
   State<StatefulWidget> createState() => BarChartSample3State();
 }
@@ -22,8 +25,6 @@ class BarChartSample3 extends StatefulWidget {
 class BarChartSample3State extends State<BarChartSample3> {
   List<Color> gradientColors = [];
   List<BarChartGroupData> spotList = [];
-  int maxX = 20;
-  int minX = 0;
   int maxY = 5;
   int minY = 0;
   List<int> scaleYList = [];
@@ -39,21 +40,19 @@ class BarChartSample3State extends State<BarChartSample3> {
   @override
   Widget build(BuildContext context) {
     spotList = [];
-    maxX = 20;
-    minX = 0;
     maxY = 5;
     minY = 0;
     scaleYList = [];
-    for (int i = 0; i < widget.dataList.length; i++) {
+    for (int i = 0; i < widget.length; i++) {
       spotList.add(
         BarChartGroupData(
           x: i,
-          barsSpace: 2,
+          barsSpace: 0,
           barRods: [
             BarChartRodData(
               toY: double.parse(widget.dataList[i].toStringAsFixed(2)),
               gradient: _barsGradient,
-              width: 15,
+              width: 200 / widget.length,
             )
           ],
           showingTooltipIndicators: [0],
@@ -75,10 +74,7 @@ class BarChartSample3State extends State<BarChartSample3> {
       maxY,
       0
     ];
-    switch (widget.currentReportDurationType) {
-      case '周报':
-        maxX = 6;
-    }
+
     return AspectRatio(
       aspectRatio: 1.6,
       child: BarChart(
@@ -135,30 +131,52 @@ class BarChartSample3State extends State<BarChartSample3> {
       fontSize: 14,
     );
     String text;
-    switch (value.toInt()) {
-      case 0:
-        text = '周一';
+
+    switch (widget.currentReportDurationType) {
+      case '周报':
+        switch (value.toInt()) {
+          case 0:
+            text = '周一';
+            break;
+          case 1:
+            text = '周二';
+            break;
+          case 2:
+            text = '周三';
+            break;
+          case 3:
+            text = '周四';
+            break;
+          case 4:
+            text = '周五';
+            break;
+          case 5:
+            text = '周六';
+            break;
+          case 6:
+            text = '周日';
+            break;
+          default:
+            text = '';
+            break;
+        }
         break;
-      case 1:
-        text = '周二';
-        break;
-      case 2:
-        text = '周三';
-        break;
-      case 3:
-        text = '周四';
-        break;
-      case 4:
-        text = '周五';
-        break;
-      case 5:
-        text = '周六';
-        break;
-      case 6:
-        text = '周日';
+      case '月报':
+        switch (value.toInt()) {
+          case 4:
+          case 9:
+          case 14:
+          case 19:
+          case 24:
+            text = (value.toInt() + 1).toString();
+            break;
+          default:
+            text = '';
+            break;
+        }
         break;
       default:
-        text = '';
+        text = value.toInt().toString();
         break;
     }
     return SideTitleWidget(

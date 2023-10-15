@@ -8,12 +8,14 @@ class LineChartSample extends StatefulWidget {
       required this.dataList,
       required this.currentReportDurationType,
       required this.title,
-      required this.unit});
+      required this.unit,
+      required this.length});
   final Color fontColor;
   final List<num> dataList;
   final String currentReportDurationType;
   final String title;
   final String unit;
+  final int length;
   @override
   State<LineChartSample> createState() => _LineChartSampleState();
 }
@@ -45,7 +47,7 @@ class _LineChartSampleState extends State<LineChartSample> {
     maxY = 5;
     minY = 0;
     scaleYList = [];
-    for (int i = 0; i < widget.dataList.length; i++) {
+    for (int i = 0; i < widget.length; i++) {
       spotList.add(FlSpot(
           i.toDouble(), double.parse(widget.dataList[i].toStringAsFixed(2))));
       while (maxY < widget.dataList[i]) {
@@ -64,10 +66,9 @@ class _LineChartSampleState extends State<LineChartSample> {
       maxY,
       0
     ];
-    switch (widget.currentReportDurationType) {
-      case '周报':
-        maxX = 6;
-    }
+
+    maxX = widget.length - 1;
+
     return Stack(
       children: <Widget>[
         AspectRatio(
@@ -93,45 +94,59 @@ class _LineChartSampleState extends State<LineChartSample> {
       fontWeight: FontWeight.bold,
       fontSize: 14,
     );
-    Widget text;
+    String text;
+    print(widget.currentReportDurationType);
     switch (widget.currentReportDurationType) {
       case '周报':
         switch (value.toInt()) {
           case 0:
-            text = const Text('周一', style: style);
+            text = '周一';
             break;
           case 1:
-            text = const Text('周二', style: style);
+            text = '周二';
             break;
           case 2:
-            text = const Text('周三', style: style);
+            text = '周三';
             break;
           case 3:
-            text = const Text('周四', style: style);
+            text = '周四';
             break;
           case 4:
-            text = const Text('周五', style: style);
+            text = '周五';
             break;
           case 5:
-            text = const Text('周六', style: style);
+            text = '周六';
             break;
           case 6:
-            text = const Text('周日', style: style);
+            text = '周日';
             break;
-
           default:
-            text = Text(value.toInt().toString(), style: style);
+            text = '';
+            break;
+        }
+        break;
+      case '月报':
+        switch (value.toInt()) {
+          case 4:
+          case 9:
+          case 14:
+          case 19:
+          case 24:
+            text = (value.toInt() + 1).toString();
+            break;
+          default:
+            text = '';
             break;
         }
         break;
       default:
-        text = Text(value.toInt().toString(), style: style);
+        text = value.toInt().toString();
         break;
     }
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      child: text,
+      child: Text(text, style: style),
     );
   }
 

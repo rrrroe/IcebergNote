@@ -499,12 +499,16 @@ class _ReportScreenState extends State<ReportScreen>
             statisticsGenerate('', '条目', graphSetting, data, fontColor, ''));
       }
       if (template.containsKey(graphSetting[0])) {
-        if (graphSetting[1] == '折线图') {
+        int durationDayLength = lastDay.difference(firstDay).inDays + 1;
+        if (graphSetting[1] == '折线图' || graphSetting[1] == '柱状图') {
           List<num> data = [];
+
           if (template[graphSetting[0]].toString().split(',')[1] == '数字') {
             switch (currentReportDurationType) {
               case '周报':
-                data = [0, 0, 0, 0, 0, 0, 0];
+                for (int i = 0; i < durationDayLength; i++) {
+                  data.add(0);
+                }
                 for (int i = 0; i < filterRecordList.length; i++) {
                   if (filterRecordList[i][graphSetting[0]].runtimeType == int ||
                       filterRecordList[i][graphSetting[0]].runtimeType ==
@@ -513,38 +517,47 @@ class _ReportScreenState extends State<ReportScreen>
                         1] += filterRecordList[i][graphSetting[0]];
                   }
                 }
-            }
-            cardList.add(LineChartSample(
-              fontColor: fontColor,
-              dataList: data,
-              currentReportDurationType: currentReportDurationType,
-              title: '',
-              unit: propertySettings[3],
-            ));
-          }
-        } else if (graphSetting[1] == '柱状图') {
-          List<num> data = [];
-          if (template[graphSetting[0]].toString().split(',')[1] == '数字') {
-            switch (currentReportDurationType) {
-              case '周报':
-                data = [0, 0, 0, 0, 0, 0, 0];
+                break;
+              case '月报':
+                for (int i = 0; i < durationDayLength; i++) {
+                  data.add(0);
+                }
                 for (int i = 0; i < filterRecordList.length; i++) {
                   if (filterRecordList[i][graphSetting[0]].runtimeType == int ||
                       filterRecordList[i][graphSetting[0]].runtimeType ==
                           double) {
-                    data[DateTime.parse(filterRecordList[i][dateFlag]).weekday -
+                    data[DateTime.parse(filterRecordList[i][dateFlag]).day -
                         1] += filterRecordList[i][graphSetting[0]];
                   }
                 }
+                print(data);
+                break;
             }
-            cardList.add(const SizedBox(height: 25));
-            cardList.add(BarChartSample3(
-              fontColor: fontColor,
-              dataList: data,
-              currentReportDurationType: currentReportDurationType,
-              title: '',
-              unit: propertySettings[3],
-            ));
+            if (graphSetting[1] == '折线图') {
+              cardList.add(
+                LineChartSample(
+                  fontColor: fontColor,
+                  dataList: data,
+                  currentReportDurationType: currentReportDurationType,
+                  title: '',
+                  unit: propertySettings[3],
+                  length: data.length,
+                ),
+              );
+            }
+            if (graphSetting[1] == '柱状图') {
+              cardList.add(const SizedBox(height: 25));
+              cardList.add(
+                BarChartSample3(
+                  fontColor: fontColor,
+                  dataList: data,
+                  currentReportDurationType: currentReportDurationType,
+                  title: '',
+                  unit: propertySettings[3],
+                  length: data.length,
+                ),
+              );
+            }
           }
         } else {
           List data = [];
