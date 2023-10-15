@@ -570,6 +570,7 @@ class _ReportScreenState extends State<ReportScreen>
               );
             }
           }
+        } else if (graphSetting[1] == '收益曲线图') {
         } else {
           List data = [];
           for (int i = 0; i < filterRecordList.length; i++) {

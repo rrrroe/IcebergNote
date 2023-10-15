@@ -1141,8 +1141,13 @@ class _PropertyCardState extends State<PropertyCard> {
   }
 
   Widget buildDateCard() {
-    DateTime? tmpDate = DateTime.tryParse(
-        widget.record[template.keys.elementAt(widget.index)].toString());
+    DateTime? tmpDate;
+    if (widget.record[template.keys.elementAt(widget.index)] != null) {
+      tmpDate = DateTime.tryParse(
+          widget.record[template.keys.elementAt(widget.index)].toString());
+    } else {
+      tmpDate = null;
+    }
     DateTime setDay = DateTime.now();
     bool dateError = false;
     if (widget.record[template.keys.elementAt(widget.index)] == null &&
