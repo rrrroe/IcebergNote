@@ -583,8 +583,8 @@ class _ReportScreenState extends State<ReportScreen>
                 case '本年':
                   List<Map<String, int>> data = []; //｛天数：[资产总额，出入金，投入额，收益率]｝
                   DateTime startDay = DateTime(firstDay.year, 1, 1);
-                  DateTime endDay = DateTime(firstDay.year, 12, 31);
-                  int days = endDay.difference(startDay).inDays + 1;
+                  DateTime endDay = lastDay;
+
                   var notesListX = realm.query<Notes>(
                       "( noteProject == \$0 ) AND noteType == '.记录' AND noteIsDeleted != true SORT(id ASC)",
                       [currentProject]);
@@ -595,11 +595,33 @@ class _ReportScreenState extends State<ReportScreen>
                           .add(loadYaml(notesListX[i].noteContext) as YamlMap);
                     }
                   }
-
+                  Map<String, int> tmp0 = {};
+                  DateTime leastDay = DateTime(1, 1, 1);
                   for (int i = 0; i < recordListX.length; i++) {
                     DateTime? date =
                         DateTime.tryParse(recordListX[i][dateFlag].toString());
                     if (date != null) {
+                      if (date.isBefore(startDay)) {
+                        if (date.isAfter(leastDay)) {
+                          if (recordListX[i][graphSetting[0]].runtimeType ==
+                                  int ||
+                              recordListX[i][graphSetting[0]].runtimeType ==
+                                  double) {
+                            tmp0['day'] = 0;
+                            tmp0['asset'] = recordListX[i][graphSetting[0]];
+
+                            if (recordListX[i][graphSetting[2]].runtimeType ==
+                                    int ||
+                                recordListX[i][graphSetting[2]].runtimeType ==
+                                    double) {
+                              tmp0['change'] = recordListX[i][graphSetting[2]];
+                            } else {
+                              tmp0['change'] = 0;
+                            }
+                            leastDay = date;
+                          }
+                        }
+                      }
                       if (date.isBefore(endDay
                               .add(const Duration(days: 1, seconds: -1))) &&
                           date.isAfter(
@@ -611,19 +633,61 @@ class _ReportScreenState extends State<ReportScreen>
                           Map<String, int> tmp = {};
                           tmp['day'] = date.difference(startDay).inDays + 1;
                           tmp['asset'] = recordListX[i][graphSetting[0]];
-                          if (recordListX[i][graphSetting[2]].runtimeType ==
+                          if (recordListX[i][int.tryParse(graphSetting[2])]
+                                      .runtimeType ==
                                   int ||
-                              recordListX[i][graphSetting[2]].runtimeType ==
+                              recordListX[i][int.tryParse(graphSetting[2])]
+                                      .runtimeType ==
                                   double) {
-                            tmp['change'] = recordListX[i][graphSetting[2]];
+                            tmp['change'] =
+                                recordListX[i][int.tryParse(graphSetting[2])];
                           } else {
                             tmp['change'] = 0;
                           }
                           data.add(tmp);
+                          //获取时间区间内第一个点后，倒着寻找上一个点day0，如果没找到，设为第一个点的asset值
+                          // if (data.length == 1) {
+                          //   for (int j = i - 1; j >= 0; j--) {
+                          //     if (recordListX[j][graphSetting[0]].runtimeType ==
+                          //             int ||
+                          //         recordListX[j][graphSetting[0]].runtimeType ==
+                          //             double) {
+                          //       Map<String, int> tmp0 = {};
+                          //       tmp0['day'] = 0;
+                          //       tmp0['asset'] = recordListX[j][graphSetting[0]];
+                          //       if (recordListX[j][graphSetting[2]]
+                          //                   .runtimeType ==
+                          //               int ||
+                          //           recordListX[j][graphSetting[2]]
+                          //                   .runtimeType ==
+                          //               double) {
+                          //         tmp0['change'] =
+                          //             recordListX[j][graphSetting[2]];
+                          //       } else {
+                          //         tmp0['change'] = 0;
+                          //       }
+                          //       data.add(tmp0);
+                          //       break;
+                          //     }
+                          //   }
+                          // }
+                          // if (data.length == 1) {
+                          //   Map<String, int> tmp0 = {};
+                          //   tmp0['day'] = 0;
+                          //   tmp0['asset'] = recordListX[i][graphSetting[0]];
+                          //   tmp0['change'] = 0;
+                          //   data.add(tmp0);
+                          // }
                         }
                       }
                     }
                   }
+                  if (leastDay == DateTime(1, 1, 1)) {
+                    tmp0['day'] = 0;
+                    tmp0['asset'] = -1;
+                    tmp0['change'] = 0;
+                  }
+                  data.add(tmp0);
                   cardList.add(
                     BenifutLineChart(
                       fontColor: fontColor,
@@ -632,6 +696,7 @@ class _ReportScreenState extends State<ReportScreen>
                       title: '',
                       unit: propertySettings[3],
                       length: data.length,
+                      startDay: startDay,
                     ),
                   );
               }

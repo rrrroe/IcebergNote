@@ -9,22 +9,27 @@ class BenifutLineChart extends StatefulWidget {
       required this.currentReportDurationType,
       required this.title,
       required this.unit,
-      required this.length});
+      required this.length,
+      required this.startDay});
   final Color fontColor;
   final List<Map<String, int>> dataList;
   final String currentReportDurationType;
   final String title;
   final String unit;
   final int length;
+  final DateTime startDay;
   @override
   State<StatefulWidget> createState() => BenifutLineChartState();
 }
 
 class BenifutLineChartState extends State<BenifutLineChart> {
   late bool isShowingMainData;
-  List assetData = [];
-  List investData = [];
-  List rateData = [];
+  List<FlSpot> assetSpot = [];
+  List<int> input = [];
+  List<FlSpot> inputSpot = [];
+  List<double> rate = [];
+  List<FlSpot> rateSpot = [];
+
   @override
   void initState() {
     super.initState();
@@ -36,34 +41,63 @@ class BenifutLineChartState extends State<BenifutLineChart> {
     widget.dataList.sort((a, b) {
       return a['day']!.compareTo(b['day']!);
     });
-    print(widget.dataList);
+    if (widget.dataList[0]['asset'] == -1) {
+      widget.dataList[0]['asset'] = widget.dataList[1]['asset']!;
+    }
+    assetSpot = [];
+    input = [];
+    inputSpot = [];
+    rateSpot = [];
+    rate = [];
+
     for (int i = 0; i < widget.dataList.length; i++) {
-      assetData.add(FlSpot(widget.dataList[i]['day']!.toDouble(),
-          widget.dataList[i]['asset']!.toDouble()));
-      rateData.add(widget.dataList[i]['rate']);
+      double day = widget.dataList[i]['day']!.toDouble();
+      if (i == 0) {
+        assetSpot.add(FlSpot(day, widget.dataList[i]['asset']!.toDouble()));
+        input.add(widget.dataList[i]['asset']!);
+        inputSpot.add(FlSpot(day, input[i].toDouble()));
+        rate.add(0);
+        rateSpot.add(FlSpot(day, 0));
+      } else {
+        assetSpot.add(FlSpot(day, widget.dataList[i]['asset']!.toDouble()));
+        input.add(input[i - 1] + widget.dataList[i]['change']!);
+        inputSpot.add(FlSpot(day, input[i].toDouble()));
+        rate.add(
+            (widget.dataList[i]['asset']! - widget.dataList[i]['change']!) /
+                    widget.dataList[i - 1]['asset']! *
+                    (rate[i - 1] + 1) -
+                1);
+        rateSpot.add(FlSpot(day, double.parse(rate[i].toStringAsFixed(4))));
+      }
     }
     return AspectRatio(
-      aspectRatio: 1.23,
+      aspectRatio: 1.8,
       child: Stack(
         children: <Widget>[
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               const SizedBox(
-                height: 37,
+                height: 10,
               ),
-              const Text(
-                'Monthly Sales',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
-                ),
-                textAlign: TextAlign.center,
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    isShowingMainData = !isShowingMainData;
+                  });
+                },
+                child: isShowingMainData == true
+                    ? Text(
+                        '资产曲线',
+                        style: TextStyle(color: widget.fontColor, fontSize: 20),
+                      )
+                    : const Text(
+                        '收益曲线',
+                        style: TextStyle(color: Colors.grey, fontSize: 20),
+                      ),
               ),
               const SizedBox(
-                height: 37,
+                height: 10,
               ),
               Expanded(
                 child: Padding(
@@ -79,17 +113,6 @@ class BenifutLineChartState extends State<BenifutLineChart> {
               ),
             ],
           ),
-          IconButton(
-            icon: Icon(
-              Icons.refresh,
-              color: Colors.white.withOpacity(isShowingMainData ? 1.0 : 0.5),
-            ),
-            onPressed: () {
-              setState(() {
-                isShowingMainData = !isShowingMainData;
-              });
-            },
-          )
         ],
       ),
     );
@@ -101,9 +124,9 @@ class BenifutLineChartState extends State<BenifutLineChart> {
         titlesData: titlesData1,
         borderData: borderData,
         lineBarsData: lineBarsData1,
-        minX: 0,
-        maxX: 14,
-        maxY: 4,
+        // minX: 0,
+        maxX: 366,
+        // maxY: 15000,
         minY: 0,
       );
 
@@ -113,22 +136,34 @@ class BenifutLineChartState extends State<BenifutLineChart> {
         titlesData: titlesData2,
         borderData: borderData,
         lineBarsData: lineBarsData2,
-        minX: 0,
-        maxX: 14,
-        maxY: 6,
-        minY: 0,
+        // minX: 0,
+        // maxX: 366,
+        // maxY: 1,
+        // minY: 0,
       );
 
   LineTouchData get lineTouchData1 => LineTouchData(
         handleBuiltInTouches: true,
         touchTooltipData: LineTouchTooltipData(
-          tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
-        ),
+            tooltipBgColor: Colors.white,
+            getTooltipItems: (List<LineBarSpot> touchedSpots) {
+              return touchedSpots.map((LineBarSpot touchedSpot) {
+                final textStyle = TextStyle(
+                  color: touchedSpot.bar.gradient?.colors.first ??
+                      touchedSpot.bar.color ??
+                      Colors.blueGrey,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                );
+                return LineTooltipItem(
+                    touchedSpot.y.toInt().toString(), textStyle);
+              }).toList();
+            }),
       );
 
   FlTitlesData get titlesData1 => FlTitlesData(
-        bottomTitles: AxisTitles(
-          sideTitles: bottomTitles,
+        bottomTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
         ),
         rightTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
@@ -137,23 +172,38 @@ class BenifutLineChartState extends State<BenifutLineChart> {
           sideTitles: SideTitles(showTitles: false),
         ),
         leftTitles: AxisTitles(
-          sideTitles: leftTitles(),
+          sideTitles: leftTitles1(),
         ),
       );
 
   List<LineChartBarData> get lineBarsData1 => [
         lineChartBarData1_1,
         lineChartBarData1_2,
-        lineChartBarData1_3,
+        // lineChartBarData1_3,
       ];
 
-  LineTouchData get lineTouchData2 => const LineTouchData(
-        enabled: false,
+  LineTouchData get lineTouchData2 => LineTouchData(
+        handleBuiltInTouches: true,
+        touchTooltipData: LineTouchTooltipData(
+            tooltipBgColor: const Color.fromARGB(0, 0, 0, 0),
+            getTooltipItems: (List<LineBarSpot> touchedSpots) {
+              return touchedSpots.map((LineBarSpot touchedSpot) {
+                final textStyle = TextStyle(
+                  color: touchedSpot.bar.gradient?.colors.first ??
+                      touchedSpot.bar.color ??
+                      Colors.blueGrey,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                );
+                return LineTooltipItem(
+                    '${(touchedSpot.y * 100).toStringAsFixed(2)}%', textStyle);
+              }).toList();
+            }),
       );
 
   FlTitlesData get titlesData2 => FlTitlesData(
-        bottomTitles: AxisTitles(
-          sideTitles: bottomTitles,
+        bottomTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
         ),
         rightTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
@@ -162,84 +212,74 @@ class BenifutLineChartState extends State<BenifutLineChart> {
           sideTitles: SideTitles(showTitles: false),
         ),
         leftTitles: AxisTitles(
-          sideTitles: leftTitles(),
+          sideTitles: leftTitles2(),
         ),
       );
 
   List<LineChartBarData> get lineBarsData2 => [
         lineChartBarData2_1,
-        lineChartBarData2_2,
-        lineChartBarData2_3,
+        // lineChartBarData2_2,
+        // lineChartBarData2_3,
       ];
 
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
+  Widget leftTitleWidgets1(double value, TitleMeta meta) {
+    if (value == meta.max) {
+      return SideTitleWidget(
+        axisSide: meta.axisSide,
+        child: const Text(
+          '',
+        ),
+      );
+    } else {
+      return SideTitleWidget(
+        axisSide: meta.axisSide,
+        child: Text(
+          meta.formattedValue,
+        ),
+      );
+    }
+  }
+
+  Widget leftTitleWidgets2(double value, TitleMeta meta) {
     const style = TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 14,
     );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '1m';
-        break;
-      case 2:
-        text = '2m';
-        break;
-      case 3:
-        text = '3m';
-        break;
-      case 4:
-        text = '5m';
-        break;
-      case 5:
-        text = '6m';
-        break;
-      default:
-        return Container();
+    String text = '';
+    if (value != meta.max && value != meta.min) {
+      text = '${(value * 100).toInt()}%';
     }
 
     return Text(text, style: style, textAlign: TextAlign.center);
   }
 
-  SideTitles leftTitles() => SideTitles(
-        getTitlesWidget: leftTitleWidgets,
+  SideTitles leftTitles1() => SideTitles(
+        getTitlesWidget: leftTitleWidgets1,
         showTitles: true,
-        interval: 1,
+        // interval: 1,
+        reservedSize: 40,
+      );
+  SideTitles leftTitles2() => SideTitles(
+        getTitlesWidget: leftTitleWidgets2,
+        showTitles: true,
+        // interval: 1,
         reservedSize: 40,
       );
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 16,
-    );
-    Widget text;
-    switch (value.toInt()) {
-      case 2:
-        text = const Text('SEPT', style: style);
-        break;
-      case 7:
-        text = const Text('OCT', style: style);
-        break;
-      case 12:
-        text = const Text('DEC', style: style);
-        break;
-      default:
-        text = const Text('');
-        break;
+    if (value == 366) {
+      return const Text(
+        '366',
+      );
+    } else {
+      return const SizedBox();
     }
-
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      space: 10,
-      child: text,
-    );
   }
 
   SideTitles get bottomTitles => SideTitles(
         showTitles: true,
-        reservedSize: 32,
-        interval: 1,
+        reservedSize: 31,
+        interval: 30,
         getTitlesWidget: bottomTitleWidgets,
       );
 
@@ -249,8 +289,8 @@ class BenifutLineChartState extends State<BenifutLineChart> {
         show: true,
         border: Border(
           bottom:
-              BorderSide(color: AppColors.primary.withOpacity(0.2), width: 4),
-          left: const BorderSide(color: Colors.transparent),
+              BorderSide(color: widget.fontColor.withOpacity(0.3), width: 3),
+          left: BorderSide(color: widget.fontColor.withOpacity(0.3), width: 3),
           right: const BorderSide(color: Colors.transparent),
           top: const BorderSide(color: Colors.transparent),
         ),
@@ -258,40 +298,27 @@ class BenifutLineChartState extends State<BenifutLineChart> {
 
   LineChartBarData get lineChartBarData1_1 => LineChartBarData(
         isCurved: true,
-        color: AppColors.contentColorGreen,
-        barWidth: 8,
+        curveSmoothness: 0,
+        color: widget.fontColor,
+        barWidth: 3,
         isStrokeCapRound: true,
         dotData: const FlDotData(show: false),
         belowBarData: BarAreaData(show: false),
-        spots: const [
-          FlSpot(1, 1),
-          FlSpot(3, 1.5),
-          FlSpot(5, 1.4),
-          FlSpot(7, 3.4),
-          FlSpot(10, 2),
-          FlSpot(12, 2.2),
-          FlSpot(13, 1.8),
-        ],
+        spots: assetSpot,
       );
 
   LineChartBarData get lineChartBarData1_2 => LineChartBarData(
         isCurved: true,
-        color: AppColors.contentColorPink,
-        barWidth: 8,
+        curveSmoothness: 0,
+        color: Colors.grey,
+        barWidth: 3,
         isStrokeCapRound: true,
         dotData: const FlDotData(show: false),
         belowBarData: BarAreaData(
           show: false,
           color: AppColors.contentColorPink.withOpacity(0),
         ),
-        spots: const [
-          FlSpot(1, 1),
-          FlSpot(3, 2.8),
-          FlSpot(7, 1.2),
-          FlSpot(10, 2.8),
-          FlSpot(12, 2.6),
-          FlSpot(13, 3.9),
-        ],
+        spots: inputSpot,
       );
 
   LineChartBarData get lineChartBarData1_3 => LineChartBarData(
@@ -313,20 +340,12 @@ class BenifutLineChartState extends State<BenifutLineChart> {
   LineChartBarData get lineChartBarData2_1 => LineChartBarData(
         isCurved: true,
         curveSmoothness: 0,
-        color: AppColors.contentColorGreen.withOpacity(0.5),
-        barWidth: 4,
+        color: Colors.red,
+        barWidth: 3,
         isStrokeCapRound: true,
         dotData: const FlDotData(show: false),
         belowBarData: BarAreaData(show: false),
-        spots: const [
-          FlSpot(1, 1),
-          FlSpot(3, 4),
-          FlSpot(5, 1.8),
-          FlSpot(7, 5),
-          FlSpot(10, 2),
-          FlSpot(12, 2.2),
-          FlSpot(13, 1.8),
-        ],
+        spots: rateSpot,
       );
 
   LineChartBarData get lineChartBarData2_2 => LineChartBarData(
