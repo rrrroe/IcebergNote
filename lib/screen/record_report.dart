@@ -645,39 +645,6 @@ class _ReportScreenState extends State<ReportScreen>
                             tmp['change'] = 0;
                           }
                           data.add(tmp);
-                          //获取时间区间内第一个点后，倒着寻找上一个点day0，如果没找到，设为第一个点的asset值
-                          // if (data.length == 1) {
-                          //   for (int j = i - 1; j >= 0; j--) {
-                          //     if (recordListX[j][graphSetting[0]].runtimeType ==
-                          //             int ||
-                          //         recordListX[j][graphSetting[0]].runtimeType ==
-                          //             double) {
-                          //       Map<String, int> tmp0 = {};
-                          //       tmp0['day'] = 0;
-                          //       tmp0['asset'] = recordListX[j][graphSetting[0]];
-                          //       if (recordListX[j][graphSetting[2]]
-                          //                   .runtimeType ==
-                          //               int ||
-                          //           recordListX[j][graphSetting[2]]
-                          //                   .runtimeType ==
-                          //               double) {
-                          //         tmp0['change'] =
-                          //             recordListX[j][graphSetting[2]];
-                          //       } else {
-                          //         tmp0['change'] = 0;
-                          //       }
-                          //       data.add(tmp0);
-                          //       break;
-                          //     }
-                          //   }
-                          // }
-                          // if (data.length == 1) {
-                          //   Map<String, int> tmp0 = {};
-                          //   tmp0['day'] = 0;
-                          //   tmp0['asset'] = recordListX[i][graphSetting[0]];
-                          //   tmp0['change'] = 0;
-                          //   data.add(tmp0);
-                          // }
                         }
                       }
                     }
