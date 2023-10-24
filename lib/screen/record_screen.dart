@@ -1802,7 +1802,11 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
     }
   }
 
-  save() {}
+  save() {
+    realm.write(() {
+      widget.note.noteCreateDate = DateTime.now().toUtc();
+    });
+  }
 
   @override
   void dispose() {

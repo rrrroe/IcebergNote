@@ -212,6 +212,8 @@ class ChangePageState extends State<ChangePage> {
                                           setState(() {
                                             realm.write(() {
                                               widget.note.noteType = '';
+                                              widget.note.noteUpdateDate =
+                                                  DateTime.now().toUtc();
                                             });
                                           });
                                           break;
@@ -229,6 +231,10 @@ class ChangePageState extends State<ChangePage> {
                                                     realm.write(() {
                                                       widget.note.noteType =
                                                           text;
+                                                      widget.note
+                                                              .noteUpdateDate =
+                                                          DateTime.now()
+                                                              .toUtc();
                                                     });
                                                   });
                                                 },
@@ -240,6 +246,8 @@ class ChangePageState extends State<ChangePage> {
                                           setState(() {
                                             realm.write(() {
                                               widget.note.noteType = type;
+                                              widget.note.noteUpdateDate =
+                                                  DateTime.now().toUtc();
                                             });
                                           });
                                       }
@@ -279,6 +287,8 @@ class ChangePageState extends State<ChangePage> {
                                           setState(() {
                                             realm.write(() {
                                               widget.note.noteProject = '';
+                                              widget.note.noteUpdateDate =
+                                                  DateTime.now().toUtc();
                                             });
                                           });
                                           break;
@@ -297,6 +307,10 @@ class ChangePageState extends State<ChangePage> {
                                                     realm.write(() {
                                                       widget.note.noteProject =
                                                           text;
+                                                      widget.note
+                                                              .noteUpdateDate =
+                                                          DateTime.now()
+                                                              .toUtc();
                                                     });
                                                   });
                                                 },
@@ -308,6 +322,8 @@ class ChangePageState extends State<ChangePage> {
                                           setState(() {
                                             realm.write(() {
                                               widget.note.noteProject = project;
+                                              widget.note.noteUpdateDate =
+                                                  DateTime.now().toUtc();
                                             });
                                           });
                                       }
@@ -347,6 +363,8 @@ class ChangePageState extends State<ChangePage> {
                                           setState(() {
                                             realm.write(() {
                                               widget.note.noteFolder = '';
+                                              widget.note.noteUpdateDate =
+                                                  DateTime.now().toUtc();
                                             });
                                           });
                                           break;
@@ -364,6 +382,10 @@ class ChangePageState extends State<ChangePage> {
                                                     realm.write(() {
                                                       widget.note.noteFolder =
                                                           text;
+                                                      widget.note
+                                                              .noteUpdateDate =
+                                                          DateTime.now()
+                                                              .toUtc();
                                                     });
                                                   });
                                                 },
@@ -375,6 +397,8 @@ class ChangePageState extends State<ChangePage> {
                                           setState(() {
                                             realm.write(() {
                                               widget.note.noteFolder = folder;
+                                              widget.note.noteUpdateDate =
+                                                  DateTime.now().toUtc();
                                             });
                                           });
                                       }
@@ -424,6 +448,10 @@ class ChangePageState extends State<ChangePage> {
                                                         widget.note
                                                                 .noteFinishState =
                                                             text;
+                                                        widget.note
+                                                                .noteUpdateDate =
+                                                            DateTime.now()
+                                                                .toUtc();
                                                       });
                                                     });
                                                   },
@@ -436,6 +464,8 @@ class ChangePageState extends State<ChangePage> {
                                               realm.write(() {
                                                 widget.note.noteFinishState =
                                                     finishState;
+                                                widget.note.noteUpdateDate =
+                                                    DateTime.now().toUtc();
                                               });
                                             });
                                         }
@@ -461,6 +491,8 @@ class ChangePageState extends State<ChangePage> {
                             onChanged: (value) {
                               realm.write(() {
                                 widget.note.noteContext = value;
+                                widget.note.noteUpdateDate =
+                                    DateTime.now().toUtc();
                               });
                               setState(() {
                                 wordCount2 = value.length;
@@ -513,7 +545,9 @@ class ChangePageState extends State<ChangePage> {
                         realm.write(() {
                           widget.note.noteContext = contentController.text
                               .replaceAll(RegExp(r'\n+'), '\n\n');
+                          widget.note.noteUpdateDate = DateTime.now().toUtc();
                         });
+
                         save();
                         Navigator.pop(context);
                         widget.onPageClosed();
@@ -572,6 +606,7 @@ class ChangePageState extends State<ChangePage> {
         realm.delete(widget.note);
       } else {
         widget.note.noteTitle = titleController.text;
+        widget.note.noteUpdateDate = DateTime.now().toUtc();
       }
     });
   }

@@ -298,6 +298,7 @@ class BottomPopSheet extends StatelessWidget {
             onTap: () {
               realm.write(() {
                 note.noteIsDeleted = true;
+                note.noteDeleteDate = DateTime.now().toUtc();
               });
               onDialogClosed();
               Navigator.pop(context);
