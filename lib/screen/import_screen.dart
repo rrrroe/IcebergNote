@@ -522,7 +522,6 @@ class ImportPageState extends State<ImportPage> {
                                   i < rowsAsListOfValues.length;
                                   i++) {
                                 String noteContent = '';
-                                String noteCreatTime = '';
                                 final dateRegex1 =
                                     RegExp(r'\d{4}-\d{1,2}-\d{1,2}');
                                 final dateRegex2 =
@@ -545,8 +544,6 @@ class ImportPageState extends State<ImportPage> {
                                             rowsAsListOfValues[i][j]
                                                 .toString()
                                                 .substring(0, 9))) {
-                                      noteCreatTime =
-                                          '${rowsAsListOfValues[i][j].toString().substring(0, 9)} 00:00:00.000000';
                                     } else if (rowsAsListOfValues[i][j]
                                                 .toString()
                                                 .length >
@@ -555,9 +552,9 @@ class ImportPageState extends State<ImportPage> {
                                             rowsAsListOfValues[i][j]
                                                 .toString()
                                                 .substring(0, 9))) {
-                                      noteCreatTime =
-                                          '${rowsAsListOfValues[i][j].toString().substring(0, 9).replaceAll('/', '-')} 00:00:00.000000';
-                                    } else if (int.tryParse(rowsAsListOfValues[i][j].toString()) !=
+                                    } else if (int.tryParse(
+                                                rowsAsListOfValues[i][j]
+                                                    .toString()) !=
                                             null &&
                                         rowsAsListOfValues[i][j]
                                                 .toString()
@@ -573,8 +570,6 @@ class ImportPageState extends State<ImportPage> {
                                       noteContent =
                                           '$noteContent${j + 1}: ${dateTime.year.toString()}-$m-$d\n';
 
-                                      noteCreatTime =
-                                          '${dateTime.year.toString()}-$m-$d 00:00:00.000000';
                                       // } else if (j == 7) {
                                       //   double? num = double.tryParse(
                                       //       rowsAsListOfValues[i][j].toString());
@@ -591,14 +586,14 @@ class ImportPageState extends State<ImportPage> {
                                                 .toString()
                                                 .length ==
                                             10 &&
-                                        rowsAsListOfValues[i][j][4].toString() ==
+                                        rowsAsListOfValues[i][j][4]
+                                                .toString() ==
                                             '/' &&
-                                        rowsAsListOfValues[i][j][7].toString() ==
+                                        rowsAsListOfValues[i][j][7]
+                                                .toString() ==
                                             '/') {
                                       noteContent =
                                           '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('/', '-')}\n';
-                                      noteCreatTime =
-                                          '${rowsAsListOfValues[i][j].toString().substring(0, 9).replaceAll('/', '-')} 00:00:00.000000';
                                     } else {
                                       noteContent =
                                           '$noteContent${j + 1}: ${rowsAsListOfValues[i][j].toString().replaceAll('\n', '    ')}\n';
@@ -609,10 +604,19 @@ class ImportPageState extends State<ImportPage> {
 
                                 realm.write(() {
                                   realm.add<Notes>(Notes(
-                                      ObjectId(), importFolder, '', noteContent,
-                                      noteProject: importProject,
-                                      noteType: importType,
-                                      noteCreatTime: noteCreatTime));
+                                    ObjectId(),
+                                    importFolder,
+                                    '',
+                                    noteContent,
+                                    DateTime.now().toUtc(),
+                                    DateTime.now().toUtc(),
+                                    DateTime(1970, 1, 1),
+                                    DateTime(1970, 1, 1),
+                                    DateTime(1970, 1, 1),
+                                    DateTime(1970, 1, 1),
+                                    noteProject: importProject,
+                                    noteType: importType,
+                                  ));
                                 });
                               }
                             },

@@ -24,44 +24,163 @@ class ReviewPageState extends State<ReviewPage> {
   late final List<Widget> titleList;
   void _listenController() => setState(() {});
   String blankTip = '恭喜您，已完成今日复盘！';
-  String today = '';
+  late DateTime now;
+  late DateTime todayMoring;
+
   bool isToday = true;
   List<Notes> blankList = [
-    Notes(
-        ObjectId(), '', '恭喜您，已完成所有复盘！', math.Random().nextInt(100).toString()),
-    Notes(
-        ObjectId(), '', '恭喜您，已完成所有复盘！', math.Random().nextInt(100).toString()),
-    Notes(
-        ObjectId(), '', '恭喜您，已完成所有复盘！', math.Random().nextInt(100).toString()),
-    Notes(
-        ObjectId(), '', '恭喜您，已完成所有复盘！', math.Random().nextInt(100).toString()),
-    Notes(
-        ObjectId(), '', '恭喜您，已完成所有复盘！', math.Random().nextInt(100).toString()),
     Notes(
       ObjectId(),
       '',
       '恭喜您，已完成所有复盘！',
       math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+    ),
+    Notes(
+      ObjectId(),
+      '',
+      '恭喜您，已完成所有复盘！',
+      math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+    ),
+    Notes(
+      ObjectId(),
+      '',
+      '恭喜您，已完成所有复盘！',
+      math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+    ),
+    Notes(
+      ObjectId(),
+      '',
+      '恭喜您，已完成所有复盘！',
+      math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+    ),
+    Notes(
+      ObjectId(),
+      '',
+      '恭喜您，已完成所有复盘！',
+      math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+    ),
+    Notes(
+      ObjectId(),
+      '',
+      '恭喜您，已完成所有复盘！',
+      math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
     )
   ];
   List<Notes> blankListToday = [
     Notes(
-        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+      ObjectId(),
+      '',
+      '恭喜您，已完成今日复盘！',
+      math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+    ),
     Notes(
-        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+      ObjectId(),
+      '',
+      '恭喜您，已完成今日复盘！',
+      math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+    ),
     Notes(
-        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+      ObjectId(),
+      '',
+      '恭喜您，已完成今日复盘！',
+      math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+    ),
     Notes(
-        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+      ObjectId(),
+      '',
+      '恭喜您，已完成今日复盘！',
+      math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+    ),
     Notes(
-        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+      ObjectId(),
+      '',
+      '恭喜您，已完成今日复盘！',
+      math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+    ),
     Notes(
-        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+      ObjectId(),
+      '',
+      '恭喜您，已完成今日复盘！',
+      math.Random().nextInt(100).toString(),
+      DateTime.now().toUtc(),
+      DateTime.now().toUtc(),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+      DateTime(1970, 1, 1),
+    ),
   ];
   @override
   void initState() {
     super.initState();
-    today = DateTime.now().toString().substring(0, 10);
+    now = DateTime.now().toUtc();
+    todayMoring = DateTime(now.year, now.month, now.day);
     _controller = SwipableStackController()..addListener(_listenController);
   }
 
@@ -77,8 +196,8 @@ class ReviewPageState extends State<ReviewPage> {
   Widget build(BuildContext context) {
     if (isToday) {
       reviewList = realm.query<Notes>(
-              "noteIsDeleted != true AND noteIsReviewed == false AND noteCreatTime CONTAINS \$0 SORT(id ASC)",
-              [today]).toList() +
+              "noteIsDeleted != true AND noteIsReviewed == false AND noteCreateDate > \$0 SORT(id ASC)",
+              [todayMoring]).toList() +
           blankListToday;
     } else {
       reviewList = realm
@@ -138,8 +257,18 @@ class ReviewPageState extends State<ReviewPage> {
                     realm.write(() => reviewList[index].noteIsReviewed = false);
                   }
                   if (reviewList[index].noteTitle == blankTip) {
-                    reviewList.add(Notes(ObjectId(), '', blankTip,
-                        math.Random().nextInt(100).toString()));
+                    reviewList.add(Notes(
+                      ObjectId(),
+                      '',
+                      blankTip,
+                      math.Random().nextInt(100).toString(),
+                      DateTime.now().toUtc(),
+                      DateTime.now().toUtc(),
+                      DateTime(1970, 1, 1),
+                      DateTime(1970, 1, 1),
+                      DateTime(1970, 1, 1),
+                      DateTime(1970, 1, 1),
+                    ));
                   }
                 },
 
@@ -569,13 +698,6 @@ class _ReviewCardState extends State<ReviewCard> {
                 ),
                 const SizedBox(
                   height: 5,
-                ),
-                Text(
-                  '${widget.note.noteCreatTime.length > 16 ? '${widget.note.noteCreatTime.substring(0, 16)}创建    ' : widget.note.noteCreatTime}${widget.note.noteUpdateTime.length > 16 ? '${widget.note.noteUpdateTime.substring(0, 16)}修改    ' : widget.note.noteUpdateTime}${widget.note.noteContext.length + widget.note.noteTitle.length}字符',
-                  maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 10,
-                  ),
                 ),
                 Align(
                   alignment: Alignment.center,

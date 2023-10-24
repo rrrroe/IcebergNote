@@ -94,12 +94,12 @@ var mainnotesList = NotesList();
 late Realm realm;
 
 void main() {
-  final config = Configuration.local([Notes.schema], schemaVersion: 11);
+  final config = Configuration.local([Notes.schema], schemaVersion: 12);
   realm = Realm(config);
 
   var deleteOvertime = realm.query<Notes>(
-      "noteIsDeleted == true AND noteUpdateTime < \$0 AND noteCreatTime < \$0 SORT(id DESC)",
-      [DateTime.now().add(const Duration(days: -80)).toString()]);
+      "noteIsDeleted == true AND noteUpdateDate < \$0 AND noteCreateDate < \$0 SORT(id DESC)",
+      [DateTime.now().toUtc()]);
   for (int i = 0; i < deleteOvertime.length; i++) {
     realm.write(() {
       realm.delete(deleteOvertime[i]);

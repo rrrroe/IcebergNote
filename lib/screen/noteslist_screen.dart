@@ -332,8 +332,17 @@ class BottomRecordTypeSheet extends StatelessWidget {
                   title: Text(recordProjectList[index]),
                   onTap: () {
                     Navigator.pop(context);
-                    Notes note = Notes(ObjectId(), '', '', '',
-                        noteCreatTime: DateTime.now().toString(),
+                    Notes note = Notes(
+                        ObjectId(),
+                        '',
+                        '',
+                        '',
+                        DateTime.now().toUtc(),
+                        DateTime.now().toUtc(),
+                        DateTime(1970, 1, 1),
+                        DateTime(1970, 1, 1),
+                        DateTime(1970, 1, 1),
+                        DateTime(1970, 1, 1),
                         noteProject: recordProjectList[index],
                         noteType: '.记录');
                     realm.write(() {
@@ -798,14 +807,13 @@ class SearchPageState extends State<SearchPage> {
                 setState(() {
                   realm.write(() {
                     note.noteFinishState = '已完';
-                    note.noteFinishTime = DateTime.now().toString();
+                    note.noteFinishDate = DateTime.now().toUtc();
                   });
                 });
               } else {
                 realm.write(() {
                   setState(() {
                     note.noteFinishState = '未完';
-                    note.noteFinishTime = '';
                   });
                 });
               }
@@ -1535,7 +1543,12 @@ class SearchPageState extends State<SearchPage> {
                   '',
                   '',
                   '',
-                  noteCreatTime: DateTime.now().toString(),
+                  DateTime.now(),
+                  DateTime.now(),
+                  DateTime(1970, 1, 1),
+                  DateTime(1970, 1, 1),
+                  DateTime(1970, 1, 1),
+                  DateTime(1970, 1, 1),
                 );
                 realm.write(() {
                   realm.add<Notes>(note, update: true);

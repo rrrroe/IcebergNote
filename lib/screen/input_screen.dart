@@ -554,9 +554,17 @@ class ChangePageState extends State<ChangePage> {
         List<Notes> tmpnoteList = [];
         for (int i = 0; i < tmpList.length; i++) {
           tmpnoteList.add(Notes(
-              ObjectId(), widget.note.noteFolder, tmpList[i], '',
+              ObjectId(),
+              widget.note.noteFolder,
+              tmpList[i],
+              '',
+              DateTime.now().toUtc(),
+              DateTime.now().toUtc(),
+              DateTime(1970, 1, 1),
+              DateTime(1970, 1, 1),
+              DateTime(1970, 1, 1),
+              DateTime(1970, 1, 1),
               noteType: '.todo',
-              noteCreatTime: DateTime.now().toString(),
               noteProject: widget.note.noteProject,
               noteFinishState: '未完'));
           realm.add(tmpnoteList[i]);
@@ -564,10 +572,6 @@ class ChangePageState extends State<ChangePage> {
         realm.delete(widget.note);
       } else {
         widget.note.noteTitle = titleController.text;
-        if (widget.note.noteCreatTime == '') {
-          widget.note.noteCreatTime = DateTime.now().toString();
-        }
-        widget.note.noteUpdateTime = DateTime.now().toString();
       }
     });
   }

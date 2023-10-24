@@ -13,13 +13,15 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
     ObjectId id,
     String noteFolder,
     String noteTitle,
-    String noteContext, {
+    String noteContext,
+    DateTime noteCreateDate,
+    DateTime noteUpdateDate,
+    DateTime noteAchiveDate,
+    DateTime noteDeleteDate,
+    DateTime noteFinishDate,
+    DateTime noteAlarmDate, {
     String noteType = "",
     String noteProject = "",
-    String noteCreatTime = "",
-    String noteUpdateTime = "",
-    String noteAchiveTime = "",
-    String noteDeleteTime = "",
     String noteTags = "",
     String noteAttachments = "",
     String noteReferences = "",
@@ -35,18 +37,12 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
     bool noteIsShared = false,
     bool noteIsAchive = false,
     String noteFinishState = "",
-    String noteFinishTime = "",
-    String noteAlarmTime = "",
     bool noteIsReviewed = false,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<Notes>({
         'noteType': "",
         'noteProject': "",
-        'noteCreatTime': "",
-        'noteUpdateTime': "",
-        'noteAchiveTime': "",
-        'noteDeleteTime': "",
         'noteTags': "",
         'noteAttachments': "",
         'noteReferences': "",
@@ -62,8 +58,6 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
         'noteIsShared': false,
         'noteIsAchive': false,
         'noteFinishState': "",
-        'noteFinishTime': "",
-        'noteAlarmTime': "",
         'noteIsReviewed': false,
       });
     }
@@ -73,10 +67,6 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'noteContext', noteContext);
     RealmObjectBase.set(this, 'noteType', noteType);
     RealmObjectBase.set(this, 'noteProject', noteProject);
-    RealmObjectBase.set(this, 'noteCreatTime', noteCreatTime);
-    RealmObjectBase.set(this, 'noteUpdateTime', noteUpdateTime);
-    RealmObjectBase.set(this, 'noteAchiveTime', noteAchiveTime);
-    RealmObjectBase.set(this, 'noteDeleteTime', noteDeleteTime);
     RealmObjectBase.set(this, 'noteTags', noteTags);
     RealmObjectBase.set(this, 'noteAttachments', noteAttachments);
     RealmObjectBase.set(this, 'noteReferences', noteReferences);
@@ -92,9 +82,13 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'noteIsShared', noteIsShared);
     RealmObjectBase.set(this, 'noteIsAchive', noteIsAchive);
     RealmObjectBase.set(this, 'noteFinishState', noteFinishState);
-    RealmObjectBase.set(this, 'noteFinishTime', noteFinishTime);
-    RealmObjectBase.set(this, 'noteAlarmTime', noteAlarmTime);
     RealmObjectBase.set(this, 'noteIsReviewed', noteIsReviewed);
+    RealmObjectBase.set(this, 'noteCreateDate', noteCreateDate);
+    RealmObjectBase.set(this, 'noteUpdateDate', noteUpdateDate);
+    RealmObjectBase.set(this, 'noteAchiveDate', noteAchiveDate);
+    RealmObjectBase.set(this, 'noteDeleteDate', noteDeleteDate);
+    RealmObjectBase.set(this, 'noteFinishDate', noteFinishDate);
+    RealmObjectBase.set(this, 'noteAlarmDate', noteAlarmDate);
   }
 
   Notes._();
@@ -136,34 +130,6 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
   @override
   set noteProject(String value) =>
       RealmObjectBase.set(this, 'noteProject', value);
-
-  @override
-  String get noteCreatTime =>
-      RealmObjectBase.get<String>(this, 'noteCreatTime') as String;
-  @override
-  set noteCreatTime(String value) =>
-      RealmObjectBase.set(this, 'noteCreatTime', value);
-
-  @override
-  String get noteUpdateTime =>
-      RealmObjectBase.get<String>(this, 'noteUpdateTime') as String;
-  @override
-  set noteUpdateTime(String value) =>
-      RealmObjectBase.set(this, 'noteUpdateTime', value);
-
-  @override
-  String get noteAchiveTime =>
-      RealmObjectBase.get<String>(this, 'noteAchiveTime') as String;
-  @override
-  set noteAchiveTime(String value) =>
-      RealmObjectBase.set(this, 'noteAchiveTime', value);
-
-  @override
-  String get noteDeleteTime =>
-      RealmObjectBase.get<String>(this, 'noteDeleteTime') as String;
-  @override
-  set noteDeleteTime(String value) =>
-      RealmObjectBase.set(this, 'noteDeleteTime', value);
 
   @override
   String get noteTags =>
@@ -265,25 +231,53 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
       RealmObjectBase.set(this, 'noteFinishState', value);
 
   @override
-  String get noteFinishTime =>
-      RealmObjectBase.get<String>(this, 'noteFinishTime') as String;
-  @override
-  set noteFinishTime(String value) =>
-      RealmObjectBase.set(this, 'noteFinishTime', value);
-
-  @override
-  String get noteAlarmTime =>
-      RealmObjectBase.get<String>(this, 'noteAlarmTime') as String;
-  @override
-  set noteAlarmTime(String value) =>
-      RealmObjectBase.set(this, 'noteAlarmTime', value);
-
-  @override
   bool get noteIsReviewed =>
       RealmObjectBase.get<bool>(this, 'noteIsReviewed') as bool;
   @override
   set noteIsReviewed(bool value) =>
       RealmObjectBase.set(this, 'noteIsReviewed', value);
+
+  @override
+  DateTime get noteCreateDate =>
+      RealmObjectBase.get<DateTime>(this, 'noteCreateDate') as DateTime;
+  @override
+  set noteCreateDate(DateTime value) =>
+      RealmObjectBase.set(this, 'noteCreateDate', value);
+
+  @override
+  DateTime get noteUpdateDate =>
+      RealmObjectBase.get<DateTime>(this, 'noteUpdateDate') as DateTime;
+  @override
+  set noteUpdateDate(DateTime value) =>
+      RealmObjectBase.set(this, 'noteUpdateDate', value);
+
+  @override
+  DateTime get noteAchiveDate =>
+      RealmObjectBase.get<DateTime>(this, 'noteAchiveDate') as DateTime;
+  @override
+  set noteAchiveDate(DateTime value) =>
+      RealmObjectBase.set(this, 'noteAchiveDate', value);
+
+  @override
+  DateTime get noteDeleteDate =>
+      RealmObjectBase.get<DateTime>(this, 'noteDeleteDate') as DateTime;
+  @override
+  set noteDeleteDate(DateTime value) =>
+      RealmObjectBase.set(this, 'noteDeleteDate', value);
+
+  @override
+  DateTime get noteFinishDate =>
+      RealmObjectBase.get<DateTime>(this, 'noteFinishDate') as DateTime;
+  @override
+  set noteFinishDate(DateTime value) =>
+      RealmObjectBase.set(this, 'noteFinishDate', value);
+
+  @override
+  DateTime get noteAlarmDate =>
+      RealmObjectBase.get<DateTime>(this, 'noteAlarmDate') as DateTime;
+  @override
+  set noteAlarmDate(DateTime value) =>
+      RealmObjectBase.set(this, 'noteAlarmDate', value);
 
   @override
   Stream<RealmObjectChanges<Notes>> get changes =>
@@ -303,10 +297,6 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('noteContext', RealmPropertyType.string),
       SchemaProperty('noteType', RealmPropertyType.string),
       SchemaProperty('noteProject', RealmPropertyType.string),
-      SchemaProperty('noteCreatTime', RealmPropertyType.string),
-      SchemaProperty('noteUpdateTime', RealmPropertyType.string),
-      SchemaProperty('noteAchiveTime', RealmPropertyType.string),
-      SchemaProperty('noteDeleteTime', RealmPropertyType.string),
       SchemaProperty('noteTags', RealmPropertyType.string),
       SchemaProperty('noteAttachments', RealmPropertyType.string),
       SchemaProperty('noteReferences', RealmPropertyType.string),
@@ -322,9 +312,13 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('noteIsShared', RealmPropertyType.bool),
       SchemaProperty('noteIsAchive', RealmPropertyType.bool),
       SchemaProperty('noteFinishState', RealmPropertyType.string),
-      SchemaProperty('noteFinishTime', RealmPropertyType.string),
-      SchemaProperty('noteAlarmTime', RealmPropertyType.string),
       SchemaProperty('noteIsReviewed', RealmPropertyType.bool),
+      SchemaProperty('noteCreateDate', RealmPropertyType.timestamp),
+      SchemaProperty('noteUpdateDate', RealmPropertyType.timestamp),
+      SchemaProperty('noteAchiveDate', RealmPropertyType.timestamp),
+      SchemaProperty('noteDeleteDate', RealmPropertyType.timestamp),
+      SchemaProperty('noteFinishDate', RealmPropertyType.timestamp),
+      SchemaProperty('noteAlarmDate', RealmPropertyType.timestamp),
     ]);
   }
 }

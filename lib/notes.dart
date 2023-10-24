@@ -10,10 +10,10 @@ class _Notes {
   late String noteContext;
   late String noteType = "";
   late String noteProject = "";
-  late String noteCreatTime = "";
-  late String noteUpdateTime = "";
-  late String noteAchiveTime = "";
-  late String noteDeleteTime = "";
+  // late String noteCreatTime = "";
+  // late String noteUpdateTime = "";
+  // late String noteAchiveTime = "";
+  // late String noteDeleteTime = "";
   late String noteTags = "";
   late String noteAttachments = "";
   late String noteReferences = "";
@@ -29,9 +29,15 @@ class _Notes {
   late bool noteIsShared = false;
   late bool noteIsAchive = false;
   late String noteFinishState = "";
-  late String noteFinishTime = "";
-  late String noteAlarmTime = "";
+  // late String noteFinishTime = "";
+  // late String noteAlarmTime = "";
   late bool noteIsReviewed = false;
+  late DateTime noteCreateDate;
+  late DateTime noteUpdateDate;
+  late DateTime noteAchiveDate;
+  late DateTime noteDeleteDate;
+  late DateTime noteFinishDate;
+  late DateTime noteAlarmDate;
 }
 //flutter pub run realm generate，用来生成notes.g.dart
 //   // 将 Notes 表加入到 Realm 中

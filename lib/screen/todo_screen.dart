@@ -153,14 +153,13 @@ class TodoPageState extends State<TodoPage> {
                 setState(() {
                   realm.write(() {
                     note.noteFinishState = '已完';
-                    note.noteFinishTime = DateTime.now().toString();
+                    note.noteFinishDate = DateTime.now().toUtc();
                   });
                 });
               } else {
                 realm.write(() {
                   setState(() {
                     note.noteFinishState = '未完';
-                    note.noteFinishTime = '';
                   });
                 });
               }
@@ -306,13 +305,6 @@ class TodoPageState extends State<TodoPage> {
                   ),
                 ),
               ),
-              Text(
-                '${note.noteContext.length + note.noteTitle.length}${note.noteCreatTime.length > 19 ? '${note.noteCreatTime.substring(0, 19)}创建       ' : note.noteCreatTime}${note.noteUpdateTime.length > 19 ? '${note.noteUpdateTime.substring(0, 19)}修改' : note.noteUpdateTime}',
-                maxLines: 1,
-                style: const TextStyle(
-                  fontSize: 10,
-                ),
-              ),
               Visibility(
                 visible:
                     note.noteType + note.noteProject + note.noteFolder != "",
@@ -407,7 +399,12 @@ class TodoPageState extends State<TodoPage> {
               '',
               '',
               '',
-              noteCreatTime: DateTime.now().toString(),
+              DateTime.now(),
+              DateTime.now(),
+              DateTime(1970, 1, 1),
+              DateTime(1970, 1, 1),
+              DateTime(1970, 1, 1),
+              DateTime(1970, 1, 1),
               noteType: '.todo',
               noteFinishState: '未完',
             );
