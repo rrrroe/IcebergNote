@@ -732,6 +732,7 @@ class _ReviewCardState extends State<ReviewCard> {
                         },
                         menuChildren: typeList.map((type) {
                           return MenuItemButton(
+                            style: menuChildrenButtonStyle,
                             child: Text(type),
                             onPressed: () {
                               switch (type) {
@@ -797,6 +798,7 @@ class _ReviewCardState extends State<ReviewCard> {
                         },
                         menuChildren: projectList.map((project) {
                           return MenuItemButton(
+                            style: menuChildrenButtonStyle,
                             child: Text(project),
                             onPressed: () {
                               switch (project) {
@@ -862,6 +864,7 @@ class _ReviewCardState extends State<ReviewCard> {
                         },
                         menuChildren: folderList.map((folder) {
                           return MenuItemButton(
+                            style: menuChildrenButtonStyle,
                             child: Text(folder),
                             onPressed: () {
                               switch (folder) {
@@ -927,6 +930,7 @@ class _ReviewCardState extends State<ReviewCard> {
                           },
                           menuChildren: finishStateList.map((finishState) {
                             return MenuItemButton(
+                              style: menuChildrenButtonStyle,
                               child: Text(finishState),
                               onPressed: () {
                                 switch (finishState) {

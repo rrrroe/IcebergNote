@@ -482,6 +482,7 @@ class TodoPageState extends State<TodoPage> {
               },
               menuChildren: projectList.map((project) {
                 return MenuItemButton(
+                  style: menuChildrenButtonStyle,
                   child: Text(project),
                   onPressed: () {
                     if (project == '全部') {
@@ -519,6 +520,7 @@ class TodoPageState extends State<TodoPage> {
               },
               menuChildren: folderList.map((folder) {
                 return MenuItemButton(
+                  style: menuChildrenButtonStyle,
                   child: Text(folder),
                   onPressed: () {
                     if (folder == '全部') {
@@ -556,6 +558,7 @@ class TodoPageState extends State<TodoPage> {
               },
               menuChildren: finishStateList.map((finishState) {
                 return MenuItemButton(
+                  style: menuChildrenButtonStyle,
                   child: Text(finishState),
                   onPressed: () {
                     if (finishState == '全部') {

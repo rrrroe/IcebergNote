@@ -274,6 +274,7 @@ class _ReportScreenState extends State<ReportScreen>
             },
             menuChildren: recordProjectList.map((type) {
               return MenuItemButton(
+                style: menuChildrenButtonStyle,
                 child: Text(type),
                 onPressed: () {
                   setState(() {
@@ -335,6 +336,7 @@ class _ReportScreenState extends State<ReportScreen>
               },
               menuChildren: typeList.map((type) {
                 return MenuItemButton(
+                  style: menuChildrenButtonStyle,
                   child: Text(type),
                   onPressed: () {
                     setState(() {

@@ -623,6 +623,7 @@ class SearchPageState extends State<SearchPage> {
               },
               menuChildren: projectList.map((project) {
                 return MenuItemButton(
+                  style: menuChildrenButtonStyle,
                   child: Text(project),
                   onPressed: () {
                     if (project == '全部') {
@@ -660,6 +661,7 @@ class SearchPageState extends State<SearchPage> {
               },
               menuChildren: folderList.map((folder) {
                 return MenuItemButton(
+                  style: menuChildrenButtonStyle,
                   child: Text(folder),
                   onPressed: () {
                     if (folder == '全部') {
@@ -697,6 +699,7 @@ class SearchPageState extends State<SearchPage> {
               },
               menuChildren: typeList.map((type) {
                 return MenuItemButton(
+                  style: menuChildrenButtonStyle,
                   child: Text(type),
                   onPressed: () {
                     if (type == '全部') {

@@ -252,6 +252,7 @@ class RecordChangePageState extends State<RecordChangePage> {
                               },
                               menuChildren: widget.typeList.map((type) {
                                 return MenuItemButton(
+                                  style: menuChildrenButtonStyle,
                                   child: Text(type),
                                   onPressed: () {
                                     switch (type) {
@@ -318,6 +319,7 @@ class RecordChangePageState extends State<RecordChangePage> {
                               },
                               menuChildren: widget.projectList.map((project) {
                                 return MenuItemButton(
+                                  style: menuChildrenButtonStyle,
                                   child: Text(project),
                                   onPressed: () {
                                     switch (project) {
@@ -385,6 +387,7 @@ class RecordChangePageState extends State<RecordChangePage> {
                               },
                               menuChildren: widget.folderList.map((folder) {
                                 return MenuItemButton(
+                                  style: menuChildrenButtonStyle,
                                   child: Text(folder),
                                   onPressed: () {
                                     switch (folder) {
@@ -1914,6 +1917,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                               },
                               menuChildren: widget.typeList.map((type) {
                                 return MenuItemButton(
+                                  style: menuChildrenButtonStyle,
                                   child: Text(type),
                                   onPressed: () {
                                     switch (type) {
@@ -1980,6 +1984,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                               },
                               menuChildren: widget.projectList.map((project) {
                                 return MenuItemButton(
+                                  style: menuChildrenButtonStyle,
                                   child: Text(project),
                                   onPressed: () {
                                     switch (project) {
@@ -2047,6 +2052,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                               },
                               menuChildren: widget.folderList.map((folder) {
                                 return MenuItemButton(
+                                  style: menuChildrenButtonStyle,
                                   child: Text(folder),
                                   onPressed: () {
                                     switch (folder) {
@@ -2230,6 +2236,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
               },
               menuChildren: templateTypeList.map((type) {
                 return MenuItemButton(
+                  style: menuChildrenButtonStyle,
                   child: Text(type),
                   onPressed: () {
                     switch (type) {

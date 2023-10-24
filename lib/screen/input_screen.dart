@@ -205,6 +205,7 @@ class ChangePageState extends State<ChangePage> {
                                 },
                                 menuChildren: widget.typeList.map((type) {
                                   return MenuItemButton(
+                                    style: menuChildrenButtonStyle,
                                     child: Text(type),
                                     onPressed: () {
                                       switch (type) {
@@ -280,6 +281,7 @@ class ChangePageState extends State<ChangePage> {
                                 },
                                 menuChildren: widget.projectList.map((project) {
                                   return MenuItemButton(
+                                    style: menuChildrenButtonStyle,
                                     child: Text(project),
                                     onPressed: () {
                                       switch (project) {
@@ -356,6 +358,7 @@ class ChangePageState extends State<ChangePage> {
                                 },
                                 menuChildren: widget.folderList.map((folder) {
                                   return MenuItemButton(
+                                    style: menuChildrenButtonStyle,
                                     child: Text(folder),
                                     onPressed: () {
                                       switch (folder) {
@@ -432,6 +435,7 @@ class ChangePageState extends State<ChangePage> {
                                   menuChildren:
                                       widget.finishStateList.map((finishState) {
                                     return MenuItemButton(
+                                      style: menuChildrenButtonStyle,
                                       child: Text(finishState),
                                       onPressed: () {
                                         switch (finishState) {

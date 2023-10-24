@@ -359,6 +359,7 @@ class ImportPageState extends State<ImportPage> {
                             },
                             menuChildren: typeList.map((type) {
                               return MenuItemButton(
+                                style: menuChildrenButtonStyle,
                                 child: Text(type),
                                 onPressed: () {
                                   switch (type) {
@@ -417,6 +418,7 @@ class ImportPageState extends State<ImportPage> {
                             },
                             menuChildren: projectList.map((project) {
                               return MenuItemButton(
+                                style: menuChildrenButtonStyle,
                                 child: Text(project),
                                 onPressed: () {
                                   switch (project) {
@@ -475,6 +477,7 @@ class ImportPageState extends State<ImportPage> {
                             },
                             menuChildren: folderList.map((folder) {
                               return MenuItemButton(
+                                style: menuChildrenButtonStyle,
                                 child: Text(folder),
                                 onPressed: () {
                                   switch (folder) {

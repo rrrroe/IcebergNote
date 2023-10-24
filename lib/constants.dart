@@ -67,6 +67,11 @@ ButtonStyle transparentContextButtonStyle = ElevatedButton.styleFrom(
   ),
   padding: const EdgeInsets.all(0),
 );
+ButtonStyle menuChildrenButtonStyle = ElevatedButton.styleFrom(
+  alignment: Alignment.center,
+  padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+  minimumSize: const Size(64, 40),
+);
 
 enum Toast {
   /// Show Short toast for 1 sec
