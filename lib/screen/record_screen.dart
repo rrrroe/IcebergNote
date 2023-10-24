@@ -178,6 +178,7 @@ class RecordChangePageState extends State<RecordChangePage> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
+              save();
               Navigator.pop(context);
               widget.onPageClosed();
             },
