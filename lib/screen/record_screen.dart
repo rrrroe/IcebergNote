@@ -2304,53 +2304,69 @@ class _InputSelectAlertDialogState extends State<InputSelectAlertDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Wrap(
-        alignment: WrapAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.start,
-        spacing: 5,
-        runSpacing: 5,
-        children: List.generate(
-          widget.currentList.length,
-          (index) {
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  widget.currentList.removeAt(index);
-                });
-              },
-              child: Container(
-                margin: const EdgeInsets.all(0),
-                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: widget.fontColor,
-                  border: Border.all(
-                    color: widget.fontColor,
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      widget.currentList[index],
-                      style: const TextStyle(
-                        fontFamily: 'LXGWWenKai',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+      titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+      insetPadding: const EdgeInsets.all(20),
+      actionsPadding: const EdgeInsets.all(10),
+      title: Container(
+        width: 600,
+        constraints: const BoxConstraints(
+          minHeight: 24,
+          maxHeight: 81,
+        ),
+        padding: const EdgeInsets.all(0),
+        // color: Colors.white,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            spacing: 5,
+            runSpacing: 5,
+            children: List.generate(
+              widget.currentList.length,
+              (index) {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      widget.currentList.removeAt(index);
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.all(0),
+                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: widget.fontColor,
+                      border: Border.all(
+                        color: widget.fontColor,
+                        width: 1,
                       ),
                     ),
-                    const Icon(
-                      Icons.close,
-                      size: 15,
-                      color: Colors.white,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          widget.currentList[index],
+                          style: const TextStyle(
+                            fontFamily: 'LXGWWenKai',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const Icon(
+                          Icons.close,
+                          size: 15,
+                          color: Colors.white,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            );
-          },
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ),
       content: Column(
@@ -2384,13 +2400,7 @@ class _InputSelectAlertDialogState extends State<InputSelectAlertDialog> {
           const SizedBox(
             height: 10,
           ),
-          Container(
-            width: 600,
-            constraints: const BoxConstraints(
-              minHeight: 100,
-              maxHeight: 400,
-            ),
-            color: Colors.white,
+          Flexible(
             child: SingleChildScrollView(
               child: Wrap(
                 alignment: WrapAlignment.start,
@@ -2459,7 +2469,7 @@ class _InputSelectAlertDialogState extends State<InputSelectAlertDialog> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
       actions: <Widget>[
@@ -2470,31 +2480,6 @@ class _InputSelectAlertDialogState extends State<InputSelectAlertDialog> {
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        // TextButton(
-        //   child: Text(
-        //     '新建',
-        //     style: TextStyle(color: widget.fontColor),
-        //   ),
-        //   onPressed: () {
-        //     showDialog(
-        //       context: context,
-        //       builder: (ctx) {
-        //         return InputAlertDialog(
-        //           onSubmitted: (text) {
-        //             setState(() {
-        //               if (!widget.isMultiSelect) {
-        //                 widget.currentList.clear();
-        //               }
-        //               widget.selectList.add(text);
-        //               widget.currentList.add(text);
-        //               filterSelectList.add(text);
-        //             });
-        //           },
-        //         );
-        //       },
-        //     );
-        //   },
-        // ),
         TextButton(
           onPressed: _submit,
           child: Text(
