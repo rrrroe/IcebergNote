@@ -1346,8 +1346,6 @@ class _PropertyCardState extends State<PropertyCard> {
     Duration? tmpDuration = stringToDuration(propertySettings.last);
     Duration? setDuration = stringToDuration(
         widget.record[template.keys.elementAt(widget.index)].toString());
-    print(widget.record[template.keys.elementAt(widget.index)]);
-    print(setDuration);
     if (widget.record[template.keys.elementAt(widget.index)] == null &&
         widget.mod == 0) {
       if (propertySettings.last == '此刻') {
