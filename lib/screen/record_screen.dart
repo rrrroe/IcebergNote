@@ -1339,6 +1339,7 @@ class _PropertyCardState extends State<PropertyCard> {
     Duration? tmpDuration = stringToDuration(propertySettings.last);
     Duration? setDuration = stringToDuration(
         widget.record[template.keys.elementAt(widget.index)].toString());
+    print(setDuration);
     if (widget.record[template.keys.elementAt(widget.index)] == null &&
         widget.mod == 0) {
       if (propertySettings.last == '此刻') {
@@ -2511,17 +2512,11 @@ Duration? stringToDuration(String str) {
   int colonCount = colonRegExp.allMatches(str).length;
   if (colonCount == 2) {
     var tmp = str.replaceAll(' ', '').split(':');
-    if (tmp.length == 3 &&
-        int.tryParse(tmp[0]) != null &&
-        int.tryParse(tmp[1]) != null &&
-        int.tryParse(tmp[2]) != null) {
-      return Duration(
-          hours: int.parse(tmp[0]),
-          minutes: int.parse(tmp[1]),
-          seconds: int.parse(tmp[2]));
-    } else {
-      return null;
-    }
+
+    return Duration(
+        hours: int.parse(tmp[0]),
+        minutes: int.parse(tmp[1]),
+        seconds: int.parse(tmp[2]));
   } else if (colonCount == 1) {
     var tmp = str.replaceAll(' ', '').split(':');
     if (tmp.length == 3 &&

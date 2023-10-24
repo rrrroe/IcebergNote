@@ -10,15 +10,6 @@ import 'input_screen.dart';
 import 'noteslist_screen.dart';
 
 const _labelAngle = math.pi / 2 * 0.2;
-String blankTip = '恭喜您，已完成所有复盘！';
-List<Notes> blankList = [
-  Notes(ObjectId(), '', blankTip, math.Random().nextInt(100).toString()),
-  Notes(ObjectId(), '', blankTip, math.Random().nextInt(100).toString()),
-  Notes(ObjectId(), '', blankTip, math.Random().nextInt(100).toString()),
-  Notes(ObjectId(), '', blankTip, math.Random().nextInt(100).toString()),
-  Notes(ObjectId(), '', blankTip, math.Random().nextInt(100).toString()),
-  Notes(ObjectId(), '', blankTip, math.Random().nextInt(100).toString())
-];
 
 class ReviewPage extends StatefulWidget {
   const ReviewPage({super.key});
@@ -32,16 +23,46 @@ class ReviewPageState extends State<ReviewPage> {
   late List<Notes> reviewList;
   late final List<Widget> titleList;
   void _listenController() => setState(() {});
-
+  String blankTip = '恭喜您，已完成今日复盘！';
+  String today = '';
+  bool isToday = true;
+  List<Notes> blankList = [
+    Notes(
+        ObjectId(), '', '恭喜您，已完成所有复盘！', math.Random().nextInt(100).toString()),
+    Notes(
+        ObjectId(), '', '恭喜您，已完成所有复盘！', math.Random().nextInt(100).toString()),
+    Notes(
+        ObjectId(), '', '恭喜您，已完成所有复盘！', math.Random().nextInt(100).toString()),
+    Notes(
+        ObjectId(), '', '恭喜您，已完成所有复盘！', math.Random().nextInt(100).toString()),
+    Notes(
+        ObjectId(), '', '恭喜您，已完成所有复盘！', math.Random().nextInt(100).toString()),
+    Notes(
+      ObjectId(),
+      '',
+      '恭喜您，已完成所有复盘！',
+      math.Random().nextInt(100).toString(),
+    )
+  ];
+  List<Notes> blankListToday = [
+    Notes(
+        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+    Notes(
+        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+    Notes(
+        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+    Notes(
+        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+    Notes(
+        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+    Notes(
+        ObjectId(), '', '恭喜您，已完成今日复盘！', math.Random().nextInt(100).toString()),
+  ];
   @override
   void initState() {
     super.initState();
+    today = DateTime.now().toString().substring(0, 10);
     _controller = SwipableStackController()..addListener(_listenController);
-    reviewList = realm
-            .query<Notes>(
-                "noteIsDeleted != true AND noteIsReviewed == false AND noteIsReviewed == false SORT(id ASC)")
-            .toList() +
-        blankList;
   }
 
   @override
@@ -54,8 +75,33 @@ class ReviewPageState extends State<ReviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (isToday) {
+      reviewList = realm.query<Notes>(
+              "noteIsDeleted != true AND noteIsReviewed == false AND noteCreatTime CONTAINS \$0 SORT(id ASC)",
+              [today]).toList() +
+          blankListToday;
+    } else {
+      reviewList = realm
+              .query<Notes>(
+                  "noteIsDeleted != true AND noteIsReviewed == false SORT(id ASC)")
+              .toList() +
+          blankList;
+    }
     return Scaffold(
-      appBar: AppBar(title: const Text("复盘")),
+      appBar: AppBar(
+        title: Text(isToday == true ? "今日复盘" : "所有复盘"),
+        actions: [
+          TextButton(
+              onPressed: () {
+                setState(() {
+                  isToday = !isToday;
+                  blankTip =
+                      (isToday == true ? '恭喜您，已完成今日复盘！' : '恭喜您，已完成所有复盘！');
+                });
+              },
+              child: Text(isToday != true ? "前往今日复盘" : "前往所有复盘"))
+        ],
+      ),
       body: Stack(
         children: [
           Positioned.fill(
