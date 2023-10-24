@@ -70,7 +70,12 @@ ButtonStyle transparentContextButtonStyle = ElevatedButton.styleFrom(
 ButtonStyle menuChildrenButtonStyle = ElevatedButton.styleFrom(
   alignment: Alignment.center,
   padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-  minimumSize: const Size(64, 40),
+  minimumSize: const Size(64, 36),
+);
+MenuStyle menuAnchorStyle = MenuStyle(
+  maximumSize: MaterialStateProperty.all(const Size(250, 250)),
+  padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
+  visualDensity: VisualDensity.compact,
 );
 
 enum Toast {

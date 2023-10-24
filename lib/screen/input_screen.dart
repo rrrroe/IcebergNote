@@ -181,6 +181,7 @@ class ChangePageState extends State<ChangePage> {
                             runSpacing: 4.0,
                             children: [
                               MenuAnchor(
+                                style: menuAnchorStyle,
                                 builder: (context, controller, child) {
                                   return FilledButton.tonal(
                                     style: selectButtonStyle,
