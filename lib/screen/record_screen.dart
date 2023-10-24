@@ -592,7 +592,12 @@ class _PropertyCardState extends State<PropertyCard> {
       if (num.tryParse(propertySettings.last) != null) {
         widget.record[template.keys.elementAt(widget.index)] =
             num.tryParse(propertySettings.last);
-        contentController.text = propertySettings.last.toString();
+
+        contentController.text =
+            propertySettings.last == null && propertySettings.last == 'null'
+                ? ''
+                : propertySettings.last.toString();
+
         // } else if (double.tryParse(propertySettings.last) != null) {
         //   widget.record[template.keys.elementAt(widget.index)] =
         //       double.tryParse(propertySettings.last);
@@ -603,10 +608,12 @@ class _PropertyCardState extends State<PropertyCard> {
         if (searchResult.length > 1) {
           if (checkNoteFormat(searchResult[1])) {
             var lastNoteMap = loadYaml(searchResult[1].noteContext) as YamlMap;
-            contentController.text =
-                lastNoteMap[template.keys.elementAt(widget.index)].toString();
-            widget.record[template.keys.elementAt(widget.index)] =
-                lastNoteMap[template.keys.elementAt(widget.index)];
+            if (lastNoteMap[template.keys.elementAt(widget.index)] != null) {
+              contentController.text =
+                  lastNoteMap[template.keys.elementAt(widget.index)].toString();
+              widget.record[template.keys.elementAt(widget.index)] =
+                  lastNoteMap[template.keys.elementAt(widget.index)];
+            }
           }
         }
       } else if (propertySettings.last == '递增') {
@@ -1339,7 +1346,6 @@ class _PropertyCardState extends State<PropertyCard> {
     Duration? tmpDuration = stringToDuration(propertySettings.last);
     Duration? setDuration = stringToDuration(
         widget.record[template.keys.elementAt(widget.index)].toString());
-    print(setDuration);
     if (widget.record[template.keys.elementAt(widget.index)] == null &&
         widget.mod == 0) {
       if (propertySettings.last == '此刻') {
@@ -1435,9 +1441,9 @@ class _PropertyCardState extends State<PropertyCard> {
                                 .record[template.keys.elementAt(widget.index)]
                                 .toString()
                         : '${timeList[0] == 0 ? '' : '${timeList[0]}时'}${timeList[1]}分${timeList[2] == 0 ? '' : '${timeList[2]}秒'}',
-                    style: setDuration == null
-                        ? const TextStyle(color: Colors.red)
-                        : const TextStyle(color: Colors.black),
+                    style: setDuration != null
+                        ? const TextStyle(color: Colors.black)
+                        : const TextStyle(color: Colors.red),
                   ),
                 ),
               ),
