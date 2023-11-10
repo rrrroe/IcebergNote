@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:icebergnote/screen/login_screen.dart';
 import 'package:icebergnote/screen/review_screen.dart';
 import 'screen/import_screen.dart';
 import 'screen/noteslist_screen.dart';
@@ -502,6 +503,18 @@ class _NavigationTransitionState extends State<NavigationTransition> {
                   ),
                 ],
               ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.login_rounded),
+              title: const Text('登录'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.delete),
