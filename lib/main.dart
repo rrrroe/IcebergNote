@@ -9,6 +9,7 @@ import 'package:realm/realm.dart';
 import 'constants.dart';
 import 'home.dart';
 import 'notes.dart';
+import 'postgresql/sync.dart';
 
 class NotesList {
   var visibleItemCount = 50;

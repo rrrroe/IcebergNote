@@ -59,6 +59,7 @@ dependencies:
   fl_chart: ^0.64.0
   flutter_login: ^4.2.1
   shared_preferences: ^2.2.2
+  postgres: ^2.6.3
 
 dev_dependencies:
   flutter_test:
