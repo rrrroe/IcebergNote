@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:icebergnote/screen/login_screen.dart';
 import 'package:realm/realm.dart';
 import 'constants.dart';
 import 'home.dart';
@@ -178,14 +179,18 @@ class _AppState extends State<App> {
         brightness: Brightness.dark,
         fontFamily: 'LXGWWenKai',
       ),
-      home: Home(
-        useLightMode: useLightMode,
-        useMaterial3: useMaterial3,
-        colorSelected: colorSelected,
-        handleBrightnessChange: handleBrightnessChange,
-        handleMaterialVersionChange: handleMaterialVersionChange,
-        handleColorSelect: handleColorSelect,
-      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => Home(
+              useLightMode: useLightMode,
+              useMaterial3: useMaterial3,
+              colorSelected: colorSelected,
+              handleBrightnessChange: handleBrightnessChange,
+              handleMaterialVersionChange: handleMaterialVersionChange,
+              handleColorSelect: handleColorSelect,
+            ),
+        '/login': (context) => const LoginScreen()
+      },
     );
   }
 }

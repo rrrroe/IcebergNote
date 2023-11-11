@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:icebergnote/screen/login_screen.dart';
 import 'package:icebergnote/screen/review_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screen/import_screen.dart';
 import 'screen/noteslist_screen.dart';
 import 'constants.dart';
@@ -463,7 +464,8 @@ class _NavigationTransitionState extends State<NavigationTransition> {
   late final ReverseAnimation barAnimation;
   bool controllerInitialized = false;
   bool showDivider = false;
-
+  late final SharedPreferences userLocalInfo;
+  String? userName;
   @override
   void initState() {
     super.initState();
@@ -477,6 +479,12 @@ class _NavigationTransitionState extends State<NavigationTransition> {
         curve: const Interval(0.0, 0.5),
       ),
     );
+    initUserData();
+  }
+
+  Future<void> initUserData() async {
+    userLocalInfo = await SharedPreferences.getInstance();
+    userName = userLocalInfo.getString('userEmail');
   }
 
   @override
@@ -505,8 +513,10 @@ class _NavigationTransitionState extends State<NavigationTransition> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.login_rounded),
-              title: const Text('登录'),
+              leading: userName == null
+                  ? const Icon(Icons.login_rounded)
+                  : const Icon(Icons.person),
+              title: userName == null ? const Text('登录') : Text(userName!),
               onTap: () {
                 Navigator.push(
                   context,

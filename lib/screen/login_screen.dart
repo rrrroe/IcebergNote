@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
-import 'package:icebergnote/screen/noteslist_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const users = {
   'dribbble@gmail.com': '12345',
@@ -14,32 +14,33 @@ class LoginScreen extends StatelessWidget {
   Duration get loginTime => const Duration(milliseconds: 2250);
 
   Future<String?> _authUser(LoginData data) {
-    debugPrint('Name: ${data.name}, Password: ${data.password}');
     return Future.delayed(loginTime).then((_) {
-      if (!users.containsKey(data.name)) {
-        return 'User not exists';
-      }
-      if (users[data.name] != data.password) {
-        return 'Password does not match';
-      }
+      // if (!users.containsKey(data.name)) {
+      //   return 'User not exists';
+      // }
+      // if (users[data.name] != data.password) {
+      //   return 'Password does not match';
+      // }
       return null;
     });
   }
 
-  Future<String?> _signupUser(SignupData data) {
-    debugPrint('Signup Name: ${data.name}, Password: ${data.password}');
+  Future<String?> _signupUser(SignupData data) async {
+    final SharedPreferences userLocalInfo =
+        await SharedPreferences.getInstance();
+    userLocalInfo.setString('userEmail', data.name.toString());
+    userLocalInfo.setString('userID', DateTime.now().toString());
     return Future.delayed(loginTime).then((_) {
       return null;
     });
   }
 
-  Future<String> _recoverPassword(String name) {
-    debugPrint('Name: $name');
+  Future<String?> _recoverPassword(String name) {
     return Future.delayed(loginTime).then((_) {
       if (!users.containsKey(name)) {
         return 'User not exists';
       }
-      return '';
+      return null;
     });
   }
 
@@ -51,12 +52,7 @@ class LoginScreen extends StatelessWidget {
       onLogin: _authUser,
       onSignup: _signupUser,
       onSubmitAnimationCompleted: () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const SearchPage(
-            mod: 0,
-            txt: '',
-          ),
-        ));
+        Navigator.pushNamed(context, '/');
       },
       onRecoverPassword: _recoverPassword,
     );
