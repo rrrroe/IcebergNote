@@ -4,12 +4,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
 import 'package:icebergnote/screen/login_screen.dart';
 import 'package:realm/realm.dart';
 import 'constants.dart';
 import 'home.dart';
 import 'notes.dart';
-import 'postgresql/sync.dart';
 
 class NotesList {
   var visibleItemCount = 50;
@@ -156,7 +156,7 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

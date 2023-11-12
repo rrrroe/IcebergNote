@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:icebergnote/screen/login_screen.dart';
 import 'package:icebergnote/screen/review_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:icebergnote/users.dart';
 import 'screen/import_screen.dart';
 import 'screen/noteslist_screen.dart';
 import 'constants.dart';
@@ -464,8 +465,7 @@ class _NavigationTransitionState extends State<NavigationTransition> {
   late final ReverseAnimation barAnimation;
   bool controllerInitialized = false;
   bool showDivider = false;
-  late final SharedPreferences userLocalInfo;
-  String? userName;
+
   @override
   void initState() {
     super.initState();
@@ -479,12 +479,6 @@ class _NavigationTransitionState extends State<NavigationTransition> {
         curve: const Interval(0.0, 0.5),
       ),
     );
-    initUserData();
-  }
-
-  Future<void> initUserData() async {
-    userLocalInfo = await SharedPreferences.getInstance();
-    userName = userLocalInfo.getString('userEmail');
   }
 
   @override
@@ -512,22 +506,33 @@ class _NavigationTransitionState extends State<NavigationTransition> {
                 ],
               ),
             ),
-            ListTile(
-              leading: userName == null
-                  ? const Icon(Icons.login_rounded)
-                  : const Icon(Icons.person),
-              title: userName == null ? const Text('登录') : Text(userName!),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(),
-                  ),
-                );
-              },
+            GetBuilder<UserController>(
+              init: UserController(), // 首次启动
+              builder: (_) => ListTile(
+                leading: _.name.value == '登录'
+                    ? const Icon(Icons.login_rounded)
+                    : const Icon(Icons.person, color: Colors.blueGrey),
+                title: Text(
+                  _.name.value,
+                ),
+                trailing: _.name.value == '登录'
+                    ? const Text('')
+                    : _.vipDate.value.isBefore(DateTime.now())
+                        ? const Text('会员已过期')
+                        : const Text('尊享会员',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 111, 102, 0))),
+                onTap: () {
+                  if (_.name.value == '登录') {
+                    Get.to(const LoginScreen());
+                  } else {
+                    _.logout();
+                  }
+                },
+              ),
             ),
             ListTile(
-              leading: const Icon(Icons.delete),
+              leading: const Icon(Icons.delete, color: Colors.blueGrey),
               title: const Text('回收站'),
               onTap: () {
                 Navigator.push(

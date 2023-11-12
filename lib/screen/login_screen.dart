@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
+import 'package:get/get.dart';
+import 'package:icebergnote/users.dart';
 import 'package:postgres/postgres.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 
 const users = {
   'dribbble@gmail.com': '12345',
@@ -19,43 +23,44 @@ class LoginScreen extends StatefulWidget {
 class LoginScreenState extends State<LoginScreen> {
   Duration get loginTime => const Duration(milliseconds: 0);
   PostgreSQLConnection? connection;
+
   Future<String?> _authUser(LoginData data) async {
-    connection = PostgreSQLConnection("111.229.224.55", 5432, "users",
-        username: "admin", password: "456321rrRR");
-    await connection!.open();
-    final result = await connection!.query("SELECT * FROM userinfo");
-    print(result);
-    return Future.delayed(loginTime).then((_) async {
-      for (int i = 0; 1 < result.length; i++) {
-        print(result[i]);
-        if (result[i][0] == data.name ||
-            result[i][3] == data.name ||
-            result[i][2] == data.name) {
-          if (result[i][6] == data.password) {
+    try {
+      connection = PostgreSQLConnection("111.229.224.55", 5432, "users",
+          username: "admin", password: "456321rrRR");
+
+      if (connection == null) {
+        return '远程数据库连接失败';
+      } else {
+        await connection!.open();
+        final results = await connection!.query(
+            "SELECT * FROM userinfo WHERE email = '${data.name}' OR phone = '${data.name}'");
+        if (results.isNotEmpty) {
+          var tmp = sha512.convert(utf8.encode('${data.password}IceBergNote'));
+          if (tmp.toString() == results[0][6]) {
             final SharedPreferences userLocalInfo =
                 await SharedPreferences.getInstance();
-            userLocalInfo.setString('userName', result[i][0]);
-            userLocalInfo.setString('userID', result[i][1]);
-            userLocalInfo.setString('userEmail', result[i][2]);
-            userLocalInfo.setString('userPhone', result[i][3]);
-            userLocalInfo.setInt('userNO', result[i][4]);
-            userLocalInfo.setBool('userIsAdmin', result[i][5]);
-            userLocalInfo.setString('userCreatDate', result[i][7].toString());
-            userLocalInfo.setString('userVIPDate', result[i][8].toString());
+            userLocalInfo.setString('userName', results[0][0]);
+            userLocalInfo.setString('userID', results[0][1]);
+            userLocalInfo.setString('userEmail', results[0][2]);
+            userLocalInfo.setString('userPhone', results[0][3]);
+            userLocalInfo.setInt('userNO', results[0][4]);
+            userLocalInfo.setBool('userIsAdmin', results[0][5]);
+            userLocalInfo.setString('userCreatDate', results[0][7].toString());
+            userLocalInfo.setString('userVIPDate', results[0][8].toString());
+            Get.find<UserController>().refreshLocalUser();
             return null;
           } else {
-            return 'Password does not match';
+            return '密码错误';
           }
+        } else {
+          return '用户不存在';
         }
       }
-      return 'User not exists';
-      // if (!users.containsKey(data.name)) {
-      //   return 'User not exists';
-      // }
-      // if (users[data.name] != data.password) {
-      //   return 'Password does not match';
-      // }
-    });
+    } catch (e) {
+      await Future.delayed(const Duration(seconds: 5));
+      return '网络错误';
+    }
   }
 
   Future<String?> _signupUser(SignupData data) async {
@@ -71,7 +76,7 @@ class LoginScreenState extends State<LoginScreen> {
   Future<String?> _recoverPassword(String name) {
     return Future.delayed(loginTime).then((_) {
       if (!users.containsKey(name)) {
-        return 'User not exists';
+        return '用户不存在';
       }
       return null;
     });

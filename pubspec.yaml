@@ -60,6 +60,7 @@ dependencies:
   flutter_login: ^4.2.1
   shared_preferences: ^2.2.2
   postgres: ^2.6.3
+  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_test:
