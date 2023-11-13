@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:realm/realm.dart';
 
 class AppColor {
   Color colorBackgroundLight = const Color.fromARGB(255, 26, 148, 188);
