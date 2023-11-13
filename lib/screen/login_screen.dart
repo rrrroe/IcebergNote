@@ -33,21 +33,20 @@ class LoginScreenState extends State<LoginScreen> {
         return '远程数据库连接失败';
       } else {
         await connection!.open();
-        final results = await connection!.query(
-            "SELECT * FROM userinfo WHERE email = '${data.name}' OR phone = '${data.name}'");
+        final results = await connection!
+            .query("SELECT * FROM userinfo WHERE email = '${data.name}'");
         if (results.isNotEmpty) {
           var tmp = sha512.convert(utf8.encode('${data.password}IceBergNote'));
-          if (tmp.toString() == results[0][6]) {
+          if (tmp.toString() == results[0][5]) {
             final SharedPreferences userLocalInfo =
                 await SharedPreferences.getInstance();
             userLocalInfo.setString('userName', results[0][0]);
             userLocalInfo.setString('userID', results[0][1]);
             userLocalInfo.setString('userEmail', results[0][2]);
-            userLocalInfo.setString('userPhone', results[0][3]);
-            userLocalInfo.setInt('userNO', results[0][4]);
-            userLocalInfo.setBool('userIsAdmin', results[0][5]);
-            userLocalInfo.setString('userCreatDate', results[0][7].toString());
-            userLocalInfo.setString('userVIPDate', results[0][8].toString());
+            userLocalInfo.setString('userPhone', results[0][3] ?? '');
+            userLocalInfo.setBool('userIsAdmin', results[0][4]);
+            userLocalInfo.setString('userCreatDate', results[0][6].toString());
+            userLocalInfo.setString('userVIPDate', results[0][7].toString());
             Get.find<UserController>().refreshLocalUser();
             return null;
           } else {
@@ -64,13 +63,50 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   Future<String?> _signupUser(SignupData data) async {
-    final SharedPreferences userLocalInfo =
-        await SharedPreferences.getInstance();
-    userLocalInfo.setString('userEmail', data.name.toString());
-    userLocalInfo.setString('userID', DateTime.now().toString());
-    return Future.delayed(loginTime).then((_) {
-      return null;
-    });
+    try {
+      connection = PostgreSQLConnection("111.229.224.55", 5432, "users",
+          username: "admin", password: "456321rrRR");
+
+      if (connection == null) {
+        return '远程数据库连接失败';
+      } else {
+        await connection!.open();
+        final results = await connection!
+            .query("SELECT * FROM userinfo WHERE email = '${data.name}'");
+        var no = await connection!.query("SELECT COUNT(*) FROM userinfo");
+        print(no);
+        String date1 = DateTime.now()
+            .add(const Duration(days: 50))
+            .toString()
+            .substring(0, 10);
+        String date2 = DateTime.now().toString().substring(0, 10);
+        if (results.isNotEmpty) {
+          return '该用户已存在  请登录';
+        } else {
+          var tmp = sha512.convert(utf8.encode('${data.password}IceBergNote'));
+          int back = await connection!.execute(
+              "INSERT INTO userinfo (id, name, email, password, isadmin, createtime, viptime) VALUES (${no[0][0]}, '${data.name}', '${data.name}', '$tmp', 'f', '$date1', '$date2')");
+          if (back == 1) {
+            final SharedPreferences userLocalInfo =
+                await SharedPreferences.getInstance();
+            userLocalInfo.setString('userName', data.name!);
+            userLocalInfo.setString('userID', no[0][0].toString());
+            userLocalInfo.setString('userEmail', data.name!);
+            userLocalInfo.setString('userPhone', '');
+            userLocalInfo.setBool('userIsAdmin', false);
+            userLocalInfo.setString('userCreatDate', date2);
+            userLocalInfo.setString('userVIPDate', date1);
+            Get.find<UserController>().refreshLocalUser();
+            return null;
+          } else {
+            return '注册失败';
+          }
+        }
+      }
+    } catch (e) {
+      await Future.delayed(const Duration(seconds: 5));
+      return '网络错误';
+    }
   }
 
   Future<String?> _recoverPassword(String name) {
