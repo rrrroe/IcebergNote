@@ -93,6 +93,34 @@ class LoginScreenState extends State<LoginScreen> {
         Navigator.pushNamed(context, '/');
       },
       onRecoverPassword: _recoverPassword,
+      messages: LoginMessages(
+        userHint: '邮箱',
+        passwordHint: '密码',
+        confirmPasswordHint: '确认密码',
+        forgotPasswordButton: '忘记密码',
+        loginButton: '登录',
+        signupButton: '注册',
+        recoverPasswordButton: '恢复密码',
+        confirmPasswordError: '密码不一致',
+        recoverPasswordSuccess: '恢复密码成功',
+        goBackButton: '返回',
+        resendCodeButton: '重新发送',
+        resendCodeSuccess: '发送成功',
+        recoverPasswordDescription: '我们将会给这个邮箱发送明文密码',
+        recoverPasswordIntro: '重置密码',
+        flushbarTitleError: '错误',
+        flushbarTitleSuccess: '成功',
+      ),
+      theme: LoginTheme(
+        titleStyle: const TextStyle(color: Colors.white),
+        primaryColor: const Color.fromARGB(255, 0, 140, 198),
+        accentColor: Colors.white,
+        switchAuthTextColor: const Color.fromARGB(255, 0, 140, 198),
+        primaryColorAsInputLabel: false,
+        pageColorDark: const Color.fromARGB(255, 18, 107, 174),
+        pageColorLight: const Color.fromARGB(255, 18, 170, 156),
+        footerBackgroundColor: Colors.red,
+      ),
     );
   }
 }
