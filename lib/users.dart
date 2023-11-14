@@ -10,6 +10,7 @@ class UserController extends GetxController {
   var isAdmin = false.obs;
   var createDate = DateTime.now().obs;
   var vipDate = DateTime.now().obs;
+  var deviceNO = 0.obs;
   @override
   void onInit() {
     super.onInit();
@@ -31,6 +32,8 @@ class UserController extends GetxController {
     vipDate.value = DateTime.tryParse(
             userLocalInfo.getString('userVIPDate') ?? '1970-01-01') ??
         DateTime(1970, 1, 1);
+    deviceNO.value = userLocalInfo.getInt('deviceNO') ?? 0;
+    print(deviceNO.value);
     update();
   }
 

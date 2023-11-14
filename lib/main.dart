@@ -10,6 +10,7 @@ import 'package:realm/realm.dart';
 import 'constants.dart';
 import 'home.dart';
 import 'notes.dart';
+import 'system/device_id.dart';
 
 class NotesList {
   var visibleItemCount = 50;
@@ -107,6 +108,7 @@ void main() {
       realm.delete(deleteOvertime[i]);
     });
   }
+  getUniqueId();
   runApp(
     const App(),
   );

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_login/widgets.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/screen/login_screen.dart';
 import 'package:icebergnote/screen/review_screen.dart';
+import 'package:icebergnote/system/device_id.dart';
 import 'package:icebergnote/users.dart';
 import 'screen/import_screen.dart';
 import 'screen/noteslist_screen.dart';
@@ -558,6 +558,31 @@ class _NavigationTransitionState extends State<NavigationTransition> {
                   ),
                 );
               },
+            ),
+            ListTile(
+              leading:
+                  const Icon(Icons.devices_rounded, color: Colors.blueGrey),
+              title: Text(
+                deviceUniqueId,
+                style: const TextStyle(fontSize: 8),
+              ),
+              onTap: () {
+                getUniqueId();
+                setState(() {});
+              },
+            ),
+            GetBuilder<UserController>(
+              init: UserController(), // 首次启动
+              builder: (_) => ListTile(
+                leading:
+                    const Icon(Icons.devices_rounded, color: Colors.blueGrey),
+                title: Text(
+                  '#${_.deviceNO.value}',
+                ),
+                onTap: () {
+                  _.refreshLocalUser();
+                },
+              ),
             ),
           ],
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/constants.dart';
+import 'package:icebergnote/system/device_id.dart';
 import 'package:icebergnote/users.dart';
 import 'package:postgres/postgres.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,6 +44,30 @@ class LoginScreenState extends State<LoginScreen> {
             userLocalInfo.setBool('userIsAdmin', results[0][4]);
             userLocalInfo.setString('userCreatDate', results[0][6].toString());
             userLocalInfo.setString('userVIPDate', results[0][7].toString());
+
+            if (deviceUniqueId != '未知设备') {
+              if (results[0][8] == null || results[0][8] == '') {
+                await connection!.query(
+                    "UPDATE userinfo SET devices='$deviceUniqueId' WHERE id='${results[0][1]}'");
+                userLocalInfo.setInt('deviceNO', 1);
+              } else if (!results[0][8]
+                  .toString()
+                  .split('|||')
+                  .contains(deviceUniqueId)) {
+                String devices = results[0][8] + '|||' + deviceUniqueId;
+                await connection!.query(
+                    "UPDATE userinfo SET devices='$devices' WHERE id='${results[0][1]}'");
+                userLocalInfo.setInt('deviceNO', devices.split('|||').length);
+              } else {
+                userLocalInfo.setInt(
+                    'deviceNO',
+                    results[0][8]
+                            .toString()
+                            .split('|||')
+                            .indexOf(deviceUniqueId) +
+                        1);
+              }
+            }
             Get.find<UserController>().refreshLocalUser();
             return null;
           } else {
@@ -80,7 +105,7 @@ class LoginScreenState extends State<LoginScreen> {
         } else if (results.isEmpty) {
           var tmp = sha512.convert(utf8.encode('${data.password}IceBergNote'));
           int back = await connection!.execute(
-              "INSERT INTO userinfo (id, name, email, password, isadmin, createtime, viptime, phone) VALUES (${no[0][0]}, '${data.additionalSignupData!['昵称'] ?? ''}', '${data.name}', '$tmp', 'f', '$date1', '$date2','${data.additionalSignupData!['手机'] ?? ''}')");
+              "INSERT INTO userinfo (id, name, email, password, isadmin, createtime, viptime, phone, devices) VALUES (${no[0][0]}, '${data.additionalSignupData!['昵称'] ?? ''}', '${data.name}', '$tmp', 'f', '$date1', '$date2','${data.additionalSignupData!['手机'] ?? ''}', '${deviceUniqueId == '未知设备' ? '' : deviceUniqueId}')");
           if (back == 1) {
             final SharedPreferences userLocalInfo =
                 await SharedPreferences.getInstance();
@@ -93,6 +118,7 @@ class LoginScreenState extends State<LoginScreen> {
             userLocalInfo.setBool('userIsAdmin', false);
             userLocalInfo.setString('userCreatDate', date1);
             userLocalInfo.setString('userVIPDate', date2);
+            userLocalInfo.setInt('deviceNO', 1);
             Get.find<UserController>().refreshLocalUser();
           } else {
             return '注册失败';
@@ -102,8 +128,17 @@ class LoginScreenState extends State<LoginScreen> {
               data.additionalSignupData!['手机'] == results[0][3]) {
             var tmp =
                 sha512.convert(utf8.encode('${data.password}IceBergNote'));
+            String? devices = results[0][8];
+            if (deviceUniqueId != '未知设备') {
+              if (devices == null || devices == '') {
+                devices = deviceUniqueId;
+              } else if (!devices.split('|||').contains(deviceUniqueId)) {
+                devices = '$devices|||$deviceUniqueId';
+              }
+            }
             int back = await connection!.execute(
-                "UPDATE userinfo SET password='$tmp' WHERE id='${results[0][1]}'");
+                "UPDATE userinfo SET password='$tmp', devices='$devices' WHERE id='${results[0][1]}'");
+
             if (back == 1) {
               final SharedPreferences userLocalInfo =
                   await SharedPreferences.getInstance();
@@ -115,6 +150,8 @@ class LoginScreenState extends State<LoginScreen> {
               userLocalInfo.setBool('userIsAdmin', false);
               userLocalInfo.setString('userCreatDate', date1);
               userLocalInfo.setString('userVIPDate', date2);
+              userLocalInfo.setInt('deviceNO',
+                  devices!.split('|||').indexOf(deviceUniqueId) + 1);
               Get.find<UserController>().refreshLocalUser();
               Get.toNamed('/');
             } else {
