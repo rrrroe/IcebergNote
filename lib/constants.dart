@@ -17,6 +17,12 @@ const double largeWidthBreakpoint = 1500;
 
 const double transitionLength = 500;
 
+class APPConstants {
+  static const String appName = '冰山记';
+  static const String logoTag = 'icebergnotelogo';
+  static const String titleTag = 'icebergnotetitle';
+}
+
 enum ColorSeed {
   baseColor('M3 Baseline', Color(0xff6750a4)),
   indigo('Indigo', Colors.indigo),

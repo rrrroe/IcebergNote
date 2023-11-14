@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_login/widgets.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/screen/login_screen.dart';
 import 'package:icebergnote/screen/review_screen.dart';
@@ -161,18 +162,30 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return AppBar(
         title: Row(
           children: [
-            Image.asset(
-              'lib/assets/image/icebergicon.png',
-              width: 35,
+            Hero(
+              tag: APPConstants.logoTag,
+              child: Image.asset(
+                'lib/assets/image/icebergicon.png',
+                width: 35,
+              ),
             ),
             const Padding(padding: EdgeInsets.symmetric(horizontal: 8)),
             const Text(
               '冰山记',
               style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w600,
-              ),
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  color: Color.fromARGB(255, 17, 63, 97)),
             ),
+            // HeroText(
+            //   APPConstants.appName,
+            //   tag: APPConstants.titleTag,
+            //   viewState: ViewState.shrunk,
+            //   style: TextStyle(
+            //     fontSize: 24,
+            //     fontWeight: FontWeight.w600,
+            //   ),
+            // ),
           ],
         ),
         actions: [

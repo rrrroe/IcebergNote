@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:get/get.dart';
+import 'package:icebergnote/constants.dart';
 import 'package:icebergnote/users.dart';
 import 'package:postgres/postgres.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -176,7 +177,7 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
-      title: '冰山记',
+      title: APPConstants.appName,
       logo: const AssetImage('lib/assets/image/icebergicon.png'),
       onLogin: _authUser,
       onSignup: _signupUser,
@@ -186,10 +187,13 @@ class LoginScreenState extends State<LoginScreen> {
       onRecoverPassword: _recoverPassword,
       passwordValidator: passwordValidator,
       userValidator: emailValidator,
+
       additionalSignupFields: const [
         UserFormField(keyName: '昵称'),
         UserFormField(keyName: '手机')
       ],
+      logoTag: APPConstants.logoTag,
+      titleTag: APPConstants.titleTag,
       // loginProviders: <LoginProvider>[
       //   LoginProvider(
       //     icon: FontAwesomeIcons.google,
@@ -260,7 +264,7 @@ class LoginScreenState extends State<LoginScreen> {
         signUpSuccess: '恭喜您注册成功',
       ),
       theme: LoginTheme(
-        titleStyle: const TextStyle(color: Colors.white),
+        titleStyle: const TextStyle(color: Color.fromARGB(255, 17, 63, 97)),
         primaryColor: const Color.fromARGB(255, 0, 140, 198),
         accentColor: Colors.white,
         switchAuthTextColor: const Color.fromARGB(255, 0, 140, 198),
@@ -268,6 +272,8 @@ class LoginScreenState extends State<LoginScreen> {
         pageColorDark: const Color.fromARGB(255, 18, 107, 174),
         pageColorLight: const Color.fromARGB(255, 18, 170, 156),
         footerBackgroundColor: Colors.red,
+        beforeHeroFontSize: 48,
+        afterHeroFontSize: 24,
         cardTheme: CardTheme(
           color: Colors.white,
           elevation: 50,
