@@ -74,12 +74,12 @@ class LoginScreenState extends State<LoginScreen> {
         final results = await connection!
             .query("SELECT * FROM userinfo WHERE email = '${data.name}'");
         var no = await connection!.query("SELECT COUNT(*) FROM userinfo");
-        print(no);
-        String date1 = DateTime.now()
+        String date1 = DateTime.now().toString().substring(0, 10);
+        String date2 = DateTime.now()
             .add(const Duration(days: 50))
             .toString()
             .substring(0, 10);
-        String date2 = DateTime.now().toString().substring(0, 10);
+
         if (results.isNotEmpty) {
           return '该用户已存在  请登录';
         } else {
@@ -94,8 +94,8 @@ class LoginScreenState extends State<LoginScreen> {
             userLocalInfo.setString('userEmail', data.name!);
             userLocalInfo.setString('userPhone', '');
             userLocalInfo.setBool('userIsAdmin', false);
-            userLocalInfo.setString('userCreatDate', date2);
-            userLocalInfo.setString('userVIPDate', date1);
+            userLocalInfo.setString('userCreatDate', date1);
+            userLocalInfo.setString('userVIPDate', date2);
             Get.find<UserController>().refreshLocalUser();
             return null;
           } else {
