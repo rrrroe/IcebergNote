@@ -6,12 +6,7 @@ import 'package:postgres/postgres.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-
-const users = {
-  'dribbble@gmail.com': '12345',
-  'hunter@gmail.com': 'hunter',
-  'rrrr.zhao@qq.com': '111111',
-};
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -174,6 +169,10 @@ class LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
+  final inputBorder = const BorderRadius.vertical(
+    bottom: Radius.circular(10.0),
+    top: Radius.circular(20.0),
+  );
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
@@ -191,6 +190,53 @@ class LoginScreenState extends State<LoginScreen> {
         UserFormField(keyName: '昵称'),
         UserFormField(keyName: '手机')
       ],
+      // loginProviders: <LoginProvider>[
+      //   LoginProvider(
+      //     icon: FontAwesomeIcons.google,
+      //     callback: () async {
+      //       debugPrint('start google sign in');
+      //       await Future.delayed(loginTime);
+      //       debugPrint('stop google sign in');
+      //       return null;
+      //     },
+      //   ),
+      //   LoginProvider(
+      //     icon: FontAwesomeIcons.facebookF,
+      //     callback: () async {
+      //       debugPrint('start facebook sign in');
+      //       await Future.delayed(loginTime);
+      //       debugPrint('stop facebook sign in');
+      //       return null;
+      //     },
+      //   ),
+      //   LoginProvider(
+      //     icon: FontAwesomeIcons.linkedinIn,
+      //     callback: () async {
+      //       debugPrint('start linkdin sign in');
+      //       await Future.delayed(loginTime);
+      //       debugPrint('stop linkdin sign in');
+      //       return null;
+      //     },
+      //   ),
+      //   LoginProvider(
+      //     icon: FontAwesomeIcons.githubAlt,
+      //     callback: () async {
+      //       debugPrint('start github sign in');
+      //       await Future.delayed(loginTime);
+      //       debugPrint('stop github sign in');
+      //       return null;
+      //     },
+      //   ),
+      //   LoginProvider(
+      //     icon: FontAwesomeIcons.tencentWeibo,
+      //     callback: () async {
+      //       debugPrint('start github sign in');
+      //       await Future.delayed(loginTime);
+      //       debugPrint('stop github sign in');
+      //       return null;
+      //     },
+      //   ),
+      // ],
       messages: LoginMessages(
         userHint: '邮箱',
         passwordHint: '密码',
@@ -222,6 +268,57 @@ class LoginScreenState extends State<LoginScreen> {
         pageColorDark: const Color.fromARGB(255, 18, 107, 174),
         pageColorLight: const Color.fromARGB(255, 18, 170, 156),
         footerBackgroundColor: Colors.red,
+        cardTheme: CardTheme(
+          color: Colors.white,
+          elevation: 50,
+          margin: const EdgeInsets.only(top: 15),
+          shape: ContinuousRectangleBorder(
+              borderRadius: BorderRadius.circular(100.0)),
+        ),
+        inputTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.green.withOpacity(.1),
+          contentPadding: EdgeInsets.zero,
+          errorStyle: const TextStyle(
+            backgroundColor: Colors.orange,
+            color: Colors.white,
+          ),
+          labelStyle: const TextStyle(fontSize: 12),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue.shade700, width: 4),
+            borderRadius: inputBorder,
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue.shade400, width: 5),
+            borderRadius: inputBorder,
+          ),
+          errorBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.red.shade700, width: 7),
+            borderRadius: inputBorder,
+          ),
+          focusedErrorBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.red.shade400, width: 8),
+            borderRadius: inputBorder,
+          ),
+          disabledBorder: UnderlineInputBorder(
+            borderSide: const BorderSide(color: Colors.grey, width: 5),
+            borderRadius: inputBorder,
+          ),
+        ),
+        buttonTheme: LoginButtonTheme(
+          splashColor: const Color.fromARGB(255, 18, 170, 156),
+          backgroundColor: const Color.fromARGB(255, 18, 107, 174),
+          highlightColor: const Color.fromARGB(255, 18, 170, 156),
+          elevation: 5.0,
+          highlightElevation: 2.0,
+          // shape: BeveledRectangleBorder(
+          //   borderRadius: BorderRadius.circular(10),
+          // ),
+          // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          // shape: CircleBorder(side: BorderSide(color: Colors.green)),
+          shape: ContinuousRectangleBorder(
+              borderRadius: BorderRadius.circular(55.0)),
+        ),
       ),
     );
   }
