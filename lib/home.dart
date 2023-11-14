@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/login_screen.dart';
 import 'package:icebergnote/screen/review_screen.dart';
 import 'package:icebergnote/system/device_id.dart';
@@ -196,6 +197,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           _BrightnessButton(
             handleBrightnessChange: widget.handleBrightnessChange,
             showTooltipBelow: false,
+          ),
+          IconButton(
+            icon: const Icon(Icons.cloud_queue_rounded),
+            onPressed: () {
+              Get.to(() => const SyncPage());
+            },
           ),
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),

@@ -1,5 +1,6 @@
 // ignore_for_file: unused_local_variable, unnecessary_null_comparison
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:postgres/postgres.dart';
 
@@ -21,5 +22,56 @@ Future<void> postgreSQLQuery() async {
     final result3 =
         await postgreSQLConnection.query("SELECT name, password FROM userinfo");
     postgreSQLConnection.close();
+  }
+}
+
+class SyncPage extends StatefulWidget {
+  const SyncPage({super.key});
+
+  @override
+  State<SyncPage> createState() => _SyncPageState();
+}
+
+class _SyncPageState extends State<SyncPage> {
+  String syncProcess = '连接云端中……';
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('同步'),
+      ),
+      body: Align(
+        alignment: Alignment.center,
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text('DEV===>CLOUDE'),
+            ),
+            const Text('清空云端，本设备全部同步到云端'),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text('CLOUDE===>DEV'),
+            ),
+            const Text('清空设备，全部从云端同步'),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text('DEV===>CLOUDE'),
+            ),
+            const Text('双向全量遍历同步'),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text('DEV===>CLOUDE'),
+            ),
+            const Text('双向本周遍历同步'),
+            const SizedBox(height: 40),
+            Text(syncProcess),
+          ],
+        ),
+      ),
+    );
   }
 }
