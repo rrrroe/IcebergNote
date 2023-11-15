@@ -301,7 +301,8 @@ class LoginScreenState extends State<LoginScreen> {
         signUpSuccess: '恭喜您注册成功',
       ),
       theme: LoginTheme(
-        titleStyle: const TextStyle(color: Color.fromARGB(255, 17, 63, 97)),
+        titleStyle: const TextStyle(
+            color: Colors.white, fontWeight: FontWeight.w600, fontSize: 24),
         primaryColor: const Color.fromARGB(255, 0, 140, 198),
         accentColor: Colors.white,
         switchAuthTextColor: const Color.fromARGB(255, 0, 140, 198),
@@ -309,8 +310,6 @@ class LoginScreenState extends State<LoginScreen> {
         pageColorDark: const Color.fromARGB(255, 18, 107, 174),
         pageColorLight: const Color.fromARGB(255, 18, 170, 156),
         footerBackgroundColor: Colors.red,
-        beforeHeroFontSize: 48,
-        afterHeroFontSize: 24,
         cardTheme: CardTheme(
           color: Colors.white,
           elevation: 50,

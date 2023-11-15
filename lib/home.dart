@@ -172,11 +172,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             ),
             const Padding(padding: EdgeInsets.symmetric(horizontal: 8)),
             const Text(
-              '冰山记',
-              style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: Color.fromARGB(255, 17, 63, 97)),
+              APPConstants.appName,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
             ),
             // HeroText(
             //   APPConstants.appName,
@@ -520,8 +517,8 @@ class _NavigationTransitionState extends State<NavigationTransition> {
                     height: 100,
                   ),
                   const Text(
-                    '冰山记',
-                    style: TextStyle(fontSize: 24),
+                    APPConstants.appName,
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
