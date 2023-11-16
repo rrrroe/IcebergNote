@@ -85,10 +85,10 @@ class _ReportScreenState extends State<ReportScreen>
     }
     selectDuration = widget.duration;
     notesList = realm.query<Notes>(
-        "( noteProject == \$0 OR noteProject == \$1 ) AND noteType == '.记录' AND noteIsDeleted != true SORT(id ASC)",
+        "( noteProject == \$0 OR noteProject == \$1 ) AND noteType == '.记录' AND noteIsDeleted != true SORT(noteCreateDate ASC)",
         [currentProject, '$currentProject/']);
     templateNote = realm.query<Notes>(
-        "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+        "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
         [
           '.表头',
           currentProject,
@@ -588,7 +588,7 @@ class _ReportScreenState extends State<ReportScreen>
                   DateTime endDay = lastDay;
 
                   var notesListX = realm.query<Notes>(
-                      "( noteProject == \$0 ) AND noteType == '.记录' AND noteIsDeleted != true SORT(id ASC)",
+                      "( noteProject == \$0 ) AND noteType == '.记录' AND noteIsDeleted != true SORT(noteCreateDate ASC)",
                       [currentProject]);
                   List<Map> recordListX = [];
                   for (int i = 0; i < notesListX.length; i++) {

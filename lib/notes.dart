@@ -4,7 +4,7 @@ part 'notes.g.dart';
 @RealmModel()
 class _Notes {
   @PrimaryKey()
-  late ObjectId id;
+  late Uuid id;
   late String noteFolder;
   late String noteTitle;
   late String noteContext;

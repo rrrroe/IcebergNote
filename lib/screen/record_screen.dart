@@ -102,7 +102,7 @@ class RecordChangePageState extends State<RecordChangePage> {
       widget.projectList.add(projectDistinctList[i].noteProject);
     }
     templateNote = realm.query<Notes>(
-        "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+        "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
         [
           '.表头',
           widget.note.noteProject,
@@ -607,7 +607,7 @@ class _PropertyCardState extends State<PropertyCard> {
         //       double.tryParse(propertySettings.last);
       } else if (propertySettings.last == '上次') {
         var searchResult = realm.query<Notes>(
-            " noteProject == \$0 AND noteType == '.记录' AND noteIsDeleted != true SORT(id DESC) LIMIT(2)",
+            " noteProject == \$0 AND noteType == '.记录' AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(2)",
             [widget.note.noteProject]);
         if (searchResult.length > 1) {
           if (checkNoteFormat(searchResult[1])) {
@@ -622,7 +622,7 @@ class _PropertyCardState extends State<PropertyCard> {
         }
       } else if (propertySettings.last == '递增') {
         var searchResult = realm.query<Notes>(
-            " noteProject == \$0 AND noteType == '.记录' AND noteIsDeleted != true SORT(id DESC) LIMIT(2)",
+            " noteProject == \$0 AND noteType == '.记录' AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(2)",
             [widget.note.noteProject]);
         if (searchResult.length > 1) {
           if (checkNoteFormat(searchResult[1])) {

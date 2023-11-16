@@ -30,7 +30,7 @@ class ReviewPageState extends State<ReviewPage> {
   bool isToday = true;
   List<Notes> blankList = [
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成所有复盘！',
       math.Random().nextInt(100).toString(),
@@ -42,7 +42,7 @@ class ReviewPageState extends State<ReviewPage> {
       DateTime(1970, 1, 1),
     ),
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成所有复盘！',
       math.Random().nextInt(100).toString(),
@@ -54,7 +54,7 @@ class ReviewPageState extends State<ReviewPage> {
       DateTime(1970, 1, 1),
     ),
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成所有复盘！',
       math.Random().nextInt(100).toString(),
@@ -66,7 +66,7 @@ class ReviewPageState extends State<ReviewPage> {
       DateTime(1970, 1, 1),
     ),
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成所有复盘！',
       math.Random().nextInt(100).toString(),
@@ -78,7 +78,7 @@ class ReviewPageState extends State<ReviewPage> {
       DateTime(1970, 1, 1),
     ),
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成所有复盘！',
       math.Random().nextInt(100).toString(),
@@ -90,7 +90,7 @@ class ReviewPageState extends State<ReviewPage> {
       DateTime(1970, 1, 1),
     ),
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成所有复盘！',
       math.Random().nextInt(100).toString(),
@@ -104,7 +104,7 @@ class ReviewPageState extends State<ReviewPage> {
   ];
   List<Notes> blankListToday = [
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成今日复盘！',
       math.Random().nextInt(100).toString(),
@@ -116,7 +116,7 @@ class ReviewPageState extends State<ReviewPage> {
       DateTime(1970, 1, 1),
     ),
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成今日复盘！',
       math.Random().nextInt(100).toString(),
@@ -128,7 +128,7 @@ class ReviewPageState extends State<ReviewPage> {
       DateTime(1970, 1, 1),
     ),
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成今日复盘！',
       math.Random().nextInt(100).toString(),
@@ -140,7 +140,7 @@ class ReviewPageState extends State<ReviewPage> {
       DateTime(1970, 1, 1),
     ),
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成今日复盘！',
       math.Random().nextInt(100).toString(),
@@ -152,7 +152,7 @@ class ReviewPageState extends State<ReviewPage> {
       DateTime(1970, 1, 1),
     ),
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成今日复盘！',
       math.Random().nextInt(100).toString(),
@@ -164,7 +164,7 @@ class ReviewPageState extends State<ReviewPage> {
       DateTime(1970, 1, 1),
     ),
     Notes(
-      ObjectId(),
+      Uuid.v4(),
       '',
       '恭喜您，已完成今日复盘！',
       math.Random().nextInt(100).toString(),
@@ -196,13 +196,13 @@ class ReviewPageState extends State<ReviewPage> {
   Widget build(BuildContext context) {
     if (isToday) {
       reviewList = realm.query<Notes>(
-              "noteIsDeleted != true AND noteIsReviewed == false AND noteCreateDate > \$0 SORT(id ASC)",
+              "noteIsDeleted != true AND noteIsReviewed == false AND noteCreateDate > \$0 SORT(noteCreateDate ASC)",
               [todayMoring]).toList() +
           blankListToday;
     } else {
       reviewList = realm
               .query<Notes>(
-                  "noteIsDeleted != true AND noteIsReviewed == false SORT(id ASC)")
+                  "noteIsDeleted != true AND noteIsReviewed == false SORT(noteCreateDate ASC)")
               .toList() +
           blankList;
     }
@@ -258,7 +258,7 @@ class ReviewPageState extends State<ReviewPage> {
                   }
                   if (reviewList[index].noteTitle == blankTip) {
                     reviewList.add(Notes(
-                      ObjectId(),
+                      Uuid.v4(),
                       '',
                       blankTip,
                       math.Random().nextInt(100).toString(),
@@ -635,21 +635,24 @@ class _ReviewCardState extends State<ReviewCard> {
     super.initState();
 
     List<Notes> typeDistinctList = realm
-        .query<Notes>("noteType !='' DISTINCT(noteType) SORT(id DESC)")
+        .query<Notes>(
+            "noteType !='' DISTINCT(noteType) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < typeDistinctList.length; i++) {
       typeList.add(typeDistinctList[i].noteType);
     }
     List<Notes> folderDistinctList = realm
-        .query<Notes>("noteFolder !='' DISTINCT(noteFolder) SORT(id DESC)")
+        .query<Notes>(
+            "noteFolder !='' DISTINCT(noteFolder) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < folderDistinctList.length; i++) {
       folderList.add(folderDistinctList[i].noteFolder);
     }
     List<Notes> projectDistinctList = realm
-        .query<Notes>("noteProject !='' DISTINCT(noteProject) SORT(id DESC)")
+        .query<Notes>(
+            "noteProject !='' DISTINCT(noteProject) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < projectDistinctList.length; i++) {

@@ -35,13 +35,13 @@ bool checkNoteFormat(Notes note) {
   switch (note.noteType) {
     case '.记录':
       var templateNoteList = realm.query<Notes>(
-          "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+          "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
           [
             '.表头',
             note.noteProject,
           ]);
       if (realm.query<Notes>(
-          "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+          "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
           [
             '.表头',
             note.noteProject,
@@ -334,7 +334,7 @@ class BottomRecordTypeSheet extends StatelessWidget {
                   onTap: () {
                     Navigator.pop(context);
                     Notes note = Notes(
-                        ObjectId(),
+                        Uuid.v4(),
                         '',
                         '',
                         '',
@@ -482,21 +482,24 @@ class SearchPageState extends State<SearchPage> {
         break;
     }
     List<Notes> typeDistinctList = realm
-        .query<Notes>("noteType !='' DISTINCT(noteType) SORT(id DESC)")
+        .query<Notes>(
+            "noteType !='' DISTINCT(noteType) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < typeDistinctList.length; i++) {
       typeList.add(typeDistinctList[i].noteType);
     }
     List<Notes> folderDistinctList = realm
-        .query<Notes>("noteFolder !='' DISTINCT(noteFolder) SORT(id DESC)")
+        .query<Notes>(
+            "noteFolder !='' DISTINCT(noteFolder) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < folderDistinctList.length; i++) {
       folderList.add(folderDistinctList[i].noteFolder);
     }
     List<Notes> projectDistinctList = realm
-        .query<Notes>("noteProject !='' DISTINCT(noteProject) SORT(id DESC)")
+        .query<Notes>(
+            "noteProject !='' DISTINCT(noteProject) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < projectDistinctList.length; i++) {
@@ -880,7 +883,7 @@ class SearchPageState extends State<SearchPage> {
       );
     } else if (note.noteType == '.记录' && checkNoteFormat(note)) {
       var templateNote = realm.query<Notes>(
-          "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(id DESC) LIMIT(1)",
+          "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
           [
             '.表头',
             note.noteProject,
@@ -1543,7 +1546,7 @@ class SearchPageState extends State<SearchPage> {
           child: FloatingActionButton(
               onPressed: () {
                 Notes note = Notes(
-                  ObjectId(),
+                  Uuid.v4(),
                   '',
                   '',
                   '',

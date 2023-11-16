@@ -51,7 +51,7 @@ class TodoPageState extends State<TodoPage> {
 
     List<Notes> folderDistinctList = realm
         .query<Notes>(
-            "noteFolder !='' AND noteType == '.todo' DISTINCT(noteFolder) SORT(id DESC)")
+            "noteFolder !='' AND noteType == '.todo' DISTINCT(noteFolder) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < folderDistinctList.length; i++) {
@@ -59,7 +59,7 @@ class TodoPageState extends State<TodoPage> {
     }
     List<Notes> projectDistinctList = realm
         .query<Notes>(
-            "noteProject !='' AND noteType == '.todo' DISTINCT(noteProject) SORT(id DESC)")
+            "noteProject !='' AND noteType == '.todo' DISTINCT(noteProject) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < projectDistinctList.length; i++) {
@@ -67,7 +67,7 @@ class TodoPageState extends State<TodoPage> {
     }
     List<Notes> finishStateDistinctList = realm
         .query<Notes>(
-            "noteFinishState !='' AND noteType == '.todo' DISTINCT(noteFinishState) SORT(id DESC)")
+            "noteFinishState !='' AND noteType == '.todo' DISTINCT(noteFinishState) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < finishStateDistinctList.length; i++) {
@@ -395,7 +395,7 @@ class TodoPageState extends State<TodoPage> {
       floatingActionButton: FloatingActionButton(
           onPressed: () {
             Notes note = Notes(
-              ObjectId(),
+              Uuid.v4(),
               '',
               '',
               '',

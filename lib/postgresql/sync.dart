@@ -11,6 +11,7 @@ import 'package:postgres/postgres.dart';
 import 'package:realm/realm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+String syncProcess = '';
 Future<void> initConnect() async {}
 
 Future<void> postgreSQLQuery() async {
@@ -100,7 +101,7 @@ class _SyncPageState extends State<SyncPage> {
             }
           } else {
             setState(() {
-              syncProcess = '$syncProcess\n查询到已有数据库';
+              syncProcess = '$syncProcess\n查询到已有云端数据库';
             });
           }
         }
@@ -124,7 +125,7 @@ class _SyncPageState extends State<SyncPage> {
       num = await postgreSQLConnection!.execute("DELETE FROM u$id.n$id");
       if (num != 0) {
         setState(() {
-          syncProcess = '$syncProcess\n清空失败 剩余$num条云端数据 请重试';
+          syncProcess = '$syncProcess\n清空失败 剩余$num条云端数据 正在重试';
         });
       } else {
         setState(() {
@@ -162,9 +163,54 @@ class _SyncPageState extends State<SyncPage> {
     });
   }
 
-  Future<void> remotetolocal(List result) async {
-    var noteList = realm.query<Notes>("id == '${result[0]}' SORT(id DESC)");
+  Future<void> clearLocalDatabase() async {
+    var localResults = realm.all<Notes>();
+    if (localResults.isNotEmpty) {
+      setState(() {
+        syncProcess = '$syncProcess\n开始清空${localResults.length}条本地数据';
+      });
+    }
+    realm.write(() {
+      realm.deleteAll<Notes>();
+    });
+    localResults = realm.all<Notes>();
+    if (localResults.isNotEmpty) {
+      setState(() {
+        syncProcess = '$syncProcess\n清空失败 剩余${localResults.length}条本地数据 正在重试';
+      });
+    } else {
+      setState(() {
+        syncProcess =
+            '$syncProcess\n--------------------本地清空完成--------------------';
+      });
+    }
+  }
+
+  Future<void> allRemoteToLocal() async {
+    var remoteResults =
+        await postgreSQLConnection!.query("SELECT * FROM u$id.n$id");
+    setState(() {
+      syncProcess = '$syncProcess\n开始下载${remoteResults.length}条云端数据';
+      syncProcess = '$syncProcess\n下载进度: 0 / ${remoteResults.length}条云端数据';
+    });
+    for (int i = 0; i < remoteResults.length; i++) {
+      setState(() {
+        syncProcess = syncProcess.replaceAll('下载进度: $i', '下载进度: ${i + 1}');
+      });
+      await insertLocal(remoteResults[i]);
+    }
+    //
+    setState(() {
+      syncProcess =
+          '$syncProcess\n--------------------云端下载完成--------------------';
+    });
+  }
+
+  Future<void> remotetolocal1(List result) async {
+    var noteList =
+        realm.query<Notes>("id == '${result[0]}' SORT(noteCreateDate DESC)");
     if (noteList.isEmpty) {
+      await insertLocal(result);
     } else if (noteList.length == 1) {
       Notes note = noteList[0];
       if (note.noteUpdateDate.isBefore(result[23])) {
@@ -211,10 +257,10 @@ class _SyncPageState extends State<SyncPage> {
     });
   }
 
-  Future<void> insertLocal(Notes note, List result) async {
+  Future<void> insertLocal(List result) async {
     realm.write(() {
       realm.add(Notes(
-        ObjectId(),
+        Uuid.fromString(result[0]),
         result[1],
         result[2],
         result[3],
@@ -256,7 +302,6 @@ class _SyncPageState extends State<SyncPage> {
         "INSERT INTO u$id.n$id VALUES ('${note.id}', '${note.noteFolder}', '${note.noteTitle}', '${note.noteContext}', '${note.noteType}', '${note.noteProject}', '${note.noteTags}', '${note.noteAttachments}', '${note.noteReferences}', '${note.noteSource}', '${note.noteAuthor}', '${note.noteNext}', '${note.noteLast}', '${note.notePlace}', '${note.noteIsStarred}', '${note.noteIsLocked}', '${note.noteIstodo}', '${note.noteIsDeleted}', '${note.noteIsShared}', '${note.noteIsAchive}', '${note.noteFinishState}', '${note.noteIsReviewed}', '${note.noteCreateDate.toString().substring(0, 19)}','${note.noteUpdateDate.toString().substring(0, 19)}', '${note.noteAchiveDate.toString().substring(0, 19)}', '${note.noteDeleteDate.toString().substring(0, 19)}', '${note.noteFinishDate.toString().substring(0, 19)}', '${note.noteAlarmDate.toString().substring(0, 19)}')");
   }
 
-  String syncProcess = '';
   PostgreSQLConnection? postgreSQLConnection;
   @override
   Widget build(BuildContext context) {
@@ -273,14 +318,20 @@ class _SyncPageState extends State<SyncPage> {
                 syncProcess = '';
                 await checkRemoteDatabase();
                 await clearRemoteDatabase();
-                allLocalToRemote();
+                await allLocalToRemote();
+                postgreSQLConnection!.queueSize;
               },
               child: const Text('DEV===>CLOUDE'),
             ),
             const Text('清空云端，本设备全部同步到云端'),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {},
+              onPressed: () async {
+                syncProcess = '';
+                await checkRemoteDatabase();
+                await clearLocalDatabase();
+                await allRemoteToLocal();
+              },
               child: const Text('CLOUDE===>DEV'),
             ),
             const Text('清空设备，全部从云端同步'),
@@ -290,12 +341,6 @@ class _SyncPageState extends State<SyncPage> {
               child: const Text('DEV<===>CLOUDE'),
             ),
             const Text('双向全量遍历同步'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('DEV<=>CLOUDE'),
-            ),
-            const Text('双向本周遍历同步'),
             const SizedBox(height: 40),
             Text(
               syncProcess,

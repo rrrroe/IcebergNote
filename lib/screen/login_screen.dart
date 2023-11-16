@@ -106,7 +106,7 @@ class LoginScreenState extends State<LoginScreen> {
         } else if (results.isEmpty) {
           var tmp = sha512.convert(utf8.encode('${data.password}IceBergNote'));
           int back = await connection!.execute(
-              "INSERT INTO userinfo (id, name, email, password, isadmin, createtime, viptime, phone, devices) VALUES (${no[0][0]}, '${data.additionalSignupData!['昵称'] ?? ''}', '${data.name}', '$tmp', 'f', '$date1', '$date2','${data.additionalSignupData!['手机'] ?? ''}', '${deviceUniqueId == '未知设备' ? '' : deviceUniqueId}')");
+              "INSERT INTO userinfo (id, name, email, password, isadmin, noteCreateDate, viptime, phone, devices) VALUES (${no[0][0]}, '${data.additionalSignupData!['昵称'] ?? ''}', '${data.name}', '$tmp', 'f', '$date1', '$date2','${data.additionalSignupData!['手机'] ?? ''}', '${deviceUniqueId == '未知设备' ? '' : deviceUniqueId}')");
           if (back == 1) {
             final SharedPreferences userLocalInfo =
                 await SharedPreferences.getInstance();

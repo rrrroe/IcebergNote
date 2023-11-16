@@ -10,7 +10,7 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
   static var _defaultsSet = false;
 
   Notes(
-    ObjectId id,
+    Uuid id,
     String noteFolder,
     String noteTitle,
     String noteContext,
@@ -94,9 +94,9 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
   Notes._();
 
   @override
-  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
+  Uuid get id => RealmObjectBase.get<Uuid>(this, 'id') as Uuid;
   @override
-  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
+  set id(Uuid value) => RealmObjectBase.set(this, 'id', value);
 
   @override
   String get noteFolder =>
@@ -291,7 +291,7 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(Notes._);
     return const SchemaObject(ObjectType.realmObject, Notes, 'Notes', [
-      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
+      SchemaProperty('id', RealmPropertyType.uuid, primaryKey: true),
       SchemaProperty('noteFolder', RealmPropertyType.string),
       SchemaProperty('noteTitle', RealmPropertyType.string),
       SchemaProperty('noteContext', RealmPropertyType.string),

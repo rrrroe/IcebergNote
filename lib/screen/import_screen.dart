@@ -47,21 +47,24 @@ class ImportPageState extends State<ImportPage> {
     super.initState();
     file = File('');
     List<Notes> typeDistinctList = realm
-        .query<Notes>("noteType !='' DISTINCT(noteType) SORT(id DESC)")
+        .query<Notes>(
+            "noteType !='' DISTINCT(noteType) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < typeDistinctList.length; i++) {
       typeList.add(typeDistinctList[i].noteType);
     }
     List<Notes> folderDistinctList = realm
-        .query<Notes>("noteFolder !='' DISTINCT(noteFolder) SORT(id DESC)")
+        .query<Notes>(
+            "noteFolder !='' DISTINCT(noteFolder) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < folderDistinctList.length; i++) {
       folderList.add(folderDistinctList[i].noteFolder);
     }
     List<Notes> projectDistinctList = realm
-        .query<Notes>("noteProject !='' DISTINCT(noteProject) SORT(id DESC)")
+        .query<Notes>(
+            "noteProject !='' DISTINCT(noteProject) SORT(noteCreateDate DESC)")
         .toList();
 
     for (int i = 0; i < projectDistinctList.length; i++) {
@@ -607,7 +610,7 @@ class ImportPageState extends State<ImportPage> {
 
                                 realm.write(() {
                                   realm.add<Notes>(Notes(
-                                    ObjectId(),
+                                    Uuid.v4(),
                                     importFolder,
                                     '',
                                     noteContent,

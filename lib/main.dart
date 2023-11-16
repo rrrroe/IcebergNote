@@ -16,8 +16,8 @@ class NotesList {
   var visibleItemCount = 50;
   late RealmResults<Notes> notesList;
   NotesList() {
-    notesList =
-        realm.query<Notes>("noteIsDeleted != true SORT(id DESC) LIMIT(1)");
+    notesList = realm.query<Notes>(
+        "noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)");
     if (notesList.isEmpty != true) {
       if (notesList[0].noteTitle + notesList[0].noteContext == '') {
         realm.write(() {
@@ -31,7 +31,7 @@ class NotesList {
   increase(int n) {
     visibleItemCount = notesList.length + n;
     notesList = realm.query<Notes>(
-        "noteIsDeleted != true SORT(id DESC) LIMIT($visibleItemCount)");
+        "noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT($visibleItemCount)");
     if (notesList.isEmpty != true) {
       if (notesList[0].noteTitle + notesList[0].noteContext == '') {
         realm.write(() {
@@ -44,7 +44,7 @@ class NotesList {
 
   reinit(int n) {
     notesList = realm.query<Notes>(
-        "noteIsDeleted != true SORT(id DESC) LIMIT($visibleItemCount)");
+        "noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT($visibleItemCount)");
     if (notesList.isEmpty != true) {
       if (notesList[0].noteTitle + notesList[0].noteContext == '') {
         realm.write(() {
@@ -58,21 +58,21 @@ class NotesList {
   search(String n, int m) {
     visibleItemCount = visibleItemCount + m;
     notesList = realm.query<Notes>(
-        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND noteIsDeleted != true SORT(id DESC) LIMIT($visibleItemCount)",
+        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT($visibleItemCount)",
         [n]);
   }
 
   searchDeleted(String n, int m) {
     visibleItemCount = visibleItemCount + m;
     notesList = realm.query<Notes>(
-        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND noteIsDeleted == true SORT(id DESC) LIMIT($visibleItemCount)",
+        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND noteIsDeleted == true SORT(noteCreateDate DESC) LIMIT($visibleItemCount)",
         [n]);
   }
 
   searchTodo(String n, int m) {
     visibleItemCount = visibleItemCount + m;
     notesList = realm.query<Notes>(
-        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType == '.TODO' OR noteType == '.todo' OR noteType == '.Todo' OR noteType == '.待办' ) SORT(id DESC) LIMIT($visibleItemCount)",
+        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType == '.TODO' OR noteType == '.todo' OR noteType == '.Todo' OR noteType == '.待办' ) SORT(noteCreateDate DESC) LIMIT($visibleItemCount)",
         [n]);
   }
 
@@ -80,7 +80,7 @@ class NotesList {
       String finishstate) {
     visibleItemCount = visibleItemCount + m;
     notesList = realm.query<Notes>(
-        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType CONTAINS[c] \$1 AND noteProject CONTAINS[c] \$2 AND noteFolder CONTAINS[c] \$3 AND noteFinishState CONTAINS[c] \$4 ) AND noteIsDeleted != true SORT(id DESC) LIMIT($visibleItemCount)",
+        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType CONTAINS[c] \$1 AND noteProject CONTAINS[c] \$2 AND noteFolder CONTAINS[c] \$3 AND noteFinishState CONTAINS[c] \$4 ) AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT($visibleItemCount)",
         [n, type, project, folder, finishstate]);
     if (notesList.isEmpty != true) {
       if (notesList[0].noteTitle + notesList[0].noteContext == '') {
@@ -97,11 +97,11 @@ var mainnotesList = NotesList();
 late Realm realm;
 
 void main() {
-  final config = Configuration.local([Notes.schema], schemaVersion: 12);
+  final config = Configuration.local([Notes.schema], schemaVersion: 1);
   realm = Realm(config);
 
   var deleteOvertime = realm.query<Notes>(
-      "noteIsDeleted == true AND noteUpdateDate < \$0 AND noteCreateDate < \$0 SORT(id DESC)",
+      "noteIsDeleted == true AND noteUpdateDate < \$0 AND noteCreateDate < \$0 SORT(noteCreateDate DESC)",
       [DateTime.now().toUtc()]);
   for (int i = 0; i < deleteOvertime.length; i++) {
     realm.write(() {
