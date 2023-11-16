@@ -45,13 +45,14 @@ class _SyncPageState extends State<SyncPage> {
   String? other;
   String? id;
 
-  Future<void> checkRemoteDatabase() async {
+  Future<int> checkRemoteDatabase() async {
     postgreSQLConnection = PostgreSQLConnection("111.229.224.55", 5432, "users",
         username: "admin", password: "456321rrRR");
     if (postgreSQLConnection == null) {
       setState(() {
         syncProcess = '$syncProcess\n连接云端数据库失败';
       });
+      return 0;
     } else {
       setState(() {
         syncProcess = '$syncProcess\n连接云端数据库成功';
@@ -65,6 +66,7 @@ class _SyncPageState extends State<SyncPage> {
         setState(() {
           syncProcess = '$syncProcess\n本地用户数据异常';
         });
+        return 0;
       } else {
         await postgreSQLConnection!.open();
         final user = await postgreSQLConnection!
@@ -75,6 +77,7 @@ class _SyncPageState extends State<SyncPage> {
           setState(() {
             syncProcess = '$syncProcess\n用户权限验证失败';
           });
+          return 0;
         } else {
           setState(() {
             syncProcess = '$syncProcess\n用户权限验证通过';
@@ -83,61 +86,73 @@ class _SyncPageState extends State<SyncPage> {
               "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
           if (checkSchema[0][0] == false) {
             setState(() {
-              syncProcess = '$syncProcess\n未检测到数据库 新建中……';
+              syncProcess = '$syncProcess\n未检测到云端数据库';
             });
-            await postgreSQLConnection!.execute("CREATE SCHEMA u$id");
-            await postgreSQLConnection!
-                .execute("CREATE TABLE u$id.n$id AS TABLE public.notetemplate");
-            final checkSchema1 = await postgreSQLConnection!.query(
-                "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
-            if (checkSchema1[0][0] == false) {
-              setState(() {
-                syncProcess = '$syncProcess\n创建错误';
-              });
-            } else {
-              setState(() {
-                syncProcess = '$syncProcess\n创建完成';
-              });
-            }
+            return 2;
           } else {
             setState(() {
               syncProcess = '$syncProcess\n查询到已有云端数据库';
+              syncProcess =
+                  '$syncProcess\n--------------------云端连接成功--------------------';
             });
+            setState(() {});
+            return 1;
           }
         }
       }
     }
-    setState(() {
-      syncProcess =
-          '$syncProcess\n--------------------云端校验完成--------------------';
-    });
   }
 
-  Future<void> clearRemoteDatabase() async {
+  Future<bool> createRemoteDatabase() async {
+    setState(() {
+      syncProcess = '$syncProcess\n准备新建云端数据库';
+    });
+    await postgreSQLConnection!.execute("CREATE SCHEMA u$id");
+    await postgreSQLConnection!
+        .execute("CREATE TABLE u$id.n$id AS TABLE public.notetemplate");
+    final checkSchema1 = await postgreSQLConnection!.query(
+        "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
+    if (checkSchema1[0][0] == false) {
+      setState(() {
+        syncProcess =
+            '$syncProcess\n--------------------云端创建失败--------------------';
+      });
+      return false;
+    } else {
+      setState(() {
+        syncProcess =
+            '$syncProcess\n--------------------云端创建成功--------------------';
+      });
+      return true;
+    }
+  }
+
+  Future<bool> clearRemoteDatabase() async {
     var num = await postgreSQLConnection!.execute("DELETE FROM u$id.n$id");
     if (num != 0) {
       setState(() {
         syncProcess = '$syncProcess\n开始清空$num条云端数据';
       });
 
-      await postgreSQLConnection!.execute("DELETE FROM u$id.n$id");
-
       num = await postgreSQLConnection!.execute("DELETE FROM u$id.n$id");
       if (num != 0) {
         setState(() {
-          syncProcess = '$syncProcess\n清空失败 剩余$num条云端数据 正在重试';
+          syncProcess = '$syncProcess\n清空失败 剩余$num条云端数据';
         });
+        return false;
       } else {
         setState(() {
           syncProcess =
               '$syncProcess\n--------------------云端清空完成--------------------';
         });
+        return true;
       }
     } else {
       setState(() {
         syncProcess =
-            '$syncProcess\n--------------------云端清空完成--------------------';
+            '$syncProcess\n--------------------云端暂无数据--------------------';
       });
+      return true;
     }
   }
 
@@ -163,34 +178,44 @@ class _SyncPageState extends State<SyncPage> {
     });
   }
 
-  Future<void> clearLocalDatabase() async {
+  Future<bool> clearLocalDatabase() async {
     var localResults = realm.all<Notes>();
     if (localResults.isNotEmpty) {
       setState(() {
         syncProcess = '$syncProcess\n开始清空${localResults.length}条本地数据';
       });
-    }
-    realm.write(() {
-      realm.deleteAll<Notes>();
-    });
-    localResults = realm.all<Notes>();
-    if (localResults.isNotEmpty) {
-      setState(() {
-        syncProcess = '$syncProcess\n清空失败 剩余${localResults.length}条本地数据 正在重试';
+      realm.write(() {
+        realm.deleteAll<Notes>();
       });
+      localResults = realm.all<Notes>();
+      if (localResults.isNotEmpty) {
+        setState(() {
+          syncProcess = '$syncProcess\n清空失败 剩余${localResults.length}条本地数据 正在重试';
+        });
+        return false;
+      } else {
+        setState(() {
+          syncProcess =
+              '$syncProcess\n--------------------本地清空完成--------------------';
+        });
+        return true;
+      }
     } else {
       setState(() {
         syncProcess =
-            '$syncProcess\n--------------------本地清空完成--------------------';
+            '$syncProcess\n--------------------本地暂无数据--------------------';
       });
+      return true;
     }
   }
 
   Future<void> allRemoteToLocal() async {
+    setState(() {
+      syncProcess = '$syncProcess\n开始下载云端数据';
+    });
     var remoteResults =
         await postgreSQLConnection!.query("SELECT * FROM u$id.n$id");
     setState(() {
-      syncProcess = '$syncProcess\n开始下载${remoteResults.length}条云端数据';
       syncProcess = '$syncProcess\n下载进度: 0 / ${remoteResults.length}条云端数据';
     });
     for (int i = 0; i < remoteResults.length; i++) {
@@ -206,7 +231,7 @@ class _SyncPageState extends State<SyncPage> {
     });
   }
 
-  Future<void> remotetolocal1(List result) async {
+  Future<void> compareLR(List result) async {
     var noteList =
         realm.query<Notes>("id == '${result[0]}' SORT(noteCreateDate DESC)");
     if (noteList.isEmpty) {
@@ -307,7 +332,7 @@ class _SyncPageState extends State<SyncPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('同步'),
+        title: const Text('高级同步'),
       ),
       body: Align(
         alignment: Alignment.center,
@@ -316,29 +341,45 @@ class _SyncPageState extends State<SyncPage> {
             ElevatedButton(
               onPressed: () async {
                 syncProcess = '';
-                await checkRemoteDatabase();
-                await clearRemoteDatabase();
-                await allLocalToRemote();
+                int p1 = await checkRemoteDatabase();
+                bool p2 = false;
+                switch (p1) {
+                  case 1:
+                    p2 = await clearRemoteDatabase();
+                    break;
+                  case 2:
+                    p2 = await createRemoteDatabase();
+                    break;
+                }
+                if (p2) {
+                  await allLocalToRemote();
+                }
                 postgreSQLConnection!.queueSize;
               },
-              child: const Text('DEV===>CLOUDE'),
+              child: const Text('本地>>>>云端'),
             ),
-            const Text('清空云端，本设备全部同步到云端'),
+            const Text('请确认本地数据完备', style: TextStyle(color: Colors.red)),
+            const Text('将清空云端 并将本地数据全部同步到云端'),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 syncProcess = '';
-                await checkRemoteDatabase();
-                await clearLocalDatabase();
-                await allRemoteToLocal();
+                int p1 = await checkRemoteDatabase();
+                if (p1 == 1) {
+                  bool p2 = await clearLocalDatabase();
+                  if (p2) await allRemoteToLocal();
+                } else if (p1 == 2) {
+                  await createRemoteDatabase();
+                }
               },
-              child: const Text('CLOUDE===>DEV'),
+              child: const Text('本地<<<<云端'),
             ),
-            const Text('清空设备，全部从云端同步'),
+            const Text('请确认云端数据完备', style: TextStyle(color: Colors.red)),
+            const Text('将清空本地 并将云端数据全部同步到本地'),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {},
-              child: const Text('DEV<===>CLOUDE'),
+              child: const Text('本地<===>云端'),
             ),
             const Text('双向全量遍历同步'),
             const SizedBox(height: 40),
