@@ -159,7 +159,7 @@ class _SyncPageState extends State<SyncPage> {
     });
   }
 
-  void remotetolocal(List result) {
+  Future<void> remotetolocal(List result) async {
     var noteList = realm.query<Notes>("id == '${result[0]}' SORT(id DESC)");
     if (noteList.isEmpty) {
       realm.add(Notes(
@@ -225,7 +225,7 @@ class _SyncPageState extends State<SyncPage> {
           note.noteAlarmDate = result[27];
         });
       } else {
-        localtoremote(note, id!);
+        await postgreSQLConnection!.execute(localtoremote(note, id!));
       }
     } else {
       setState(() {
