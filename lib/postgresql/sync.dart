@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:postgres/postgres.dart';
+import 'package:realm/realm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> initConnect() async {}
@@ -149,8 +150,7 @@ class _SyncPageState extends State<SyncPage> {
       setState(() {
         syncProcess = syncProcess.replaceAll('上传进度: $i', '上传进度: ${i + 1}');
       });
-      String sql = reamlToPG1(localResults[i], id!);
-      await postgreSQLConnection!.execute(sql);
+      await postgreSQLConnection!.execute(localtoremote(localResults[i], id!));
     }
     //100条大概半分钟
     setState(() {
@@ -159,7 +159,82 @@ class _SyncPageState extends State<SyncPage> {
     });
   }
 
-  String reamlToPG1(Notes note, String id) {
+  void remotetolocal(List result) {
+    var noteList = realm.query<Notes>("id == '${result[0]}' SORT(id DESC)");
+    if (noteList.isEmpty) {
+      realm.add(Notes(
+        ObjectId(),
+        result[1],
+        result[2],
+        result[3],
+        result[22],
+        result[23],
+        result[24],
+        result[25],
+        result[26],
+        result[27],
+        noteType: result[4],
+        noteProject: result[5],
+        noteTags: result[6],
+        noteAttachments: result[7],
+        noteReferences: result[8],
+        noteSource: result[9],
+        noteAuthor: result[10],
+        noteNext: result[11],
+        noteLast: result[12],
+        notePlace: result[13],
+        noteIsStarred: result[14],
+        noteIsLocked: result[15],
+        noteIstodo: result[16],
+        noteIsDeleted: result[17],
+        noteIsShared: result[18],
+        noteIsAchive: result[19],
+        noteFinishState: result[20],
+        noteIsReviewed: result[21],
+      ));
+    } else if (noteList.length == 1) {
+      Notes note = noteList[0];
+      if (note.noteUpdateDate.isBefore(result[23])) {
+        realm.write(() {
+          note.noteFolder = result[1];
+          note.noteTitle = result[2];
+          note.noteContext = result[3];
+          note.noteType = result[4];
+          note.noteProject = result[5];
+          note.noteTags = result[6];
+          note.noteAttachments = result[7];
+          note.noteReferences = result[8];
+          note.noteSource = result[9];
+          note.noteAuthor = result[10];
+          note.noteNext = result[11];
+          note.noteLast = result[12];
+          note.notePlace = result[13];
+          note.noteIsStarred = result[14];
+          note.noteIsLocked = result[15];
+          note.noteIstodo = result[16];
+          note.noteIsDeleted = result[17];
+          note.noteIsShared = result[18];
+          note.noteIsAchive = result[19];
+          note.noteFinishState = result[20];
+          note.noteIsReviewed = result[21];
+          note.noteCreateDate = result[22];
+          note.noteUpdateDate = result[23];
+          note.noteAchiveDate = result[24];
+          note.noteDeleteDate = result[25];
+          note.noteFinishDate = result[26];
+          note.noteAlarmDate = result[27];
+        });
+      } else {
+        localtoremote(note, id!);
+      }
+    } else {
+      setState(() {
+        syncProcess = '$syncProcess\n!!!本地存在两条记录冲突!!!';
+      });
+    }
+  }
+
+  String localtoremote(Notes note, String id) {
     return "INSERT INTO u$id.n$id VALUES ('${note.id}', '${note.noteFolder}', '${note.noteTitle}', '${note.noteContext}', '${note.noteType}', '${note.noteProject}', '${note.noteTags}', '${note.noteAttachments}', '${note.noteReferences}', '${note.noteSource}', '${note.noteAuthor}', '${note.noteNext}', '${note.noteLast}', '${note.notePlace}', '${note.noteIsStarred}', '${note.noteIsLocked}', '${note.noteIstodo}', '${note.noteIsDeleted}', '${note.noteIsShared}', '${note.noteIsAchive}', '${note.noteFinishState}', '${note.noteIsReviewed}', '${note.noteCreateDate.toString().substring(0, 19)}','${note.noteUpdateDate.toString().substring(0, 19)}', '${note.noteAchiveDate.toString().substring(0, 19)}', '${note.noteDeleteDate.toString().substring(0, 19)}', '${note.noteFinishDate.toString().substring(0, 19)}', '${note.noteAlarmDate.toString().substring(0, 19)}')";
   }
 
