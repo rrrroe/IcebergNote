@@ -150,7 +150,10 @@ class _SyncPageState extends State<SyncPage> {
       setState(() {
         syncProcess = syncProcess.replaceAll('上传进度: $i', '上传进度: ${i + 1}');
       });
-      await postgreSQLConnection!.execute(localtoremote(localResults[i], id!));
+      if (i == 74) {
+        continue;
+      }
+      await insertRemote(localResults[i], id!);
     }
     //100条大概半分钟
     setState(() {
@@ -162,6 +165,54 @@ class _SyncPageState extends State<SyncPage> {
   Future<void> remotetolocal(List result) async {
     var noteList = realm.query<Notes>("id == '${result[0]}' SORT(id DESC)");
     if (noteList.isEmpty) {
+    } else if (noteList.length == 1) {
+      Notes note = noteList[0];
+      if (note.noteUpdateDate.isBefore(result[23])) {
+        updateLocal(note, result);
+      } else {
+        await insertRemote(note, id!);
+      }
+    } else {
+      setState(() {
+        syncProcess = '$syncProcess\n!!!本地存在两条记录冲突!!!';
+      });
+    }
+  }
+
+  Future<void> updateLocal(Notes note, List result) async {
+    realm.write(() {
+      note.noteFolder = result[1];
+      note.noteTitle = result[2];
+      note.noteContext = result[3];
+      note.noteType = result[4];
+      note.noteProject = result[5];
+      note.noteTags = result[6];
+      note.noteAttachments = result[7];
+      note.noteReferences = result[8];
+      note.noteSource = result[9];
+      note.noteAuthor = result[10];
+      note.noteNext = result[11];
+      note.noteLast = result[12];
+      note.notePlace = result[13];
+      note.noteIsStarred = result[14];
+      note.noteIsLocked = result[15];
+      note.noteIstodo = result[16];
+      note.noteIsDeleted = result[17];
+      note.noteIsShared = result[18];
+      note.noteIsAchive = result[19];
+      note.noteFinishState = result[20];
+      note.noteIsReviewed = result[21];
+      note.noteCreateDate = result[22];
+      note.noteUpdateDate = result[23];
+      note.noteAchiveDate = result[24];
+      note.noteDeleteDate = result[25];
+      note.noteFinishDate = result[26];
+      note.noteAlarmDate = result[27];
+    });
+  }
+
+  Future<void> insertLocal(Notes note, List result) async {
+    realm.write(() {
       realm.add(Notes(
         ObjectId(),
         result[1],
@@ -192,50 +243,17 @@ class _SyncPageState extends State<SyncPage> {
         noteFinishState: result[20],
         noteIsReviewed: result[21],
       ));
-    } else if (noteList.length == 1) {
-      Notes note = noteList[0];
-      if (note.noteUpdateDate.isBefore(result[23])) {
-        realm.write(() {
-          note.noteFolder = result[1];
-          note.noteTitle = result[2];
-          note.noteContext = result[3];
-          note.noteType = result[4];
-          note.noteProject = result[5];
-          note.noteTags = result[6];
-          note.noteAttachments = result[7];
-          note.noteReferences = result[8];
-          note.noteSource = result[9];
-          note.noteAuthor = result[10];
-          note.noteNext = result[11];
-          note.noteLast = result[12];
-          note.notePlace = result[13];
-          note.noteIsStarred = result[14];
-          note.noteIsLocked = result[15];
-          note.noteIstodo = result[16];
-          note.noteIsDeleted = result[17];
-          note.noteIsShared = result[18];
-          note.noteIsAchive = result[19];
-          note.noteFinishState = result[20];
-          note.noteIsReviewed = result[21];
-          note.noteCreateDate = result[22];
-          note.noteUpdateDate = result[23];
-          note.noteAchiveDate = result[24];
-          note.noteDeleteDate = result[25];
-          note.noteFinishDate = result[26];
-          note.noteAlarmDate = result[27];
-        });
-      } else {
-        await postgreSQLConnection!.execute(localtoremote(note, id!));
-      }
-    } else {
-      setState(() {
-        syncProcess = '$syncProcess\n!!!本地存在两条记录冲突!!!';
-      });
-    }
+    });
   }
 
-  String localtoremote(Notes note, String id) {
-    return "INSERT INTO u$id.n$id VALUES ('${note.id}', '${note.noteFolder}', '${note.noteTitle}', '${note.noteContext}', '${note.noteType}', '${note.noteProject}', '${note.noteTags}', '${note.noteAttachments}', '${note.noteReferences}', '${note.noteSource}', '${note.noteAuthor}', '${note.noteNext}', '${note.noteLast}', '${note.notePlace}', '${note.noteIsStarred}', '${note.noteIsLocked}', '${note.noteIstodo}', '${note.noteIsDeleted}', '${note.noteIsShared}', '${note.noteIsAchive}', '${note.noteFinishState}', '${note.noteIsReviewed}', '${note.noteCreateDate.toString().substring(0, 19)}','${note.noteUpdateDate.toString().substring(0, 19)}', '${note.noteAchiveDate.toString().substring(0, 19)}', '${note.noteDeleteDate.toString().substring(0, 19)}', '${note.noteFinishDate.toString().substring(0, 19)}', '${note.noteAlarmDate.toString().substring(0, 19)}')";
+  Future<void> updateRemote(Notes note, String id) async {
+    await postgreSQLConnection!.execute(
+        "UPDATE u$id.n$id SET noteFolder = '${note.noteFolder}', title = '${note.noteTitle}', context = '${note.noteContext}', type = '${note.noteType}', project = '${note.noteProject}', tags = '${note.noteTags}', attachments = '${note.noteAttachments}', references = '${note.noteReferences}', source = '${note.noteSource}', author = '${note.noteAuthor}', next = '${note.noteNext}', last = '${note.noteLast}', place = '${note.notePlace}', isstarred = '${note.noteIsStarred}', islocked = '${note.noteIsLocked}', istodo = '${note.noteIstodo}', isdeleted = '${note.noteIsDeleted}', isshared = '${note.noteIsShared}', isachived = '${note.noteIsAchive}', finishState = '${note.noteFinishState}', isreviewed = '${note.noteIsReviewed}', createdate = '${note.noteCreateDate.toString().substring(0, 19)}', updatedate = '${note.noteUpdateDate.toString().substring(0, 19)}', achivedate = '${note.noteAchiveDate.toString().substring(0, 19)}', deletedate = '${note.noteDeleteDate.toString().substring(0, 19)}', finishdate = '${note.noteFinishDate.toString().substring(0, 19)}', alarmdate = '${note.noteAlarmDate.toString().substring(0, 19)}' WHERE id = '${note.id}';");
+  }
+
+  Future<void> insertRemote(Notes note, String id) async {
+    await postgreSQLConnection!.execute(
+        "INSERT INTO u$id.n$id VALUES ('${note.id}', '${note.noteFolder}', '${note.noteTitle}', '${note.noteContext}', '${note.noteType}', '${note.noteProject}', '${note.noteTags}', '${note.noteAttachments}', '${note.noteReferences}', '${note.noteSource}', '${note.noteAuthor}', '${note.noteNext}', '${note.noteLast}', '${note.notePlace}', '${note.noteIsStarred}', '${note.noteIsLocked}', '${note.noteIstodo}', '${note.noteIsDeleted}', '${note.noteIsShared}', '${note.noteIsAchive}', '${note.noteFinishState}', '${note.noteIsReviewed}', '${note.noteCreateDate.toString().substring(0, 19)}','${note.noteUpdateDate.toString().substring(0, 19)}', '${note.noteAchiveDate.toString().substring(0, 19)}', '${note.noteDeleteDate.toString().substring(0, 19)}', '${note.noteFinishDate.toString().substring(0, 19)}', '${note.noteAlarmDate.toString().substring(0, 19)}')");
   }
 
   String syncProcess = '';
