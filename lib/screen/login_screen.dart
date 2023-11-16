@@ -42,6 +42,7 @@ class LoginScreenState extends State<LoginScreen> {
             userLocalInfo.setString('userEmail', results[0][2]);
             userLocalInfo.setString('userPhone', results[0][3] ?? '');
             userLocalInfo.setBool('userIsAdmin', results[0][4]);
+            userLocalInfo.setString('userOther', data.password);
             userLocalInfo.setString('userCreatDate', results[0][6].toString());
             userLocalInfo.setString('userVIPDate', results[0][7].toString());
 
@@ -115,6 +116,7 @@ class LoginScreenState extends State<LoginScreen> {
             userLocalInfo.setString('userEmail', data.name!);
             userLocalInfo.setString(
                 'userPhone', data.additionalSignupData!['手机'] ?? '');
+            userLocalInfo.setString('userOther', tmp.toString());
             userLocalInfo.setBool('userIsAdmin', false);
             userLocalInfo.setString('userCreatDate', date1);
             userLocalInfo.setString('userVIPDate', date2);
@@ -147,6 +149,7 @@ class LoginScreenState extends State<LoginScreen> {
               userLocalInfo.setString('userEmail', data.name!);
               userLocalInfo.setString(
                   'userPhone', data.additionalSignupData!['手机'] ?? '');
+              userLocalInfo.setString('userOther', tmp.toString());
               userLocalInfo.setBool('userIsAdmin', false);
               userLocalInfo.setString('userCreatDate', date1);
               userLocalInfo.setString('userVIPDate', date2);

@@ -33,7 +33,6 @@ class UserController extends GetxController {
             userLocalInfo.getString('userVIPDate') ?? '1970-01-01') ??
         DateTime(1970, 1, 1);
     deviceNO.value = userLocalInfo.getInt('deviceNO') ?? 0;
-    print(deviceNO.value);
     update();
   }
 
