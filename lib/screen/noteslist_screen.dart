@@ -1487,7 +1487,6 @@ class SearchPageState extends State<SearchPage> {
   }
 
   void _onRefresh() async {
-    // monitor network fetch
     setState(() {
       switch (widget.mod) {
         case 0:

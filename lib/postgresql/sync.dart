@@ -11,7 +11,6 @@ import 'package:postgres/postgres.dart';
 import 'package:realm/realm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String syncProcess = '';
 Future<void> initConnect() async {}
 
 Future<void> postgreSQLQuery() async {
@@ -19,7 +18,7 @@ Future<void> postgreSQLQuery() async {
       "111.229.224.55", 5432, "users",
       username: "admin", password: "456321rrRR");
   if (postgreSQLConnection == null) {
-    Get.snackbar('错误', '远程数据库连接失败');
+    Get.snackbar('错误', '云端数据库连接失败');
   } else {
     await postgreSQLConnection.open();
     final result = await postgreSQLConnection.query("SELECT * FROM userinfo");
@@ -44,7 +43,7 @@ class _SyncPageState extends State<SyncPage> {
   String? email;
   String? other;
   String? id;
-
+  String syncProcess = '';
   Future<int> checkRemoteDatabase() async {
     postgreSQLConnection = PostgreSQLConnection("111.229.224.55", 5432, "users",
         username: "admin", password: "456321rrRR");
@@ -110,6 +109,8 @@ class _SyncPageState extends State<SyncPage> {
     await postgreSQLConnection!.execute("CREATE SCHEMA u$id");
     await postgreSQLConnection!
         .execute("CREATE TABLE u$id.n$id AS TABLE public.notetemplate");
+    await postgreSQLConnection!.execute(
+        "ALTER TABLE u$id.n$id ALTER COLUMN id SET NOT NULL, ADD PRIMARY KEY (id)");
     final checkSchema1 = await postgreSQLConnection!.query(
         "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
     if (checkSchema1[0][0] == false) {
@@ -231,24 +232,114 @@ class _SyncPageState extends State<SyncPage> {
     });
   }
 
-  Future<void> compareLR(List result) async {
-    var noteList =
-        realm.query<Notes>("id == '${result[0]}' SORT(noteCreateDate DESC)");
-    if (noteList.isEmpty) {
-      await insertLocal(result);
-    } else if (noteList.length == 1) {
-      Notes note = noteList[0];
-      if (note.noteUpdateDate.isBefore(result[23])) {
-        updateLocal(note, result);
-      } else {
-        await insertRemote(note, id!);
-      }
+  Future<void> exchangeSmart() async {
+    setState(() {
+      syncProcess =
+          '$syncProcess\n--------------------开始智能同步--------------------';
+    });
+    DateTime lastRefresh =
+        DateTime.utc(2023, 11, 17, 3, 30, 00).add(const Duration(days: -1));
+    print(lastRefresh);
+    RealmResults<Notes> localNewNotes = realm.query<Notes>(
+        "noteUpdateDate > \$0 SORT(noteUpdateDate ASC)", [lastRefresh]);
+    var remoteNewNotes = await postgreSQLConnection!
+        .query("SELECT * FROM u$id.n$id WHERE updatedate > '$lastRefresh'");
+    List<int> synced = [];
+    bool isMatch = false;
+    if (remoteNewNotes.isEmpty && localNewNotes.isNotEmpty) {
+      setState(() {
+        syncProcess = '$syncProcess\n云端为空  开始单向上传';
+      });
+      await allLocalToRemote();
+      setState(() {
+        syncProcess = '$syncProcess\n上传完成';
+      });
+    } else if (remoteNewNotes.isNotEmpty && localNewNotes.isEmpty) {
+      setState(() {
+        syncProcess = '$syncProcess\n本地为空  开始单向下载';
+      });
+      await allRemoteToLocal();
+      setState(() {
+        syncProcess = '$syncProcess\n下载完成';
+      });
+    } else if (remoteNewNotes.isNotEmpty && localNewNotes.isEmpty) {
+      setState(() {
+        syncProcess = '$syncProcess\n双端为空  无需同步';
+      });
     } else {
       setState(() {
-        syncProcess = '$syncProcess\n!!!本地存在两条记录冲突!!!';
+        syncProcess = '$syncProcess\n处理云端数据: 0 / ${localNewNotes.length}';
+      });
+      print('------------------开始遍历云端------------------');
+      print(synced);
+      for (int j = 0; j < remoteNewNotes.length; j++) {
+        if (synced.contains(j)) {
+          print('${remoteNewNotes[j][3]}:::${remoteNewNotes[j][23]}跳过');
+        } else {
+          RealmResults<Notes> existedNote = realm.query<Notes>(
+              "id == \$0", [Uuid.fromString(remoteNewNotes[j][0])]);
+          if (existedNote.isEmpty) {
+            print(
+                '${remoteNewNotes[j][3]}:::${remoteNewNotes[j][23]}未匹配到本地 新增到本地');
+            insertLocal(remoteNewNotes[j]);
+          } else if (existedNote.length == 1) {
+            print(
+                '${remoteNewNotes[j][3]}:::${remoteNewNotes[j][23]}已匹配到本地 更新到本地');
+            updateLocal(existedNote.first, remoteNewNotes[j]);
+          } else {
+            print('本地主键重复');
+          }
+        }
+        setState(() {
+          syncProcess =
+              syncProcess.replaceAll('处理云端数据: $j', '处理云端数据: ${j + 1}');
+        });
+      }
+      setState(() {
+        syncProcess = '$syncProcess\n处理本地数据: 0 / ${localNewNotes.length}';
+      });
+      print('------------------开始遍历本地------------------');
+      for (int i = 0; i < localNewNotes.length; i++) {
+        print(
+            '${localNewNotes[i].noteContext}:::${localNewNotes[i].noteCreateDate}本地');
+        isMatch = false;
+        for (int j = 0; j < remoteNewNotes.length; j++) {
+          if (localNewNotes[i].id.toString() == remoteNewNotes[j][0]) {
+            print('${remoteNewNotes[j][3]}:::${remoteNewNotes[j][23]}匹配到云端');
+            isMatch = true;
+            synced.add(j);
+            if (localNewNotes[i]
+                .noteUpdateDate
+                .isAfter(remoteNewNotes[j][23])) {
+              print('本地较新 同步云端');
+              await updateRemote(localNewNotes[i], id!);
+            } else if (localNewNotes[i].noteUpdateDate ==
+                remoteNewNotes[j][23]) {
+              print('两端一致 无需同步');
+            } else {
+              print('云端较新 同步本地');
+              await updateLocal(localNewNotes[i], remoteNewNotes[j]);
+            }
+          } else {
+            if (j == remoteNewNotes.length - 1 && isMatch == false) {
+              print('未匹配到云端 新增到云端');
+              await insertOrUpdateRemote(localNewNotes[i], id!);
+            }
+          }
+        }
+        setState(() {
+          syncProcess =
+              syncProcess.replaceAll('处理本地数据: $i', '处理本地数据: ${i + 1}');
+        });
+      }
+      setState(() {
+        syncProcess =
+            '$syncProcess\n--------------------智能同步成功--------------------';
       });
     }
   }
+
+  Future<void> compareLR1(Notes note, List result) async {}
 
   Future<void> updateLocal(Notes note, List result) async {
     realm.write(() {
@@ -319,12 +410,17 @@ class _SyncPageState extends State<SyncPage> {
 
   Future<void> updateRemote(Notes note, String id) async {
     await postgreSQLConnection!.execute(
-        "UPDATE u$id.n$id SET noteFolder = '${note.noteFolder}', title = '${note.noteTitle}', context = '${note.noteContext}', type = '${note.noteType}', project = '${note.noteProject}', tags = '${note.noteTags}', attachments = '${note.noteAttachments}', references = '${note.noteReferences}', source = '${note.noteSource}', author = '${note.noteAuthor}', next = '${note.noteNext}', last = '${note.noteLast}', place = '${note.notePlace}', isstarred = '${note.noteIsStarred}', islocked = '${note.noteIsLocked}', istodo = '${note.noteIstodo}', isdeleted = '${note.noteIsDeleted}', isshared = '${note.noteIsShared}', isachived = '${note.noteIsAchive}', finishState = '${note.noteFinishState}', isreviewed = '${note.noteIsReviewed}', createdate = '${note.noteCreateDate.toString().substring(0, 19)}', updatedate = '${note.noteUpdateDate.toString().substring(0, 19)}', achivedate = '${note.noteAchiveDate.toString().substring(0, 19)}', deletedate = '${note.noteDeleteDate.toString().substring(0, 19)}', finishdate = '${note.noteFinishDate.toString().substring(0, 19)}', alarmdate = '${note.noteAlarmDate.toString().substring(0, 19)}' WHERE id = '${note.id}';");
+        "UPDATE u$id.n$id SET folder = '${note.noteFolder}', title = '${note.noteTitle}', context = '${note.noteContext}', type = '${note.noteType}', project = '${note.noteProject}', tags = '${note.noteTags}', attachments = '${note.noteAttachments}', ref = '${note.noteReferences}', source = '${note.noteSource}', author = '${note.noteAuthor}', next = '${note.noteNext}', last = '${note.noteLast}', place = '${note.notePlace}', isstarred = '${note.noteIsStarred}', islocked = '${note.noteIsLocked}', istodo = '${note.noteIstodo}', isdeleted = '${note.noteIsDeleted}', isshared = '${note.noteIsShared}', isachived = '${note.noteIsAchive}', finishstate = '${note.noteFinishState}', isreviewed = '${note.noteIsReviewed}', createdate = '${note.noteCreateDate}', updatedate = '${note.noteUpdateDate}', achivedate = '${note.noteAchiveDate}', deletedate = '${note.noteDeleteDate}', finishdate = '${note.noteFinishDate}', alarmdate = '${note.noteAlarmDate}' WHERE id = '${note.id}'");
   }
 
   Future<void> insertRemote(Notes note, String id) async {
     await postgreSQLConnection!.execute(
-        "INSERT INTO u$id.n$id VALUES ('${note.id}', '${note.noteFolder}', '${note.noteTitle}', '${note.noteContext}', '${note.noteType}', '${note.noteProject}', '${note.noteTags}', '${note.noteAttachments}', '${note.noteReferences}', '${note.noteSource}', '${note.noteAuthor}', '${note.noteNext}', '${note.noteLast}', '${note.notePlace}', '${note.noteIsStarred}', '${note.noteIsLocked}', '${note.noteIstodo}', '${note.noteIsDeleted}', '${note.noteIsShared}', '${note.noteIsAchive}', '${note.noteFinishState}', '${note.noteIsReviewed}', '${note.noteCreateDate.toString().substring(0, 19)}','${note.noteUpdateDate.toString().substring(0, 19)}', '${note.noteAchiveDate.toString().substring(0, 19)}', '${note.noteDeleteDate.toString().substring(0, 19)}', '${note.noteFinishDate.toString().substring(0, 19)}', '${note.noteAlarmDate.toString().substring(0, 19)}')");
+        "INSERT INTO u$id.n$id VALUES ('${note.id}', '${note.noteFolder}', '${note.noteTitle}', '${note.noteContext}', '${note.noteType}', '${note.noteProject}', '${note.noteTags}', '${note.noteAttachments}', '${note.noteReferences}', '${note.noteSource}', '${note.noteAuthor}', '${note.noteNext}', '${note.noteLast}', '${note.notePlace}', '${note.noteIsStarred}', '${note.noteIsLocked}', '${note.noteIstodo}', '${note.noteIsDeleted}', '${note.noteIsShared}', '${note.noteIsAchive}', '${note.noteFinishState}', '${note.noteIsReviewed}', '${note.noteCreateDate}','${note.noteUpdateDate}', '${note.noteAchiveDate}', '${note.noteDeleteDate}', '${note.noteFinishDate}', '${note.noteAlarmDate}')");
+  }
+
+  Future<void> insertOrUpdateRemote(Notes note, String id) async {
+    await postgreSQLConnection!.execute(
+        "INSERT INTO u$id.n$id VALUES ('${note.id}', '${note.noteFolder}', '${note.noteTitle}', '${note.noteContext}', '${note.noteType}', '${note.noteProject}', '${note.noteTags}', '${note.noteAttachments}', '${note.noteReferences}', '${note.noteSource}', '${note.noteAuthor}', '${note.noteNext}', '${note.noteLast}', '${note.notePlace}', '${note.noteIsStarred}', '${note.noteIsLocked}', '${note.noteIstodo}', '${note.noteIsDeleted}', '${note.noteIsShared}', '${note.noteIsAchive}', '${note.noteFinishState}', '${note.noteIsReviewed}', '${note.noteCreateDate}','${note.noteUpdateDate}', '${note.noteAchiveDate}', '${note.noteDeleteDate}', '${note.noteFinishDate}', '${note.noteAlarmDate}') ON CONFLICT (id) DO UPDATE SET folder = '${note.noteFolder}', title = '${note.noteTitle}', context = '${note.noteContext}', type = '${note.noteType}', project = '${note.noteProject}', tags = '${note.noteTags}', attachments = '${note.noteAttachments}', ref = '${note.noteReferences}', source = '${note.noteSource}', author = '${note.noteAuthor}', next = '${note.noteNext}', last = '${note.noteLast}', place = '${note.notePlace}', isstarred = '${note.noteIsStarred}', islocked = '${note.noteIsLocked}', istodo = '${note.noteIstodo}', isdeleted = '${note.noteIsDeleted}', isshared = '${note.noteIsShared}', isachived = '${note.noteIsAchive}', finishstate = '${note.noteFinishState}', isreviewed = '${note.noteIsReviewed}', createdate = '${note.noteCreateDate}', updatedate = '${note.noteUpdateDate}', achivedate = '${note.noteAchiveDate}', deletedate = '${note.noteDeleteDate}', finishdate = '${note.noteFinishDate}', alarmdate = '${note.noteAlarmDate}'");
   }
 
   PostgreSQLConnection? postgreSQLConnection;
@@ -378,14 +474,22 @@ class _SyncPageState extends State<SyncPage> {
             const Text('将清空本地 并将云端数据全部同步到本地'),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                syncProcess = '';
+                int p1 = await checkRemoteDatabase();
+                if (p1 == 1) {
+                  exchangeSmart();
+                }
+              },
               child: const Text('本地<===>云端'),
             ),
             const Text('双向全量遍历同步'),
             const SizedBox(height: 40),
-            Text(
-              syncProcess,
-              textAlign: TextAlign.center,
+            SingleChildScrollView(
+              child: Text(
+                syncProcess,
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),
