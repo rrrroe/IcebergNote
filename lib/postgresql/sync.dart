@@ -239,7 +239,7 @@ class _SyncPageState extends State<SyncPage> {
     });
     DateTime lastRefresh =
         DateTime.utc(2023, 11, 17, 3, 30, 00).add(const Duration(days: -1));
-    print(lastRefresh);
+    debugPrint(lastRefresh.toString());
     RealmResults<Notes> localNewNotes = realm.query<Notes>(
         "noteUpdateDate > \$0 SORT(noteUpdateDate ASC)", [lastRefresh]);
     var remoteNewNotes = await postgreSQLConnection!
@@ -270,24 +270,23 @@ class _SyncPageState extends State<SyncPage> {
       setState(() {
         syncProcess = '$syncProcess\n处理云端数据: 0 / ${localNewNotes.length}';
       });
-      print('------------------开始遍历云端------------------');
-      print(synced);
+      debugPrint('------------------开始遍历云端------------------');
       for (int j = 0; j < remoteNewNotes.length; j++) {
         if (synced.contains(j)) {
-          print('${remoteNewNotes[j][3]}:::${remoteNewNotes[j][23]}跳过');
+          debugPrint('${remoteNewNotes[j][3]}:::${remoteNewNotes[j][23]}跳过');
         } else {
           RealmResults<Notes> existedNote = realm.query<Notes>(
               "id == \$0", [Uuid.fromString(remoteNewNotes[j][0])]);
           if (existedNote.isEmpty) {
-            print(
+            debugPrint(
                 '${remoteNewNotes[j][3]}:::${remoteNewNotes[j][23]}未匹配到本地 新增到本地');
             insertLocal(remoteNewNotes[j]);
           } else if (existedNote.length == 1) {
-            print(
+            debugPrint(
                 '${remoteNewNotes[j][3]}:::${remoteNewNotes[j][23]}已匹配到本地 更新到本地');
             updateLocal(existedNote.first, remoteNewNotes[j]);
           } else {
-            print('本地主键重复');
+            debugPrint('本地主键重复');
           }
         }
         setState(() {
@@ -298,31 +297,32 @@ class _SyncPageState extends State<SyncPage> {
       setState(() {
         syncProcess = '$syncProcess\n处理本地数据: 0 / ${localNewNotes.length}';
       });
-      print('------------------开始遍历本地------------------');
+      debugPrint('------------------开始遍历本地------------------');
       for (int i = 0; i < localNewNotes.length; i++) {
-        print(
+        debugPrint(
             '${localNewNotes[i].noteContext}:::${localNewNotes[i].noteCreateDate}本地');
         isMatch = false;
         for (int j = 0; j < remoteNewNotes.length; j++) {
           if (localNewNotes[i].id.toString() == remoteNewNotes[j][0]) {
-            print('${remoteNewNotes[j][3]}:::${remoteNewNotes[j][23]}匹配到云端');
+            debugPrint(
+                '${remoteNewNotes[j][3]}:::${remoteNewNotes[j][23]}匹配到云端');
             isMatch = true;
             synced.add(j);
             if (localNewNotes[i]
                 .noteUpdateDate
                 .isAfter(remoteNewNotes[j][23])) {
-              print('本地较新 同步云端');
+              debugPrint('本地较新 同步云端');
               await updateRemote(localNewNotes[i], id!);
             } else if (localNewNotes[i].noteUpdateDate ==
                 remoteNewNotes[j][23]) {
-              print('两端一致 无需同步');
+              debugPrint('两端一致 无需同步');
             } else {
-              print('云端较新 同步本地');
+              debugPrint('云端较新 同步本地');
               await updateLocal(localNewNotes[i], remoteNewNotes[j]);
             }
           } else {
             if (j == remoteNewNotes.length - 1 && isMatch == false) {
-              print('未匹配到云端 新增到云端');
+              debugPrint('未匹配到云端 新增到云端');
               await insertOrUpdateRemote(localNewNotes[i], id!);
             }
           }
