@@ -48,7 +48,7 @@ class _ReportScreenState extends State<ReportScreen>
   late List propertySettings1;
   List graphSettings = [];
   DateFormat ymd = DateFormat('yyyy-MM-dd');
-  DateTime now = DateTime.now();
+  DateTime now = DateTime.now().toUtc();
   late int weekday;
   late DateTime firstDay;
   late DateTime lastDay;
@@ -61,7 +61,7 @@ class _ReportScreenState extends State<ReportScreen>
   void initState() {
     super.initState();
     tabController = TabController(length: tabs.length, vsync: this);
-    DateTime now = DateTime.now();
+    DateTime now = DateTime.now().toUtc();
     weekday = now.weekday;
     firstDay = now.subtract(Duration(days: weekday - 1));
     firstDay = DateTime(firstDay.year, firstDay.month, firstDay.day);

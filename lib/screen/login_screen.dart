@@ -96,8 +96,9 @@ class LoginScreenState extends State<LoginScreen> {
         final results = await connection!
             .query("SELECT * FROM userinfo WHERE email = '${data.name}'");
         var no = await connection!.query("SELECT COUNT(*) FROM userinfo");
-        String date1 = DateTime.now().toString().substring(0, 10);
+        String date1 = DateTime.now().toUtc().toString().substring(0, 10);
         String date2 = DateTime.now()
+            .toUtc()
             .add(const Duration(days: 50))
             .toString()
             .substring(0, 10);

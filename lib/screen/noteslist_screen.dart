@@ -399,7 +399,7 @@ class TimeBarState extends State<TimeBar> {
   }
 
   void updateTime() {
-    final now = DateTime.now();
+    final now = DateTime.now().toUtc();
     setState(() {
       time =
           "${now.year}年${now.month.toString().padLeft(2, '0')}月${now.day..toString().padLeft(2, '0')}日 "

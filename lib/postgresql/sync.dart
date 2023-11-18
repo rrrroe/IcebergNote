@@ -251,7 +251,6 @@ class _SyncPageState extends State<SyncPage> {
     var remoteNewNotes = await postgreSQLConnection!
         .query("SELECT * FROM u$id.n$id WHERE updatedate > '$lastRefresh'");
     List<int> synced = [];
-    bool isMatch = false;
     // if (remoteNewNotes.isEmpty && localNewNotes.isNotEmpty) {
     //   setState(() {
     //     syncProcess = '$syncProcess\n云端为空  开始单向上传';
@@ -280,11 +279,10 @@ class _SyncPageState extends State<SyncPage> {
     print('------------------开始遍历本地------------------');
     for (int i = 0; i < localNewNotes.length; i++) {
       print('${localNewNotes[i].id}:::${localNewNotes[i].noteCreateDate}本地');
-      isMatch = false;
       for (int j = 0; j < remoteNewNotes.length; j++) {
         if (localNewNotes[i].id.toString() == remoteNewNotes[j][0]) {
           print('${remoteNewNotes[j][0]}:::${remoteNewNotes[j][23]}匹配到云端');
-          isMatch = true;
+
           synced.add(j);
           if (localNewNotes[i].noteUpdateDate.isAfter(remoteNewNotes[j][23])) {
             print('本地较新 同步云端');
@@ -295,8 +293,9 @@ class _SyncPageState extends State<SyncPage> {
             print('云端较新 同步本地');
             await updateLocal(localNewNotes[i], remoteNewNotes[j]);
           }
+          break;
         } else {
-          if (j == remoteNewNotes.length - 1 && isMatch == false) {
+          if (j == remoteNewNotes.length - 1) {
             print('未匹配到云端 新增到云端');
             await insertOrUpdateRemote(localNewNotes[i], id!);
           }
@@ -307,7 +306,7 @@ class _SyncPageState extends State<SyncPage> {
       });
     }
     setState(() {
-      syncProcess = '$syncProcess\n处理云端数据: 0 / ${localNewNotes.length}';
+      syncProcess = '$syncProcess\n处理云端数据: 0 / ${remoteNewNotes.length}';
     });
 
     print('------------------开始遍历云端------------------');

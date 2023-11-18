@@ -8,8 +8,8 @@ class UserController extends GetxController {
   var phone = ''.obs;
   var no = 0.obs;
   var isAdmin = false.obs;
-  var createDate = DateTime.now().obs;
-  var vipDate = DateTime.now().obs;
+  var createDate = DateTime.now().toUtc().obs;
+  var vipDate = DateTime.now().toUtc().obs;
   var deviceNO = 0.obs;
   @override
   void onInit() {
