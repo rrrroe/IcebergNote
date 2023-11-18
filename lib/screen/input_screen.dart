@@ -111,10 +111,9 @@ class ChangePageState extends State<ChangePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
+    return PopScope(
+      onPopInvoked: (a) {
         widget.onPageClosed;
-        return Future.value(true);
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -488,7 +487,8 @@ class ChangePageState extends State<ChangePage> {
                             focusNode: focusNode,
                             style: const TextStyle(
                               fontSize: 18,
-                              height: 1.5,
+                              height: 2,
+                              wordSpacing: 4,
                             ),
                             controller: contentController,
                             decoration: const InputDecoration(
@@ -602,10 +602,10 @@ class ChangePageState extends State<ChangePage> {
               '',
               DateTime.now().toUtc(),
               DateTime.now().toUtc(),
-              DateTime(1970, 1, 1),
-              DateTime(1970, 1, 1),
-              DateTime(1970, 1, 1),
-              DateTime(1970, 1, 1),
+              DateTime.utc(1970, 1, 1),
+              DateTime.utc(1970, 1, 1),
+              DateTime.utc(1970, 1, 1),
+              DateTime.utc(1970, 1, 1),
               noteType: '.todo',
               noteProject: widget.note.noteProject,
               noteFinishState: '未完'));

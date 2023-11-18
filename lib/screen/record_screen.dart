@@ -145,6 +145,7 @@ class RecordChangePageState extends State<RecordChangePage> {
     record = sortedRecord;
     realm.write(() {
       widget.note.noteContext = mapToyaml(record);
+      widget.note.noteUpdateDate = DateTime.now().toUtc();
     });
     for (var i = 0; i < template.length; i++) {
       propertyControllerList.add(TextEditingController());
@@ -167,10 +168,9 @@ class RecordChangePageState extends State<RecordChangePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
+    return PopScope(
+      onPopInvoked: (a) {
         widget.onPageClosed;
-        return Future.value(true);
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -260,6 +260,8 @@ class RecordChangePageState extends State<RecordChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteType = '';
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                         break;
@@ -276,6 +278,8 @@ class RecordChangePageState extends State<RecordChangePage> {
                                                   widget.typeList.add(text);
                                                   realm.write(() {
                                                     widget.note.noteType = text;
+                                                    widget.note.noteUpdateDate =
+                                                        DateTime.now().toUtc();
                                                   });
                                                 });
                                               },
@@ -287,6 +291,8 @@ class RecordChangePageState extends State<RecordChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteType = type;
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                     }
@@ -327,6 +333,8 @@ class RecordChangePageState extends State<RecordChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteProject = '';
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                         break;
@@ -344,6 +352,8 @@ class RecordChangePageState extends State<RecordChangePage> {
                                                   realm.write(() {
                                                     widget.note.noteProject =
                                                         text;
+                                                    widget.note.noteUpdateDate =
+                                                        DateTime.now().toUtc();
                                                   });
                                                 });
                                               },
@@ -355,6 +365,8 @@ class RecordChangePageState extends State<RecordChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteProject = project;
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                     }
@@ -395,6 +407,8 @@ class RecordChangePageState extends State<RecordChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteFolder = '';
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                         break;
@@ -412,6 +426,8 @@ class RecordChangePageState extends State<RecordChangePage> {
                                                   realm.write(() {
                                                     widget.note.noteFolder =
                                                         text;
+                                                    widget.note.noteUpdateDate =
+                                                        DateTime.now().toUtc();
                                                   });
                                                 });
                                               },
@@ -423,6 +439,8 @@ class RecordChangePageState extends State<RecordChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteFolder = folder;
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                     }
@@ -647,6 +665,7 @@ class _PropertyCardState extends State<PropertyCard> {
       }
       realm.write(() {
         widget.note.noteContext = mapToyaml(widget.record);
+        widget.note.noteUpdateDate = DateTime.now().toUtc();
       });
     }
     return Card(
@@ -702,6 +721,7 @@ class _PropertyCardState extends State<PropertyCard> {
                           value;
                       realm.write(() {
                         widget.note.noteContext = mapToyaml(widget.record);
+                        widget.note.noteUpdateDate = DateTime.now().toUtc();
                       });
                       setState(() {
                         error = '';
@@ -711,6 +731,7 @@ class _PropertyCardState extends State<PropertyCard> {
                           value;
                       realm.write(() {
                         widget.note.noteContext = mapToyaml(widget.record);
+                        widget.note.noteUpdateDate = DateTime.now().toUtc();
                       });
                       setState(() {
                         error = '请输入数字';
@@ -741,6 +762,7 @@ class _PropertyCardState extends State<PropertyCard> {
           propertySettings.last.toString();
       realm.write(() {
         widget.note.noteContext = mapToyaml(widget.record);
+        widget.note.noteUpdateDate = DateTime.now().toUtc();
       });
       contentController.text =
           propertySettings.last.toString().replaceAll('    ', '\n');
@@ -788,6 +810,7 @@ class _PropertyCardState extends State<PropertyCard> {
                         value.replaceAll('\n', '    ').trim();
                     realm.write(() {
                       widget.note.noteContext = mapToyaml(widget.record);
+                      widget.note.noteUpdateDate = DateTime.now().toUtc();
                     });
                   },
                 ),
@@ -806,6 +829,7 @@ class _PropertyCardState extends State<PropertyCard> {
           propertySettings.last.toString();
       realm.write(() {
         widget.note.noteContext = mapToyaml(widget.record);
+        widget.note.noteUpdateDate = DateTime.now().toUtc();
       });
       contentController.text = propertySettings.last.toString();
     }
@@ -858,6 +882,7 @@ class _PropertyCardState extends State<PropertyCard> {
                         value;
                     realm.write(() {
                       widget.note.noteContext = mapToyaml(widget.record);
+                      widget.note.noteUpdateDate = DateTime.now().toUtc();
                     });
                   },
                 ),
@@ -889,6 +914,7 @@ class _PropertyCardState extends State<PropertyCard> {
           currentList.join(', ');
       realm.write(() {
         widget.note.noteContext = mapToyaml(widget.record);
+        widget.note.noteUpdateDate = DateTime.now().toUtc();
       });
     }
 
@@ -973,6 +999,8 @@ class _PropertyCardState extends State<PropertyCard> {
                             realm.write(() {
                               widget.note.noteContext =
                                   mapToyaml(widget.record);
+                              widget.note.noteUpdateDate =
+                                  DateTime.now().toUtc();
                             });
                           });
                           List testList = (text.split(', '));
@@ -985,6 +1013,8 @@ class _PropertyCardState extends State<PropertyCard> {
                                     widget.templateNote.noteContext.replaceAll(
                                         propertySettings.join(','),
                                         '${propertySettings.join(',')}||${testList[i]}');
+                                widget.templateNote.noteUpdateDate =
+                                    DateTime.now().toUtc();
                               });
                             }
                           }
@@ -1026,6 +1056,7 @@ class _PropertyCardState extends State<PropertyCard> {
           currentList.join(', ');
       realm.write(() {
         widget.note.noteContext = mapToyaml(widget.record);
+        widget.note.noteUpdateDate = DateTime.now().toUtc();
       });
     }
 
@@ -1110,6 +1141,8 @@ class _PropertyCardState extends State<PropertyCard> {
                             realm.write(() {
                               widget.note.noteContext =
                                   mapToyaml(widget.record);
+                              widget.note.noteUpdateDate =
+                                  DateTime.now().toUtc();
                             });
                           });
                           List testList = (text.split(', '));
@@ -1122,6 +1155,8 @@ class _PropertyCardState extends State<PropertyCard> {
                                     widget.templateNote.noteContext.replaceAll(
                                         propertySettings.join(','),
                                         '${propertySettings.join(',')}||${testList[i]}');
+                                widget.templateNote.noteUpdateDate =
+                                    DateTime.now().toUtc();
                               });
                             }
                           }
@@ -1253,6 +1288,7 @@ class _PropertyCardState extends State<PropertyCard> {
             '${setDay.year}-$m-$d';
         realm.write(() {
           widget.note.noteContext = mapToyaml(widget.record);
+          widget.note.noteUpdateDate = DateTime.now().toUtc();
         });
       }
     } else if (tmpDate != null) {
@@ -1315,6 +1351,7 @@ class _PropertyCardState extends State<PropertyCard> {
                               '${newDateTime.year}-$m-$d';
                           realm.write(() {
                             widget.note.noteContext = mapToyaml(widget.record);
+                            widget.note.noteUpdateDate = DateTime.now().toUtc();
                           });
                         });
                       }
@@ -1371,6 +1408,7 @@ class _PropertyCardState extends State<PropertyCard> {
       }
       realm.write(() {
         widget.note.noteContext = mapToyaml(widget.record);
+        widget.note.noteUpdateDate = DateTime.now().toUtc();
       });
     } else if (setDuration != null) {
       timeList = [
@@ -1431,6 +1469,7 @@ class _PropertyCardState extends State<PropertyCard> {
                               '${p.hour}:${p.minute}:${p.second}';
                           realm.write(() {
                             widget.note.noteContext = mapToyaml(widget.record);
+                            widget.note.noteUpdateDate = DateTime.now().toUtc();
                           });
                         });
                       },
@@ -1480,6 +1519,7 @@ class _PropertyCardState extends State<PropertyCard> {
       }
       realm.write(() {
         widget.note.noteContext = mapToyaml(widget.record);
+        widget.note.noteUpdateDate = DateTime.now().toUtc();
       });
     }
     return Card(
@@ -1543,6 +1583,7 @@ class _PropertyCardState extends State<PropertyCard> {
                               '${p.hour}:${p.minute}:${p.second}';
                           realm.write(() {
                             widget.note.noteContext = mapToyaml(widget.record);
+                            widget.note.noteUpdateDate = DateTime.now().toUtc();
                           });
                         });
                       },
@@ -1642,6 +1683,7 @@ Widget buildPropertyCard(
                         record[template.keys.elementAt(index)] = value;
                         realm.write(() {
                           note.noteContext = mapToyaml(record);
+                          note.noteUpdateDate = DateTime.now().toUtc();
                         });
                         error = '';
                       } else {
@@ -1706,6 +1748,7 @@ Widget buildPropertyCard(
                       record[template.keys.elementAt(index)] = value;
                       realm.write(() {
                         note.noteContext = mapToyaml(record);
+                        note.noteUpdateDate = DateTime.now().toUtc();
                       });
                     },
                   ),
@@ -1822,10 +1865,9 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
+    return PopScope(
+      onPopInvoked: (a) {
         widget.onPageClosed;
-        return Future.value(true);
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -1836,6 +1878,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
               realm.write(() {
                 widget.note.noteContext =
                     '${mapToyaml(template)}settings: ${mapToyaml(templateProperty)}';
+                widget.note.noteUpdateDate = DateTime.now().toUtc();
               });
             });
           },
@@ -1925,6 +1968,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteType = '';
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                         break;
@@ -1941,6 +1986,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                                                   widget.typeList.add(text);
                                                   realm.write(() {
                                                     widget.note.noteType = text;
+                                                    widget.note.noteUpdateDate =
+                                                        DateTime.now().toUtc();
                                                   });
                                                 });
                                               },
@@ -1952,6 +1999,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteType = type;
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                     }
@@ -1992,6 +2041,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteProject = '';
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                         break;
@@ -2009,6 +2060,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                                                   realm.write(() {
                                                     widget.note.noteProject =
                                                         text;
+                                                    widget.note.noteUpdateDate =
+                                                        DateTime.now().toUtc();
                                                   });
                                                 });
                                               },
@@ -2020,6 +2073,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteProject = project;
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                     }
@@ -2060,6 +2115,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteFolder = '';
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                         break;
@@ -2077,6 +2134,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                                                   realm.write(() {
                                                     widget.note.noteFolder =
                                                         text;
+                                                    widget.note.noteUpdateDate =
+                                                        DateTime.now().toUtc();
                                                   });
                                                 });
                                               },
@@ -2088,6 +2147,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                                         setState(() {
                                           realm.write(() {
                                             widget.note.noteFolder = folder;
+                                            widget.note.noteUpdateDate =
+                                                DateTime.now().toUtc();
                                           });
                                         });
                                     }
@@ -2244,6 +2305,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                         setState(() {
                           realm.write(() {
                             widget.note.noteType = '';
+                            widget.note.noteUpdateDate = DateTime.now().toUtc();
                           });
                         });
                         break;

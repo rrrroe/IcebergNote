@@ -298,6 +298,7 @@ class BottomPopSheet extends StatelessWidget {
             onTap: () {
               realm.write(() {
                 note.noteIsDeleted = true;
+                note.noteUpdateDate = DateTime.now().toUtc();
                 note.noteDeleteDate = DateTime.now().toUtc();
               });
               onDialogClosed();
@@ -340,10 +341,10 @@ class BottomRecordTypeSheet extends StatelessWidget {
                         '',
                         DateTime.now().toUtc(),
                         DateTime.now().toUtc(),
-                        DateTime(1970, 1, 1),
-                        DateTime(1970, 1, 1),
-                        DateTime(1970, 1, 1),
-                        DateTime(1970, 1, 1),
+                        DateTime.utc(1970, 1, 1),
+                        DateTime.utc(1970, 1, 1),
+                        DateTime.utc(1970, 1, 1),
+                        DateTime.utc(1970, 1, 1),
                         noteProject: recordProjectList[index],
                         noteType: '.记录');
                     realm.write(() {
@@ -815,12 +816,14 @@ class SearchPageState extends State<SearchPage> {
                   realm.write(() {
                     note.noteFinishState = '已完';
                     note.noteFinishDate = DateTime.now().toUtc();
+                    note.noteUpdateDate = DateTime.now().toUtc();
                   });
                 });
               } else {
                 realm.write(() {
                   setState(() {
                     note.noteFinishState = '未完';
+                    note.noteUpdateDate = DateTime.now().toUtc();
                   });
                 });
               }
@@ -1549,12 +1552,12 @@ class SearchPageState extends State<SearchPage> {
                   '',
                   '',
                   '',
-                  DateTime.now(),
-                  DateTime.now(),
-                  DateTime(1970, 1, 1),
-                  DateTime(1970, 1, 1),
-                  DateTime(1970, 1, 1),
-                  DateTime(1970, 1, 1),
+                  DateTime.now().toUtc(),
+                  DateTime.now().toUtc(),
+                  DateTime.utc(1970, 1, 1),
+                  DateTime.utc(1970, 1, 1),
+                  DateTime.utc(1970, 1, 1),
+                  DateTime.utc(1970, 1, 1),
                 );
                 realm.write(() {
                   realm.add<Notes>(note, update: true);
@@ -1631,6 +1634,7 @@ class BottomPopSheetDeleted extends StatelessWidget {
             onTap: () {
               realm.write(() {
                 note.noteIsDeleted = false;
+                note.noteUpdateDate = DateTime.now().toUtc();
               });
               onDialogClosed();
               Navigator.pop(context);

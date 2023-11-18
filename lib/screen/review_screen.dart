@@ -36,10 +36,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     ),
     Notes(
       Uuid.v4(),
@@ -48,10 +48,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     ),
     Notes(
       Uuid.v4(),
@@ -60,10 +60,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     ),
     Notes(
       Uuid.v4(),
@@ -72,10 +72,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     ),
     Notes(
       Uuid.v4(),
@@ -84,10 +84,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     ),
     Notes(
       Uuid.v4(),
@@ -96,10 +96,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     )
   ];
   List<Notes> blankListToday = [
@@ -110,10 +110,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     ),
     Notes(
       Uuid.v4(),
@@ -122,10 +122,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     ),
     Notes(
       Uuid.v4(),
@@ -134,10 +134,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     ),
     Notes(
       Uuid.v4(),
@@ -146,10 +146,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     ),
     Notes(
       Uuid.v4(),
@@ -158,10 +158,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     ),
     Notes(
       Uuid.v4(),
@@ -170,10 +170,10 @@ class ReviewPageState extends State<ReviewPage> {
       math.Random().nextInt(100).toString(),
       DateTime.now().toUtc(),
       DateTime.now().toUtc(),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
-      DateTime(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
+      DateTime.utc(1970, 1, 1),
     ),
   ];
   @override
@@ -249,12 +249,18 @@ class ReviewPageState extends State<ReviewPage> {
                   if ((direction == SwipeDirection.right ||
                           direction == SwipeDirection.up) &&
                       reviewList[index].noteTitle != blankTip) {
-                    realm.write(() => reviewList[index].noteIsReviewed = true);
+                    realm.write(() {
+                      reviewList[index].noteIsReviewed = true;
+                      reviewList[index].noteUpdateDate = DateTime.now().toUtc();
+                    });
                   }
                   if ((direction == SwipeDirection.left ||
                           direction == SwipeDirection.down) &&
                       reviewList[index].noteTitle != blankTip) {
-                    realm.write(() => reviewList[index].noteIsReviewed = false);
+                    realm.write(() {
+                      reviewList[index].noteIsReviewed = false;
+                      reviewList[index].noteUpdateDate = DateTime.now().toUtc();
+                    });
                   }
                   if (reviewList[index].noteTitle == blankTip) {
                     reviewList.add(Notes(
@@ -264,10 +270,10 @@ class ReviewPageState extends State<ReviewPage> {
                       math.Random().nextInt(100).toString(),
                       DateTime.now().toUtc(),
                       DateTime.now().toUtc(),
-                      DateTime(1970, 1, 1),
-                      DateTime(1970, 1, 1),
-                      DateTime(1970, 1, 1),
-                      DateTime(1970, 1, 1),
+                      DateTime.utc(1970, 1, 1),
+                      DateTime.utc(1970, 1, 1),
+                      DateTime.utc(1970, 1, 1),
+                      DateTime.utc(1970, 1, 1),
                     ));
                   }
                 },
@@ -743,6 +749,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                   setState(() {
                                     realm.write(() {
                                       widget.note.noteType = '';
+                                      widget.note.noteUpdateDate =
+                                          DateTime.now().toUtc();
                                     });
                                   });
                                   break;
@@ -759,6 +767,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                             typeList.add(text);
                                             realm.write(() {
                                               widget.note.noteType = text;
+                                              widget.note.noteUpdateDate =
+                                                  DateTime.now().toUtc();
                                             });
                                           });
                                         },
@@ -770,6 +780,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                   setState(() {
                                     realm.write(() {
                                       widget.note.noteType = type;
+                                      widget.note.noteUpdateDate =
+                                          DateTime.now().toUtc();
                                     });
                                   });
                               }
@@ -809,6 +821,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                   setState(() {
                                     realm.write(() {
                                       widget.note.noteProject = '';
+                                      widget.note.noteUpdateDate =
+                                          DateTime.now().toUtc();
                                     });
                                   });
                                   break;
@@ -825,6 +839,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                             projectList.add(text);
                                             realm.write(() {
                                               widget.note.noteProject = text;
+                                              widget.note.noteUpdateDate =
+                                                  DateTime.now().toUtc();
                                             });
                                           });
                                         },
@@ -836,6 +852,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                   setState(() {
                                     realm.write(() {
                                       widget.note.noteProject = project;
+                                      widget.note.noteUpdateDate =
+                                          DateTime.now().toUtc();
                                     });
                                   });
                               }
@@ -875,6 +893,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                   setState(() {
                                     realm.write(() {
                                       widget.note.noteFolder = '';
+                                      widget.note.noteUpdateDate =
+                                          DateTime.now().toUtc();
                                     });
                                   });
                                   break;
@@ -891,6 +911,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                             folderList.add(text);
                                             realm.write(() {
                                               widget.note.noteFolder = text;
+                                              widget.note.noteUpdateDate =
+                                                  DateTime.now().toUtc();
                                             });
                                           });
                                         },
@@ -902,6 +924,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                   setState(() {
                                     realm.write(() {
                                       widget.note.noteFolder = folder;
+                                      widget.note.noteUpdateDate =
+                                          DateTime.now().toUtc();
                                     });
                                   });
                               }
@@ -948,6 +972,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                               realm.write(() {
                                                 widget.note.noteFinishState =
                                                     text;
+                                                widget.note.noteUpdateDate =
+                                                    DateTime.now().toUtc();
                                               });
                                             });
                                           },
@@ -960,6 +986,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                       realm.write(() {
                                         widget.note.noteFinishState =
                                             finishState;
+                                        widget.note.noteUpdateDate =
+                                            DateTime.now().toUtc();
                                       });
                                     });
                                 }

@@ -154,12 +154,14 @@ class TodoPageState extends State<TodoPage> {
                   realm.write(() {
                     note.noteFinishState = '已完';
                     note.noteFinishDate = DateTime.now().toUtc();
+                    note.noteUpdateDate = DateTime.now().toUtc();
                   });
                 });
               } else {
                 realm.write(() {
                   setState(() {
                     note.noteFinishState = '未完';
+                    note.noteUpdateDate = DateTime.now().toUtc();
                   });
                 });
               }
@@ -401,10 +403,10 @@ class TodoPageState extends State<TodoPage> {
               '',
               DateTime.now(),
               DateTime.now(),
-              DateTime(1970, 1, 1),
-              DateTime(1970, 1, 1),
-              DateTime(1970, 1, 1),
-              DateTime(1970, 1, 1),
+              DateTime.utc(1970, 1, 1),
+              DateTime.utc(1970, 1, 1),
+              DateTime.utc(1970, 1, 1),
+              DateTime.utc(1970, 1, 1),
               noteType: '.todo',
               noteFinishState: '未完',
             );

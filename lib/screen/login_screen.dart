@@ -238,45 +238,45 @@ class LoginScreenState extends State<LoginScreen> {
       //   LoginProvider(
       //     icon: FontAwesomeIcons.google,
       //     callback: () async {
-      //       debugPrint('start google sign in');
+      //       print('start google sign in');
       //       await Future.delayed(loginTime);
-      //       debugPrint('stop google sign in');
+      //       print('stop google sign in');
       //       return null;
       //     },
       //   ),
       //   LoginProvider(
       //     icon: FontAwesomeIcons.facebookF,
       //     callback: () async {
-      //       debugPrint('start facebook sign in');
+      //       print('start facebook sign in');
       //       await Future.delayed(loginTime);
-      //       debugPrint('stop facebook sign in');
+      //       print('stop facebook sign in');
       //       return null;
       //     },
       //   ),
       //   LoginProvider(
       //     icon: FontAwesomeIcons.linkedinIn,
       //     callback: () async {
-      //       debugPrint('start linkdin sign in');
+      //       print('start linkdin sign in');
       //       await Future.delayed(loginTime);
-      //       debugPrint('stop linkdin sign in');
+      //       print('stop linkdin sign in');
       //       return null;
       //     },
       //   ),
       //   LoginProvider(
       //     icon: FontAwesomeIcons.githubAlt,
       //     callback: () async {
-      //       debugPrint('start github sign in');
+      //       print('start github sign in');
       //       await Future.delayed(loginTime);
-      //       debugPrint('stop github sign in');
+      //       print('stop github sign in');
       //       return null;
       //     },
       //   ),
       //   LoginProvider(
       //     icon: FontAwesomeIcons.tencentWeibo,
       //     callback: () async {
-      //       debugPrint('start github sign in');
+      //       print('start github sign in');
       //       await Future.delayed(loginTime);
-      //       debugPrint('stop github sign in');
+      //       print('stop github sign in');
       //       return null;
       //     },
       //   ),
