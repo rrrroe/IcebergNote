@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/input_screen.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:realm/realm.dart';
@@ -419,9 +421,10 @@ class TimeBarState extends State<TimeBar> {
 }
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key, required this.mod, required this.txt});
+  SearchPage({super.key, required this.mod, required this.txt});
   final String txt;
   final int mod;
+  final SearchPageState state = SearchPageState();
   @override
   SearchPageState createState() => SearchPageState();
 }
@@ -431,7 +434,8 @@ class SearchPageState extends State<SearchPage> {
   final ScrollController _scrollController = ScrollController();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-
+  final SyncProcessController syncProcessController =
+      Get.put(SyncProcessController());
   String searchText = '';
   List<String> folderList = ['全部'];
   List<String> typeList = ['全部'];
@@ -439,6 +443,7 @@ class SearchPageState extends State<SearchPage> {
   String searchType = '';
   String searchProject = '';
   String searchFolder = '';
+  int isSyncing = 0;
   // String searchFinishState = '';
   late String time;
   void refreshList() {
@@ -463,9 +468,30 @@ class SearchPageState extends State<SearchPage> {
     });
   }
 
+  void refreshListTotop() {
+    setState(() {
+      switch (widget.mod) {
+        case 0:
+          searchnotesList.searchall(
+              searchText, 0, searchType, searchProject, searchFolder, '');
+          break;
+        case 1:
+          searchnotesList.search(searchText, 0);
+          break;
+        case 2:
+          searchnotesList.searchDeleted(searchText, 0);
+          break;
+        case 3:
+          searchnotesList.searchTodo(searchText, 0);
+          break;
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    isSyncing = 0;
     _scrollController.addListener(_scrollListener);
     switch (widget.mod) {
       case 0:
@@ -526,47 +552,47 @@ class SearchPageState extends State<SearchPage> {
     super.dispose();
   }
 
-  void _scrollListener() {
-    if (true) {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        setState(() {
-          switch (widget.mod) {
-            case 0:
-              searchnotesList.searchall(
-                  searchText, 50, searchType, searchProject, searchFolder, '');
-              break;
-            case 1:
-              searchnotesList.search(searchText, 50);
-              break;
-            case 2:
-              searchnotesList.searchDeleted(searchText, 50);
-              break;
-            case 3:
-              searchnotesList.searchTodo(searchText, 50);
-              break;
-          }
-          refreshList();
-        });
-      }
+  void _scrollListener() async {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      setState(() {
+        switch (widget.mod) {
+          case 0:
+            searchnotesList.searchall(
+                searchText, 50, searchType, searchProject, searchFolder, '');
+            break;
+          case 1:
+            searchnotesList.search(searchText, 50);
+            break;
+          case 2:
+            searchnotesList.searchDeleted(searchText, 50);
+            break;
+          case 3:
+            searchnotesList.searchTodo(searchText, 50);
+            break;
+        }
+        refreshList();
+      });
+    }
+    if (Platform.isWindows == true) {
       if (_scrollController.position.pixels == 0 && widget.mod == 0) {
-        setState(() {
-          switch (widget.mod) {
-            case 0:
-              searchnotesList.searchall(
-                  searchText, 0, searchType, searchProject, searchFolder, '');
-              break;
-            case 1:
-              searchnotesList.search(searchText, 0);
-              break;
-            case 2:
-              searchnotesList.searchDeleted(searchText, 0);
-              break;
-            case 3:
-              searchnotesList.searchTodo(searchText, 0);
-              break;
-          }
-        });
+        switch (widget.mod) {
+          case 0:
+            searchnotesList.searchall(
+                searchText, 0, searchType, searchProject, searchFolder, '');
+            break;
+          case 1:
+            searchnotesList.search(searchText, 0);
+            break;
+          case 2:
+            searchnotesList.searchDeleted(searchText, 0);
+            break;
+          case 3:
+            searchnotesList.searchTodo(searchText, 0);
+            break;
+        }
+        refreshList();
+        setState(() {});
       }
     }
   }
@@ -1489,26 +1515,27 @@ class SearchPageState extends State<SearchPage> {
     }
   }
 
-  void _onRefresh() async {
-    setState(() {
-      switch (widget.mod) {
-        case 0:
-          searchnotesList.searchall(
-              searchText, 0, searchType, searchProject, searchFolder, '');
-          break;
-        case 1:
-          searchnotesList.search(searchText, 0);
-          break;
-        case 2:
-          searchnotesList.searchDeleted(searchText, 0);
-          break;
-        case 3:
-          searchnotesList.searchTodo(searchText, 0);
-          break;
+  Future<void> syncDate() async {
+    if (isSyncing == 0) {
+      isSyncing++;
+      int p1 = await checkRemoteDatabase();
+      if (p1 == 1) {
+        await exchangeSmart();
       }
-    });
-    await Future.delayed(const Duration(milliseconds: 1000));
-    // if failed,use refreshFailed()
+
+      isSyncing = isSyncing--;
+
+      Get.snackbar(
+        '恭喜',
+        '远程同步已完成',
+        duration: const Duration(seconds: 1),
+        backgroundColor: const Color.fromARGB(60, 0, 140, 198),
+      );
+    }
+  }
+
+  void _onRefresh() async {
+    await syncDate();
     _refreshController.refreshCompleted();
   }
 
@@ -1584,7 +1611,7 @@ class SearchPageState extends State<SearchPage> {
               color: Colors.white,
               child: SmartRefresher(
                 enablePullDown: true,
-                enablePullUp: true,
+                enablePullUp: false,
                 header: const WaterDropHeader(),
                 footer: const ClassicFooter(
                   loadStyle: LoadStyle.ShowWhenLoading,

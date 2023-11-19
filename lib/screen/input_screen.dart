@@ -48,8 +48,8 @@ class ChangePageState extends State<ChangePage> {
 
   // late QuillController _controller;
 
-  var wordCount1 = 0;
-  var wordCount2 = 0;
+  // var wordCount1 = 0;
+  // var wordCount2 = 0;
   FocusNode focusNode = FocusNode();
 
   @override
@@ -58,8 +58,8 @@ class ChangePageState extends State<ChangePage> {
     focusNode.requestFocus();
     titleController.text = widget.note.noteTitle;
     contentController.text = widget.note.noteContext;
-    wordCount1 = titleController.text.length;
-    wordCount2 = contentController.text.length;
+    // wordCount1 = titleController.text.length;
+    // wordCount2 = contentController.text.length;
     final KeyboardManager keyboardManager = KeyboardManager();
     focusNode.addListener(() {
       keyboardManager.updateHeight(MediaQuery.of(context).viewInsets.bottom);
@@ -163,19 +163,24 @@ class ChangePageState extends State<ChangePage> {
                                 // enabledBorder: OutlineInputBorder(
                                 //     borderSide: BorderSide(color: Colors.blue)),
                                 ),
-                            onChanged: (value) {
-                              setState(() {
-                                wordCount1 = value.length;
+                            onChanged: (value) async {
+                              // setState(() {
+                              //   wordCount1 = value.length;
+                              // });
+                              await realm.writeAsync(() {
+                                widget.note.noteTitle = value;
+                                widget.note.noteUpdateDate =
+                                    DateTime.now().toUtc();
                               });
                             },
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text('${wordCount1 + wordCount2}字符'),
-                            ],
-                          ),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.end,
+                          //   crossAxisAlignment: CrossAxisAlignment.center,
+                          //   children: [
+                          //     Text('${wordCount1 + wordCount2}字符'),
+                          //   ],
+                          // ),
                           Wrap(
                             direction: Axis.horizontal,
                             alignment: WrapAlignment.start, // Left align
@@ -496,15 +501,15 @@ class ChangePageState extends State<ChangePage> {
                             ),
                             maxLines: null,
                             minLines: 6,
-                            onChanged: (value) {
-                              realm.write(() {
+                            onChanged: (value) async {
+                              await realm.writeAsync(() {
                                 widget.note.noteContext = value;
                                 widget.note.noteUpdateDate =
                                     DateTime.now().toUtc();
                               });
-                              setState(() {
-                                wordCount2 = value.length;
-                              });
+                              // setState(() {
+                              //   wordCount2 = value.length;
+                              // });
                             },
                           ),
                         ],

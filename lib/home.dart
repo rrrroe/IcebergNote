@@ -46,9 +46,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   bool controllerInitialized = false;
   bool showMediumSizeLayout = false;
   bool showLargeSizeLayout = false;
-
   int screenIndex = ScreenSelected.component.value;
-
+  final SearchPage searchPage = SearchPage(
+    mod: 0,
+    txt: '',
+  );
+  final SearchPage searchPage2 = SearchPage(
+    mod: 0,
+    txt: '',
+  );
   @override
   initState() {
     super.initState();
@@ -115,10 +121,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         return Expanded(
           child: OneTwoTransition(
             animation: railAnimation,
-            one: const SearchPage(
-              mod: 0,
-              txt: '',
-            ),
+            one: searchPage2,
             two: SecondComponentList(
               scaffoldKey: scaffoldKey,
             ),
@@ -152,10 +155,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ),
         );
       default:
-        return const SearchPage(
-          mod: 0,
-          txt: '',
-        );
+        return searchPage;
     }
   }
 
@@ -197,8 +197,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ),
           IconButton(
             icon: const Icon(Icons.cloud_queue_rounded),
-            onPressed: () {
-              Get.to(() => const SyncPage());
+            onPressed: () async {
+              await searchPage.state.syncDate();
+              // searchPage.state.refreshListTotop();
+              // Get.to(() => const SyncPage());
             },
           ),
           PopupMenuButton(
@@ -221,7 +223,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SearchPage(
+                        builder: (context) => SearchPage(
                               mod: 1,
                               txt: '',
                             )),
@@ -555,7 +557,7 @@ class _NavigationTransitionState extends State<NavigationTransition> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const SearchPage(
+                    builder: (context) => SearchPage(
                       mod: 2,
                       txt: '',
                     ),

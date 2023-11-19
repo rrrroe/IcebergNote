@@ -70,6 +70,7 @@ class LoginScreenState extends State<LoginScreen> {
               }
             }
             Get.find<UserController>().refreshLocalUser();
+            connection!.close();
             return null;
           } else {
             return '密码错误';
@@ -103,11 +104,13 @@ class LoginScreenState extends State<LoginScreen> {
             .toString()
             .substring(0, 10);
         if (results.isNotEmpty && results[0][5] != '') {
+          connection!.close();
           return '该用户已存在  请登录';
         } else if (results.isEmpty) {
           var tmp = sha512.convert(utf8.encode('${data.password}IceBergNote'));
           int back = await connection!.execute(
               "INSERT INTO userinfo (id, name, email, password, isadmin, noteCreateDate, viptime, phone, devices) VALUES (${no[0][0]}, '${data.additionalSignupData!['昵称'] ?? ''}', '${data.name}', '$tmp', 'f', '$date1', '$date2','${data.additionalSignupData!['手机'] ?? ''}', '${deviceUniqueId == '未知设备' ? '' : deviceUniqueId}')");
+          connection!.close();
           if (back == 1) {
             final SharedPreferences userLocalInfo =
                 await SharedPreferences.getInstance();
@@ -141,7 +144,7 @@ class LoginScreenState extends State<LoginScreen> {
             }
             int back = await connection!.execute(
                 "UPDATE userinfo SET password='$tmp', devices='$devices' WHERE id='${results[0][1]}'");
-
+            connection!.close();
             if (back == 1) {
               final SharedPreferences userLocalInfo =
                   await SharedPreferences.getInstance();
