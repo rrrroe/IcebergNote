@@ -1522,9 +1522,7 @@ class SearchPageState extends State<SearchPage> {
       if (p1 == 1) {
         await exchangeSmart();
       }
-
-      isSyncing = isSyncing--;
-
+      isSyncing--;
       Get.snackbar(
         '恭喜',
         '远程同步已完成',

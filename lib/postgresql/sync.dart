@@ -39,6 +39,7 @@ Future<void> postgreSQLQuery() async {
   PostgreSQLConnection? postgreSQLConnection = PostgreSQLConnection(
       "111.229.224.55", 5432, "users",
       username: "admin", password: "456321rrRR");
+
   if (postgreSQLConnection == null) {
     Get.snackbar('错误', '云端数据库连接失败');
   } else {
@@ -63,12 +64,11 @@ class SyncPage extends StatefulWidget {
 
 class SyncPageState extends State<SyncPage> {
   final SyncProcessController syncProcessController = Get.find();
+  String syncProcess = '';
   @override
   Widget build(BuildContext context) {
     SyncProcessController syncProcessController = Get.find();
-    PostgreSQLConnection? postgreSQLConnection = PostgreSQLConnection(
-        "111.229.224.55", 5432, "users",
-        username: "admin", password: "456321rrRR");
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('高级同步'),
@@ -79,21 +79,126 @@ class SyncPageState extends State<SyncPage> {
           children: [
             ElevatedButton(
               onPressed: () async {
-                syncProcessController.syncProcessClear();
+                syncProcess = '--------------------开始上传本地--------------------';
+                setState(() {});
+                PostgreSQLConnection? postgreSQLConnection =
+                    PostgreSQLConnection("111.229.224.55", 5432, "users",
+                        username: "admin", password: "456321rrRR");
+                await postgreSQLConnection.open();
+                final SharedPreferences userLocalInfo =
+                    await SharedPreferences.getInstance();
+                email = userLocalInfo.getString('userEmail');
+                other = userLocalInfo.getString('userOther');
+                id = userLocalInfo.getString('userID');
                 int p1 = await checkRemoteDatabase();
-                bool p2 = false;
-                switch (p1) {
-                  case 1:
-                    p2 = await clearRemoteDatabase();
-                    break;
-                  case 2:
-                    p2 = await createRemoteDatabase();
-                    break;
+                if (email == null || other == null || id == null) {
+                  syncProcess = '$syncProcess\n本地用户数据异常';
+                  setState(() {});
+                } else {
+                  final user = await postgreSQLConnection
+                      .query("SELECT * FROM userinfo WHERE email = '$email'");
+                  final other0 = sha512
+                      .convert(utf8.encode('${other}IceBergNote'))
+                      .toString();
+                  if (user[0][5] != other0) {
+                    syncProcess = '$syncProcess\n用户权限验证失败';
+                    setState(() {});
+                  } else {
+                    syncProcess = '$syncProcess\n用户权限验证通过';
+                    setState(() {});
+
+                    final checkSchema = await postgreSQLConnection.query(
+                        "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
+                    if (checkSchema[0][0] == false) {
+                      syncProcess = '$syncProcess\n未检测到云端数据库';
+                      setState(() {});
+                      syncProcess = '$syncProcess\n准备新建云端数据库';
+                      setState(() {});
+                      await postgreSQLConnection.execute("CREATE SCHEMA u$id");
+                      await postgreSQLConnection.execute(
+                          "CREATE TABLE u$id.n$id AS TABLE public.notetemplate");
+                      await postgreSQLConnection.execute(
+                          "ALTER TABLE u$id.n$id ALTER COLUMN id SET NOT NULL, ADD PRIMARY KEY (id)");
+                      final checkSchema1 = await postgreSQLConnection.query(
+                          "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
+                      if (checkSchema1[0][0] == false) {
+                        syncProcess =
+                            '$syncProcess\n--------------------云端创建失败--------------------';
+                        setState(() {});
+                      } else {
+                        syncProcess =
+                            '$syncProcess\n--------------------云端创建成功--------------------';
+                        setState(() {});
+                        var localResults = realm.all<Notes>();
+
+                        syncProcess =
+                            '$syncProcess\n开始上传${localResults.length}条本地数据';
+                        setState(() {});
+                        syncProcess =
+                            '$syncProcess\n上传进度: 0 / ${localResults.length}条本地数据';
+                        setState(() {});
+
+                        for (int i = 0; i < localResults.length; i++) {
+                          syncProcess = syncProcess.replaceAll(
+                              '上传进度: $i', '上传进度: ${i + 1}');
+                          setState(() {});
+                          await postgreSQLConnection
+                              .execute(insertRemote(localResults[i], id!));
+                        }
+                        //100条大概半分钟
+                        await postgreSQLConnection.close();
+                        syncProcess =
+                            '$syncProcess\n--------------------本地上传完成--------------------';
+                        setState(() {});
+                      }
+                    } else {
+                      syncProcess = '$syncProcess\n查询到已有云端数据库';
+                      setState(() {});
+                      syncProcess =
+                          '$syncProcess\n--------------------云端连接成功--------------------';
+                      setState(() {});
+                      var num = await postgreSQLConnection
+                          .execute("DELETE FROM u$id.n$id");
+                      if (num != 0) {
+                        '开始清空$num条云端数据';
+
+                        num = await postgreSQLConnection
+                            .execute("DELETE FROM u$id.n$id");
+                        if (num != 0) {
+                          syncProcess = '$syncProcess\n清空失败 剩余$num条云端数据';
+                        } else {
+                          syncProcess =
+                              '$syncProcess\n--------------------云端清空完成--------------------';
+                        }
+                      } else {
+                        syncProcess =
+                            '$syncProcess\n--------------------云端暂无数据--------------------';
+                      }
+                      var localResults = realm.all<Notes>();
+
+                      syncProcess =
+                          '$syncProcess\n开始上传${localResults.length}条本地数据';
+                      setState(() {});
+                      syncProcess =
+                          '$syncProcess\n上传进度: 0 / ${localResults.length}条本地数据';
+                      setState(() {});
+
+                      for (int i = 0; i < localResults.length; i++) {
+                        syncProcess = syncProcess.replaceAll(
+                            '上传进度: $i', '上传进度: ${i + 1}');
+                        setState(() {});
+                        await postgreSQLConnection
+                            .execute(insertRemote(localResults[i], id!));
+                      }
+                      //100条大概半分钟
+                      await postgreSQLConnection.close();
+                      syncProcess =
+                          '$syncProcess\n--------------------本地上传完成--------------------';
+                      setState(() {});
+                    }
+                  }
                 }
-                if (p2) {
-                  await allLocalToRemote();
-                }
-                postgreSQLConnection.queueSize;
+                await postgreSQLConnection.close();
               },
               child: const Text('本地>>>>云端'),
             ),
@@ -102,14 +207,76 @@ class SyncPageState extends State<SyncPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                syncProcessController.syncProcessClear();
+                syncProcess = '--------------------开始下载云端--------------------';
+                setState(() {});
+                PostgreSQLConnection? postgreSQLConnection =
+                    PostgreSQLConnection("111.229.224.55", 5432, "users",
+                        username: "admin", password: "456321rrRR");
+                await postgreSQLConnection.open();
+                final SharedPreferences userLocalInfo =
+                    await SharedPreferences.getInstance();
+                email = userLocalInfo.getString('userEmail');
+                other = userLocalInfo.getString('userOther');
+                id = userLocalInfo.getString('userID');
                 int p1 = await checkRemoteDatabase();
-                if (p1 == 1) {
-                  bool p2 = await clearLocalDatabase();
-                  if (p2) await allRemoteToLocal();
-                } else if (p1 == 2) {
-                  await createRemoteDatabase();
+                if (email == null || other == null || id == null) {
+                  syncProcess = '$syncProcess\n本地用户数据异常';
+                  setState(() {});
+                } else {
+                  final user = await postgreSQLConnection
+                      .query("SELECT * FROM userinfo WHERE email = '$email'");
+                  final other0 = sha512
+                      .convert(utf8.encode('${other}IceBergNote'))
+                      .toString();
+                  if (user[0][5] != other0) {
+                    syncProcess = '$syncProcess\n用户权限验证失败';
+                    setState(() {});
+                  } else {
+                    syncProcess = '$syncProcess\n用户权限验证通过';
+                    setState(() {});
+
+                    final checkSchema = await postgreSQLConnection.query(
+                        "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
+                    if (checkSchema[0][0] == false) {
+                      syncProcess = '$syncProcess\n未检测到云端数据库';
+                      setState(() {});
+                    } else {
+                      syncProcess = '$syncProcess\n查询到已有云端数据库';
+                      setState(() {});
+                      syncProcess =
+                          '$syncProcess\n--------------------云端连接成功--------------------';
+                      setState(() {});
+                      var localResults = realm.all<Notes>();
+
+                      syncProcess =
+                          '$syncProcess\n开始清空${localResults.length}条本地数据';
+                      setState(() {});
+                      realm.write(() {
+                        realm.deleteAll<Notes>();
+                      });
+
+                      syncProcess =
+                          '$syncProcess\n--------------------本地清空完成--------------------';
+                      setState(() {});
+                      var remoteResults = await postgreSQLConnection
+                          .query("SELECT * FROM u$id.n$id");
+                      syncProcess =
+                          '$syncProcess\n下载进度: 0 / ${remoteResults.length}条云端数据';
+                      setState(() {});
+                      for (int i = 0; i < remoteResults.length; i++) {
+                        await insertLocal(remoteResults[i]);
+                        syncProcess = syncProcess.replaceAll(
+                            '下载进度: $i', '下载进度: ${i + 1}');
+                        setState(() {});
+                      }
+                      await postgreSQLConnection.close();
+                      syncProcess =
+                          '$syncProcess\n--------------------云端下载完成--------------------';
+                      setState(() {});
+                    }
+                  }
                 }
+                await postgreSQLConnection.close();
               },
               child: const Text('本地<<<<云端'),
             ),
@@ -130,7 +297,7 @@ class SyncPageState extends State<SyncPage> {
             const SizedBox(height: 40),
             SingleChildScrollView(
               child: Text(
-                syncProcessController.syncProcess.value,
+                syncProcess,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -156,42 +323,7 @@ Future<int> checkRemoteDatabase() async {
     email = userLocalInfo.getString('userEmail');
     other = userLocalInfo.getString('userOther');
     id = userLocalInfo.getString('userID');
-    if (email == null || other == null || id == null) {
-      syncProcessController.syncProcessAddLine('本地用户数据异常');
-
-      return 0;
-    } else {
-      PostgreSQLConnection? postgreSQLConnection = PostgreSQLConnection(
-          "111.229.224.55", 5432, "users",
-          username: "admin", password: "456321rrRR");
-      await postgreSQLConnection.open();
-      final user = await postgreSQLConnection
-          .query("SELECT * FROM userinfo WHERE email = '$email'");
-      final other0 =
-          sha512.convert(utf8.encode('${other}IceBergNote')).toString();
-      if (user[0][5] != other0) {
-        syncProcessController.syncProcessAddLine('用户权限验证失败');
-        await postgreSQLConnection.close();
-        return 0;
-      } else {
-        syncProcessController.syncProcessAddLine('用户权限验证通过');
-
-        final checkSchema = await postgreSQLConnection.query(
-            "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
-        if (checkSchema[0][0] == false) {
-          syncProcessController.syncProcessAddLine('未检测到云端数据库');
-          await postgreSQLConnection.close();
-          return 2;
-        } else {
-          syncProcessController.syncProcessAddLine('查询到已有云端数据库');
-
-          syncProcessController.syncProcessAddLine(
-              '--------------------云端连接成功--------------------');
-          await postgreSQLConnection.close();
-          return 1;
-        }
-      }
-    }
+    return 1;
   }
 }
 
@@ -335,7 +467,6 @@ Future<void> exchangeSmart() async {
           userLocalInfo.getString('refreshdate') ??
               '1969-01-01 00:00:00.000000')
       .add(const Duration(days: -3));
-  print(lastRefresh);
   userLocalInfo.setString('refreshdate', DateTime.now().toUtc().toString());
   RealmResults<Notes> localNewNotes = realm.query<Notes>(
       "noteUpdateDate > \$0 SORT(noteUpdateDate ASC)", [lastRefresh]);
@@ -371,33 +502,24 @@ Future<void> exchangeSmart() async {
   syncProcessController
       .syncProcessAddLine('处理本地数据: 0 / ${localNewNotes.length}');
 
-  print('------------------开始遍历本地------------------');
   for (int i = 0; i < localNewNotes.length; i++) {
-    print('${localNewNotes[i].id}:::${localNewNotes[i].noteCreateDate}本地');
     if (remoteNewNotes.isEmpty) {
-      print('未匹配到云端 新增到云端');
       await postgreSQLConnection
           .execute(insertOrUpdateRemote(localNewNotes[i], id!));
     }
     for (int j = 0; j < remoteNewNotes.length; j++) {
       if (localNewNotes[i].id.toString() == remoteNewNotes[j][0]) {
-        print('${remoteNewNotes[j][0]}:::${remoteNewNotes[j][23]}匹配到云端');
-
         synced.add(j);
         if (localNewNotes[i].noteUpdateDate.isAfter(remoteNewNotes[j][23])) {
-          print('本地较新 同步云端');
           await postgreSQLConnection
               .execute(updateRemote(localNewNotes[i], id!));
         } else if (localNewNotes[i].noteUpdateDate == remoteNewNotes[j][23]) {
-          print('两端一致 无需同步');
         } else {
-          print('云端较新 同步本地');
           await updateLocal(localNewNotes[i], remoteNewNotes[j]);
         }
         break;
       } else {
         if (j == remoteNewNotes.length - 1) {
-          print('未匹配到云端 新增到云端');
           await postgreSQLConnection
               .execute(insertOrUpdateRemote(localNewNotes[i], id!));
         }
@@ -408,22 +530,16 @@ Future<void> exchangeSmart() async {
   syncProcessController
       .syncProcessAddLine('处理云端数据: 0 / ${remoteNewNotes.length}');
 
-  print('------------------开始遍历云端------------------');
   for (int j = 0; j < remoteNewNotes.length; j++) {
     if (synced.contains(j)) {
-      print('${remoteNewNotes[j][0]}:::${remoteNewNotes[j][23]}跳过');
     } else {
       RealmResults<Notes> existedNote = realm
           .query<Notes>("id == \$0", [Uuid.fromString(remoteNewNotes[j][0])]);
       if (existedNote.isEmpty) {
-        print('${remoteNewNotes[j][0]}:::${remoteNewNotes[j][23]}未匹配到本地 新增到本地');
         insertLocal(remoteNewNotes[j]);
       } else if (existedNote.length == 1) {
-        print('${remoteNewNotes[j][0]}:::${remoteNewNotes[j][23]}已匹配到本地 更新到本地');
         updateLocal(existedNote.first, remoteNewNotes[j]);
-      } else {
-        print('本地主键重复');
-      }
+      } else {}
     }
     syncProcessController.syncProcessReplace('处理云端数据: $j', '处理云端数据: ${j + 1}');
   }

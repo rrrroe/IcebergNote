@@ -195,6 +195,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             handleBrightnessChange: widget.handleBrightnessChange,
             showTooltipBelow: false,
           ),
+
           IconButton(
             icon: const Icon(Icons.cloud_queue_rounded),
             onPressed: () async {
@@ -229,6 +230,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             )),
                   );
                   break;
+                case 4:
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SyncPage()),
+                  );
+                  break;
                 default:
               }
             },
@@ -245,6 +252,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 const PopupMenuItem(
                   value: 3,
                   child: Text("搜索"),
+                ),
+                const PopupMenuItem(
+                  value: 4,
+                  child: Text("同步"),
                 ),
               ];
             },
