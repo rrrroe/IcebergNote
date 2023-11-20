@@ -18,6 +18,7 @@ import 'package:realm/realm.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:yaml/yaml.dart';
+import 'package:image/image.dart' as img;
 
 import '../main.dart';
 import '../constants.dart';
@@ -207,33 +208,33 @@ class _ImagePopupState extends State<ImagePopup> {
           children: [
             Image.memory(widget.pngBytes),
             Positioned(
-                right: 0,
-                bottom: 0,
-                child: Row(children: [
-                  Visibility(
-                    visible: Platform.isAndroid,
-                    child: IconButton.filledTonal(
-                      onPressed: () {
-                        setState(() async {
-                          final result = await ImageGallerySaver.saveImage(
-                            widget.pngBytes.buffer.asUint8List(),
-                            quality: 100,
-                          );
-                          Utils.toast(result.toString());
-                        });
-                      },
-                      style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all(Colors.white),
-                          backgroundColor: MaterialStateProperty.all(
-                              const Color.fromARGB(0, 255, 255, 255))),
-                      icon: const Icon(
-                        Icons.download,
-                        color: Colors.grey,
-                      ),
+              right: 0,
+              bottom: 0,
+              child: Row(
+                children: [
+                  IconButton.filledTonal(
+                    onPressed: () async {
+                      await (img.Command()
+                            // Decode the PNG image file
+                            ..decodePng(widget.pngBytes)
+                            // Save the resized image to a PNG image file
+                            ..writeToFile('123456789.png'))
+                          // executeThread will run the commands in an Isolate thread
+                          .executeThread();
+                    },
+                    style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        backgroundColor: MaterialStateProperty.all(
+                            const Color.fromARGB(0, 255, 255, 255))),
+                    icon: const Icon(
+                      Icons.download,
+                      color: Colors.grey,
                     ),
-                  )
-                ]))
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

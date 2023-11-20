@@ -63,6 +63,7 @@ dependencies:
   crypto: ^3.0.3
   # font_awesome_flutter: ^10.6.0
   device_info_plus: ^9.1.0
+  image: ^4.1.3
 
 dev_dependencies:
   flutter_test:
