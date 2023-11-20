@@ -1050,7 +1050,7 @@ class _PropertyCardState extends State<PropertyCard> {
         .record[template.keys.elementAt(widget.index)]
         .toString()
         .split(", ");
-    if (currentList[0] == '' && widget.mod == 0) {
+    if (widget.mod == 0) {
       currentList[0] = selectList[0];
       widget.record[template.keys.elementAt(widget.index)] =
           currentList.join(', ');
