@@ -795,7 +795,29 @@ class SearchPageState extends State<SearchPage> {
     } else if (widget.mod == 3) {
       return AppBar(title: const Text("待办"));
     } else {
-      return AppBar(title: const Text("回收站"));
+      return AppBar(
+        title: const Text("回收站"),
+        actions: [
+          TextButton(
+              onPressed: () {
+                var result = realm.query<Notes>(
+                    "noteIsDeleted == true SORT(noteCreateDate DESC)");
+                for (int i = 0; i < result.length; i++) {
+                  realm.write(() {
+                    realm.delete(result[i]);
+                  });
+                }
+                Get.snackbar(
+                  '恭喜',
+                  '清空回收站成功',
+                  duration: const Duration(seconds: 1),
+                  backgroundColor: const Color.fromARGB(60, 0, 140, 198),
+                );
+                setState(() {});
+              },
+              child: const Text("清空回收站"))
+        ],
+      );
     }
   }
 
