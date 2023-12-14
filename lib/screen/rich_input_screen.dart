@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'record_screen.dart';
+import 'record_input.dart';
 import 'package:extended_text_field/extended_text_field.dart';
 import 'package:html/parser.dart';
 import 'package:flutter/material.dart' hide Element;

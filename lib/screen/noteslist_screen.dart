@@ -22,7 +22,7 @@ import 'package:image/image.dart' as img;
 import '../main.dart';
 import '../constants.dart';
 import 'card.dart';
-import 'record_screen.dart';
+import 'record_input.dart';
 import 'search_screen.dart';
 
 const rowDividerincrease = SizedBox(width: 20);

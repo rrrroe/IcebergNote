@@ -5,7 +5,7 @@ import 'package:realm/realm.dart';
 import '../constants.dart';
 import '../notes.dart';
 import '../main.dart';
-import 'record_screen.dart';
+import 'record_input.dart';
 import 'rich_input_screen.dart';
 
 String tmpTitle = "", tmpContext = "";

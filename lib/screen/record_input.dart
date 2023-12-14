@@ -908,7 +908,8 @@ class _PropertyCardState extends State<PropertyCard> {
         .record[template.keys.elementAt(widget.index)]
         .toString()
         .split(", ");
-    if (currentList[0] == '' && widget.mod == 0) {
+    if (widget.record[template.keys.elementAt(widget.index)] == null &&
+        widget.mod == 0) {
       currentList[0] = selectList[0];
       widget.record[template.keys.elementAt(widget.index)] =
           currentList.join(', ');
@@ -1050,7 +1051,9 @@ class _PropertyCardState extends State<PropertyCard> {
         .record[template.keys.elementAt(widget.index)]
         .toString()
         .split(", ");
-    if (widget.mod == 0) {
+    print(widget.mod);
+    if (widget.record[template.keys.elementAt(widget.index)] == null &&
+        widget.mod == 0) {
       currentList[0] = selectList[0];
       widget.record[template.keys.elementAt(widget.index)] =
           currentList.join(', ');
@@ -1058,8 +1061,9 @@ class _PropertyCardState extends State<PropertyCard> {
         widget.note.noteContext = mapToyaml(widget.record);
         widget.note.noteUpdateDate = DateTime.now().toUtc();
       });
+      print(currentList[0]);
     }
-
+    print(3);
     selectList.removeWhere((element) => element == 'null' || element == '');
     currentList.removeWhere((element) => element == 'null' || element == '');
     return Card(
