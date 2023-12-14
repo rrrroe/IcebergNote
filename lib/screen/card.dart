@@ -12,7 +12,7 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
   // var templateNote = realm.query<Notes>(
   //     "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
   //     [
-  //       '.表头',
+  //       '.表单',
   //       note.noteProject,
   //     ])[0];
 

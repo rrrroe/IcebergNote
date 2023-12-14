@@ -39,13 +39,13 @@ bool checkNoteFormat(Notes note) {
       var templateNoteList = realm.query<Notes>(
           "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
           [
-            '.表头',
+            '.表单',
             note.noteProject,
           ]);
       if (realm.query<Notes>(
           "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
           [
-            '.表头',
+            '.表单',
             note.noteProject,
           ]).isEmpty) {
         return false;
@@ -921,7 +921,7 @@ class SearchPageState extends State<SearchPage> {
       var templateNote = realm.query<Notes>(
           "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
           [
-            '.表头',
+            '.表单',
             note.noteProject,
           ])[0];
 
@@ -1499,7 +1499,7 @@ class SearchPageState extends State<SearchPage> {
     List<String> recordProjectList = [];
     List<Notes> recordProjectDistinctList = realm
         .query<Notes>(
-            "noteType == '.表头' AND noteProject !='' DISTINCT(noteProject)")
+            "noteType == '.表单' AND noteProject !='' DISTINCT(noteProject)")
         .toList();
     for (int i = 0; i < recordProjectDistinctList.length; i++) {
       recordProjectList.add(recordProjectDistinctList[i].noteProject);

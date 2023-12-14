@@ -104,7 +104,7 @@ class RecordChangePageState extends State<RecordChangePage> {
     templateNote = realm.query<Notes>(
         "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
         [
-          '.表头',
+          '.表单',
           widget.note.noteProject,
         ])[0];
     template = loadYaml(templateNote.noteContext

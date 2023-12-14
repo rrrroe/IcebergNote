@@ -539,7 +539,7 @@ class ChangePageState extends State<ChangePage> {
                   children: [
                     TextButton(
                       onPressed: () {
-                        if (widget.note.noteType == '.表头') {
+                        if (widget.note.noteType == '.表单') {
                           Navigator.push(
                             context,
                             MaterialPageRoute(

@@ -539,7 +539,7 @@ class ImportPageState extends State<ImportPage> {
                                   }
                                   noteContent =
                                       '${noteContent}settings: 1\ncolor: [135, 198, 181]';
-                                  importType = '.表头';
+                                  importType = '.表单';
                                 } else {
                                   for (int j = 0; j < length; j++) {
                                     if (rowsAsListOfValues[i][j]

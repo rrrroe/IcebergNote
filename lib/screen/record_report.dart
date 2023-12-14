@@ -74,7 +74,7 @@ class _ReportScreenState extends State<ReportScreen>
   void reportInit() {
     List<Notes> recordProjectDistinctList = realm
         .query<Notes>(
-            "noteType == '.表头' AND noteProject !='' DISTINCT(noteProject)")
+            "noteType == '.表单' AND noteProject !='' DISTINCT(noteProject)")
         .toList();
     recordProjectList = [];
     for (int i = 0; i < recordProjectDistinctList.length; i++) {
@@ -90,7 +90,7 @@ class _ReportScreenState extends State<ReportScreen>
     templateNote = realm.query<Notes>(
         "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
         [
-          '.表头',
+          '.表单',
           currentProject,
         ])[0];
     template = loadYaml(templateNote.noteContext
