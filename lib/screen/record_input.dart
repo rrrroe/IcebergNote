@@ -938,16 +938,16 @@ class _PropertyCardState extends State<PropertyCard> {
               style: textStyle,
             ),
           ),
+          // Expanded(
+          //   flex: 2,
+          //   child: Text(
+          //     propertySettings[2] ?? '',
+          //     textAlign: TextAlign.right,
+          //     style: textStyle,
+          //   ),
+          // ),
           Expanded(
-            flex: 2,
-            child: Text(
-              propertySettings[2] ?? '',
-              textAlign: TextAlign.right,
-              style: textStyle,
-            ),
-          ),
-          Expanded(
-            flex: 6,
+            flex: 10,
             child: Padding(
               padding: edgeInsets,
               child: GestureDetector(
@@ -1032,14 +1032,14 @@ class _PropertyCardState extends State<PropertyCard> {
               ),
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              propertySettings[3] ?? '',
-              textAlign: TextAlign.left,
-              style: textStyle,
-            ),
-          ),
+          // Expanded(
+          //   flex: 2,
+          //   child: Text(
+          //     propertySettings[3] ?? '',
+          //     textAlign: TextAlign.left,
+          //     style: textStyle,
+          //   ),
+          // ),
         ],
       ),
     );
@@ -1083,16 +1083,16 @@ class _PropertyCardState extends State<PropertyCard> {
               style: textStyle,
             ),
           ),
+          // Expanded(
+          //   flex: 2,
+          //   child: Text(
+          //     propertySettings[2] ?? '',
+          //     textAlign: TextAlign.right,
+          //     style: textStyle,
+          //   ),
+          // ),
           Expanded(
-            flex: 2,
-            child: Text(
-              propertySettings[2] ?? '',
-              textAlign: TextAlign.right,
-              style: textStyle,
-            ),
-          ),
-          Expanded(
-            flex: 6,
+            flex: 10,
             child: Padding(
               padding: edgeInsets,
               child: GestureDetector(
@@ -1177,14 +1177,14 @@ class _PropertyCardState extends State<PropertyCard> {
               ),
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              propertySettings[3] ?? '',
-              textAlign: TextAlign.left,
-              style: textStyle,
-            ),
-          ),
+          // Expanded(
+          //   flex: 2,
+          //   child: Text(
+          //     propertySettings[3] ?? '',
+          //     textAlign: TextAlign.left,
+          //     style: textStyle,
+          //   ),
+          // ),
         ],
       ),
     );
