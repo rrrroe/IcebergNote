@@ -16,7 +16,6 @@ import 'package:icebergnote/screen/input_screen.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:realm/realm.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:yaml/yaml.dart';
 import 'package:image/image.dart' as img;
 
@@ -214,13 +213,20 @@ class _ImagePopupState extends State<ImagePopup> {
                 children: [
                   IconButton.filledTonal(
                     onPressed: () async {
+                      String tmp = DateTime.now().toString();
                       await (img.Command()
                             // Decode the PNG image file
                             ..decodePng(widget.pngBytes)
                             // Save the resized image to a PNG image file
-                            ..writeToFile('123456789.png'))
+                            ..writeToFile('export/export_$tmp.png'))
                           // executeThread will run the commands in an Isolate thread
                           .executeThread();
+                      Get.snackbar(
+                        '恭喜',
+                        '导出已完成',
+                        duration: const Duration(seconds: 1),
+                        backgroundColor: const Color.fromARGB(60, 0, 140, 198),
+                      );
                     },
                     style: ButtonStyle(
                         foregroundColor:

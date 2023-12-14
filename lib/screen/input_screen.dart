@@ -1,10 +1,12 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:realm/realm.dart';
 import '../constants.dart';
 import '../notes.dart';
 import '../main.dart';
 import 'record_screen.dart';
+import 'rich_input_screen.dart';
 
 String tmpTitle = "", tmpContext = "";
 late Notes latestNote;
@@ -549,6 +551,8 @@ class ChangePageState extends State<ChangePage> {
                               ),
                             ),
                           );
+                        } else {
+                          Get.to(const RichEditorPage());
                         }
                       },
                       child: const Text('高级'),

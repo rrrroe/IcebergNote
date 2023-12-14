@@ -64,6 +64,8 @@ dependencies:
   # font_awesome_flutter: ^10.6.0
   device_info_plus: ^9.1.0
   image: ^4.1.3
+  extended_text_field: ^13.0.0
+  html: ^0.15.4
 
 dev_dependencies:
   flutter_test:
@@ -99,6 +101,7 @@ flutter:
     # - lib/assets/fonts/LXGWWenKai-Light.ttf
     # - lib/assets/fonts/LXGWWenKai-Regular.ttf
     - lib/assets/image/
+    - lib/assets/emoji/
     - lib/assets/image/icebergicon.png
 
 flutter_icons:
