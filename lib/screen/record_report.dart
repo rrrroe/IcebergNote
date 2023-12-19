@@ -720,7 +720,7 @@ class _ReportScreenState extends State<ReportScreen>
                   color: fontColor,
                   level: level,
                   firstWeekday: firstDay.weekday,
-                  today: -10));
+                  today: -20));
             } else {}
           }
         } else {
