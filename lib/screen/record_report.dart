@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:icebergnote/chart/heatmap.dart';
 import 'package:icebergnote/screen/noteslist_screen.dart';
 import 'package:icebergnote/screen/record_graph_benifit.dart';
 import 'package:realm/realm.dart';
@@ -9,11 +10,27 @@ import 'package:yaml/yaml.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../notes.dart';
-import 'card.dart';
+import '../card.dart';
 import 'record_graph_bar.dart';
 import 'record_graph_line.dart';
 import 'record_input.dart';
 import 'package:intl/intl.dart';
+
+bool isLeap(int year) {
+  if (year % 4 == 0) {
+    if (year % 100 == 0) {
+      if (year % 400 == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
+  } else {
+    return false;
+  }
+}
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key, required this.duration});
@@ -32,6 +49,7 @@ class _ReportScreenState extends State<ReportScreen>
       text: "总览",
     ),
   ];
+  List<num> randomdata = [];
   late TabController tabController;
   String currentProject = '';
   String currentReportDurationType = '周报';
@@ -69,6 +87,9 @@ class _ReportScreenState extends State<ReportScreen>
     lastDay = DateTime(lastDay.year, lastDay.month, lastDay.day);
 
     reportInit();
+    for (int i = 0; i < 365; i++) {
+      randomdata.add(Random().nextInt(10));
+    }
   }
 
   void reportInit() {
@@ -239,7 +260,13 @@ class _ReportScreenState extends State<ReportScreen>
                   ),
                 )),
           ),
-          Container(),
+          DaysInYearHeatmap(
+            data: randomdata,
+            color: Colors.green,
+            level: const [2, 4, 6, 8],
+            firstWeekday: 3,
+            today: 355,
+          ),
         ],
       ),
     );
@@ -670,6 +697,31 @@ class _ReportScreenState extends State<ReportScreen>
                   );
               }
             }
+          }
+        } else if (graphSetting[1] == '日年热力图') {
+          if (template.containsKey(graphSetting[0])) {
+            if (template[graphSetting[0]].toString().split(',')[1] == '数字') {
+              List<num> level = [];
+              List<num> data = [];
+              for (int i = 2; i < graphSetting.length; i++) {
+                level.add(num.tryParse(graphSetting[i]) ?? level.last);
+              }
+              for (int i = 0; i < (isLeap(firstDay.year) ? 366 : 365); i++) {
+                data.add(0);
+              }
+              for (int i = 0; i < filterRecordList.length; i++) {
+                DateTime tmp = DateTime.parse(filterRecordList[i][dateFlag]);
+                int dayNO = tmp.difference(DateTime(tmp.year)).inDays;
+                data[dayNO] =
+                    data[dayNO] + filterRecordList[i][graphSetting[0]];
+              }
+              cardList.add(DaysInYearHeatmap(
+                  data: data,
+                  color: fontColor,
+                  level: level,
+                  firstWeekday: firstDay.weekday,
+                  today: -10));
+            } else {}
           }
         } else {
           List data = [];

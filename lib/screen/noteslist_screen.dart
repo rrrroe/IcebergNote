@@ -21,7 +21,7 @@ import 'package:image/image.dart' as img;
 
 import '../main.dart';
 import '../constants.dart';
-import 'card.dart';
+import '../card.dart';
 import 'record_input.dart';
 import 'search_screen.dart';
 
@@ -213,7 +213,10 @@ class _ImagePopupState extends State<ImagePopup> {
                 children: [
                   IconButton.filledTonal(
                     onPressed: () async {
-                      String tmp = DateTime.now().toString();
+                      // final dir = Directory('export');
+                      // dir.create();
+                      String tmp =
+                          DateTime.now().toString().replaceAll(':', '');
                       await (img.Command()
                             // Decode the PNG image file
                             ..decodePng(widget.pngBytes)
