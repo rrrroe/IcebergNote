@@ -29,12 +29,16 @@ class KeyboardManager extends ChangeNotifier {
   }
 }
 
-List templateTypeList = ['数字', '文本', '单选', '多选', '时间', '日期', '长文', '时长'];
+List templateTypeList = ['数字', '文本', '单选', '多选', '时间', '日期', '长文', '时长', '清单'];
 
 String mapToyaml(Map map) {
   String yaml = '';
   for (var i = 0; i < map.length; i++) {
-    yaml = '$yaml${map.keys.elementAt(i)}: ${map.values.elementAt(i)}\n';
+    if (map.values.elementAt(i).runtimeType == String) {
+      yaml = '$yaml${map.keys.elementAt(i)}: "${map.values.elementAt(i)}"\n';
+    } else {
+      yaml = '$yaml${map.keys.elementAt(i)}: ${map.values.elementAt(i)}\n';
+    }
   }
   return yaml;
 }
