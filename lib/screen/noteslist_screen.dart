@@ -50,14 +50,12 @@ bool checkNoteFormat(Notes note) {
           ]).isEmpty) {
         return false;
       } else {
-        List textList =
-            note.noteContext.replaceAll(RegExp(r'\n{2,}'), '\n').split('\n');
         List templateList = templateNoteList[0]
             .noteContext
             .replaceAll(RegExp(r'\n{2,}'), '\n')
             .split('\n');
         RegExp pattern = RegExp(": ");
-        for (String str in textList + templateList) {
+        for (String str in templateList) {
           if (pattern.allMatches(str).length != 1 && str != '') {
             return false;
           }

@@ -406,7 +406,91 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                       ),
                     ],
                   );
-
+                case '清单':
+                  List<String> todoList = noteMapOther.values
+                      .elementAt(index)
+                      .toString()
+                      .split('    ');
+                  return Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.all(0),
+                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          color: fontColor,
+                        ),
+                        child: Text(
+                          "${propertySettings[0] ?? ''}",
+                          style: const TextStyle(
+                            fontFamily: 'LXGWWenKai',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        ' : ',
+                        style: TextStyle(
+                          fontFamily: 'LXGWWenKai',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: fontColor,
+                        ),
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: List.generate(
+                          todoList.length,
+                          (index) => Row(
+                            children: [
+                              Visibility(
+                                visible: todoList[index].startsWith('- [ ]'),
+                                child: SizedBox(
+                                  width: 23,
+                                  height: 23,
+                                  child: Checkbox.adaptive(
+                                    fillColor: MaterialStateProperty.all(
+                                        const Color.fromARGB(0, 0, 0, 0)),
+                                    checkColor: fontColor,
+                                    value: false,
+                                    onChanged: (bool? value) {},
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: todoList[index].startsWith('- [x]'),
+                                child: SizedBox(
+                                  width: 23,
+                                  height: 23,
+                                  child: Checkbox.adaptive(
+                                    fillColor:
+                                        MaterialStateProperty.all(fontColor),
+                                    value: true,
+                                    onChanged: (bool? value) {},
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                todoList[index]
+                                    .replaceAll('- [ ]', '')
+                                    .replaceAll('- [x]', ''),
+                                style: TextStyle(
+                                  fontFamily: 'LXGWWenKai',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: fontColor,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
                 default:
                   return Row(
                     mainAxisSize: MainAxisSize.max,
