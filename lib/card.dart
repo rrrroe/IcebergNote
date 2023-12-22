@@ -91,6 +91,7 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                       Container(
                         margin: const EdgeInsets.all(0),
                         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                        constraints: const BoxConstraints(maxWidth: 43),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
                           color: fontColor,
@@ -412,11 +413,13 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                       .toString()
                       .split('    ');
                   return Row(
-                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.ideographic,
                     children: [
                       Container(
                         margin: const EdgeInsets.all(0),
                         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                        constraints: const BoxConstraints(maxWidth: 43),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
                           color: fontColor,
