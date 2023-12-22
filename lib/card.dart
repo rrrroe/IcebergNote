@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:icebergnote/screen/record_input.dart';
 import 'package:yaml/yaml.dart';
-import 'dart:io';
 import 'screen/noteslist_screen.dart';
 
 Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
@@ -410,7 +409,6 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                 case '清单':
                   List<String?> todoList =
                       noteMapOther.values.elementAt(index).split('////');
-                  print(todoList);
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.ideographic,

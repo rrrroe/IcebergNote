@@ -1663,9 +1663,6 @@ class _PropertyCardState extends State<PropertyCard> {
       todoListController[i].text =
           todoList[i].replaceAll('- [ ] ', '').replaceAll('- [x] ', '');
     }
-    print(todoList);
-    print(todoList.length);
-    print(todoListController.length);
     return Card(
       elevation: 0,
       color: Color.fromARGB(
@@ -1790,7 +1787,7 @@ class _PropertyCardState extends State<PropertyCard> {
                               alignment: Alignment.topCenter,
                               height: 23,
                               child: TextButton(
-                                child: Text('✖'),
+                                child: const Text('✖'),
                                 onPressed: () {
                                   todoList.removeAt(index);
                                   todoListController.removeAt(index);
@@ -1821,7 +1818,7 @@ class _PropertyCardState extends State<PropertyCard> {
                                     alignment: Alignment.topCenter,
                                     height: 20,
                                     child: TextButton(
-                                      child: Text(
+                                      child: const Text(
                                         '➕',
                                       ),
                                       onPressed: () {
