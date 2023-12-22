@@ -607,6 +607,8 @@ class _PropertyCardState extends State<PropertyCard> {
         return buildDurationCard();
       case '多选':
         return buildMultiSelectCard();
+      case '清单':
+        return buildTodoListCard();
       default:
         return buildTextCard();
     }
@@ -1619,6 +1621,231 @@ class _PropertyCardState extends State<PropertyCard> {
               propertySettings[3] ?? '',
               textAlign: TextAlign.left,
               style: textStyle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTodoListCard() {
+    if (widget.record[template.keys.elementAt(widget.index)] == null &&
+        widget.mod == 0) {
+      if (propertySettings.last == '上次') {
+        var searchResult = realm.query<Notes>(
+            " noteProject == \$0 AND noteType == '.记录' AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(2)",
+            [widget.note.noteProject]);
+        if (searchResult.length > 1) {
+          if (checkNoteFormat(searchResult[1])) {
+            var lastNoteMap = loadYaml(searchResult[1].noteContext) as YamlMap;
+            if (lastNoteMap[template.keys.elementAt(widget.index)] != null) {
+              widget.record[template.keys.elementAt(widget.index)] =
+                  lastNoteMap[template.keys.elementAt(widget.index)];
+            }
+          }
+        }
+      } else if (propertySettings.last == '未完') {
+      } else {
+        widget.record[template.keys.elementAt(widget.index)] =
+            propertySettings.last.toString();
+      }
+      realm.write(() {
+        widget.note.noteContext = mapToyaml(widget.record);
+        widget.note.noteUpdateDate = DateTime.now().toUtc();
+      });
+    }
+    List<String> todoList = widget.record[template.keys.elementAt(widget.index)]
+        .toString()
+        .split('////');
+    List<TextEditingController> todoListController = [];
+    for (int i = 0; i < todoList.length; i++) {
+      todoListController.add(TextEditingController());
+      todoListController[i].text =
+          todoList[i].replaceAll('- [ ] ', '').replaceAll('- [x] ', '');
+    }
+    print(todoList);
+    print(todoList.length);
+    print(todoListController.length);
+    return Card(
+      elevation: 0,
+      color: Color.fromARGB(
+          50,
+          widget.templateProperty['color'][0],
+          widget.templateProperty['color'][1],
+          widget.templateProperty['color'][2]),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              propertySettings[0] + ':',
+              textAlign: TextAlign.center,
+              style: textStyle,
+            ),
+          ),
+          Expanded(
+            flex: 10,
+            child: Padding(
+              padding: edgeInsets,
+              child: Container(
+                alignment: Alignment.center,
+                child: Column(
+                  children: List.generate(
+                        todoList.length,
+                        (index) => Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Visibility(
+                              visible: todoList[index].startsWith('- [ ] '),
+                              child: SizedBox(
+                                width: 23,
+                                height: 23,
+                                child: Checkbox.adaptive(
+                                  fillColor: MaterialStateProperty.all(
+                                      const Color.fromARGB(0, 0, 0, 0)),
+                                  checkColor: fontColor,
+                                  value: false,
+                                  onChanged: (bool? value) async {
+                                    todoList[index] = todoList[index]
+                                        .replaceFirst('- [ ] ', '- [x] ');
+                                    setState(() {});
+                                    widget.record[template.keys
+                                            .elementAt(widget.index)] =
+                                        todoList.join('////');
+
+                                    realm.write(() {
+                                      widget.note.noteContext =
+                                          mapToyaml(widget.record);
+                                      widget.note.noteUpdateDate =
+                                          DateTime.now().toUtc();
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible: todoList[index].startsWith('- [x] '),
+                              child: SizedBox(
+                                width: 23,
+                                height: 23,
+                                child: Checkbox.adaptive(
+                                  fillColor:
+                                      MaterialStateProperty.all(fontColor),
+                                  value: true,
+                                  onChanged: (bool? value) async {
+                                    todoList[index] = todoList[index]
+                                        .replaceFirst('- [x] ', '- [ ] ');
+                                    setState(() {});
+                                    widget.record[template.keys
+                                            .elementAt(widget.index)] =
+                                        todoList.join('////');
+                                    realm.write(() {
+                                      widget.note.noteContext =
+                                          mapToyaml(widget.record);
+                                      widget.note.noteUpdateDate =
+                                          DateTime.now().toUtc();
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible: !(todoList[index].startsWith('- [ ] ') ||
+                                  todoList[index].startsWith('- [x] ')),
+                              child: const SizedBox(width: 23, height: 23),
+                            ),
+                            Expanded(
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: TextField(
+                                  keyboardType: TextInputType.text,
+                                  textAlign: TextAlign.left,
+                                  style: textStyle,
+                                  controller: todoListController[index],
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    isCollapsed: true,
+                                    contentPadding: edgeInsets,
+                                  ),
+                                  maxLines: 5,
+                                  minLines: 1,
+                                  onChanged: (value) async {
+                                    todoList[index] =
+                                        '${todoList[index].substring(0, 6)}${todoListController[index].text}';
+                                    widget.record[template.keys
+                                            .elementAt(widget.index)] =
+                                        todoList.join('////');
+                                    realm.write(() {
+                                      widget.note.noteContext =
+                                          mapToyaml(widget.record);
+                                      widget.note.noteUpdateDate =
+                                          DateTime.now().toUtc();
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(0),
+                              alignment: Alignment.topCenter,
+                              height: 23,
+                              child: TextButton(
+                                child: Text('✖'),
+                                onPressed: () {
+                                  todoList.removeAt(index);
+                                  todoListController.removeAt(index);
+                                  widget.record[template.keys
+                                          .elementAt(widget.index)] =
+                                      todoList.join('////');
+                                  realm.write(() {
+                                    widget.note.noteContext =
+                                        mapToyaml(widget.record);
+                                    widget.note.noteUpdateDate =
+                                        DateTime.now().toUtc();
+                                  });
+                                  setState(() {});
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ) +
+                      List.generate(
+                          1,
+                          (index) => Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Expanded(child: Container()),
+                                  Container(
+                                    padding: const EdgeInsets.all(0),
+                                    alignment: Alignment.topCenter,
+                                    height: 20,
+                                    child: TextButton(
+                                      child: Text(
+                                        '➕',
+                                      ),
+                                      onPressed: () {
+                                        todoList.add('- [ ] ');
+                                        todoListController
+                                            .add(TextEditingController());
+                                        todoListController.last.text = '';
+                                        widget.record[template.keys
+                                                .elementAt(widget.index)] =
+                                            todoList.join('////');
+                                        realm.write(() {
+                                          widget.note.noteContext =
+                                              mapToyaml(widget.record);
+                                          widget.note.noteUpdateDate =
+                                              DateTime.now().toUtc();
+                                        });
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              )),
+                ),
+              ),
             ),
           ),
         ],
