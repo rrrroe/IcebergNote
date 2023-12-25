@@ -1657,9 +1657,13 @@ class _PropertyCardState extends State<PropertyCard> {
         widget.note.noteUpdateDate = DateTime.now().toUtc();
       });
     }
-    List<String> todoList = widget.record[template.keys.elementAt(widget.index)]
-        .toString()
-        .split('////');
+    List<String> todoList = [];
+    if (widget.record[template.keys.elementAt(widget.index)] != '') {
+      todoList = widget.record[template.keys.elementAt(widget.index)]
+          .toString()
+          .split('////');
+    }
+
     List<TextEditingController> todoListController = [];
     for (int i = 0; i < todoList.length; i++) {
       todoListController.add(TextEditingController());
@@ -1688,6 +1692,9 @@ class _PropertyCardState extends State<PropertyCard> {
             child: Padding(
               padding: edgeInsets,
               child: Container(
+                constraints: const BoxConstraints(
+                  minHeight: 30,
+                ),
                 alignment: Alignment.center,
                 child: Column(
                   children: List.generate(
@@ -1816,32 +1823,35 @@ class _PropertyCardState extends State<PropertyCard> {
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Expanded(child: Container()),
-                                  Container(
-                                    padding: const EdgeInsets.all(0),
-                                    alignment: Alignment.topCenter,
-                                    height: 20,
-                                    child: TextButton(
-                                      child: const Text(
-                                        '➕',
+                                  GestureDetector(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(0),
+                                      alignment: Alignment.center,
+                                      height: 20,
+                                      child: Icon(
+                                        Icons.add,
+                                        size: 20,
+                                        color: fontColor,
                                       ),
-                                      onPressed: () {
-                                        todoList.add('- [ ] ');
-                                        todoListController
-                                            .add(TextEditingController());
-                                        todoListController.last.text = '';
-                                        widget.record[template.keys
-                                                .elementAt(widget.index)] =
-                                            todoList.join('////');
-                                        realm.write(() {
-                                          widget.note.noteContext =
-                                              mapToyaml(widget.record);
-                                          widget.note.noteUpdateDate =
-                                              DateTime.now().toUtc();
-                                        });
-                                        setState(() {});
-                                      },
                                     ),
+                                    onTap: () {
+                                      todoList.add('- [ ] ');
+                                      todoListController
+                                          .add(TextEditingController());
+                                      todoListController.last.text = '';
+                                      widget.record[template.keys
+                                              .elementAt(widget.index)] =
+                                          todoList.join('////');
+                                      realm.write(() {
+                                        widget.note.noteContext =
+                                            mapToyaml(widget.record);
+                                        widget.note.noteUpdateDate =
+                                            DateTime.now().toUtc();
+                                      });
+                                      setState(() {});
+                                    },
                                   ),
+                                  Expanded(child: Container()),
                                 ],
                               )),
                 ),
