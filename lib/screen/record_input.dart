@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls
 
+import 'dart:io';
 import 'dart:math';
 
 import 'package:clipboard/clipboard.dart';
@@ -1701,12 +1702,14 @@ class _PropertyCardState extends State<PropertyCard> {
                         todoList.length,
                         (index) => Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Visibility(
                               visible: todoList[index].startsWith('- [ ] '),
-                              child: SizedBox(
-                                width: 23,
-                                height: 23,
+                              child: Container(
+                                alignment: Alignment.center,
+                                width: 25,
+                                height: 25,
                                 child: Checkbox.adaptive(
                                   fillColor: MaterialStateProperty.all(
                                       const Color.fromARGB(0, 0, 0, 0)),
@@ -1732,9 +1735,10 @@ class _PropertyCardState extends State<PropertyCard> {
                             ),
                             Visibility(
                               visible: todoList[index].startsWith('- [x] '),
-                              child: SizedBox(
-                                width: 23,
-                                height: 23,
+                              child: Container(
+                                alignment: Alignment.center,
+                                width: 25,
+                                height: 25,
                                 child: Checkbox.adaptive(
                                   fillColor:
                                       MaterialStateProperty.all(fontColor),
@@ -1759,20 +1763,23 @@ class _PropertyCardState extends State<PropertyCard> {
                             Visibility(
                               visible: !(todoList[index].startsWith('- [ ] ') ||
                                   todoList[index].startsWith('- [x] ')),
-                              child: const SizedBox(width: 23, height: 23),
+                              child: const SizedBox(width: 25, height: 25),
                             ),
                             Expanded(
                               child: Container(
-                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(0),
+                                alignment: Alignment.topLeft,
                                 child: TextField(
                                   keyboardType: TextInputType.text,
-                                  textAlign: TextAlign.left,
+                                  textAlign: TextAlign.start,
                                   style: textStyle,
                                   controller: todoListController[index],
                                   decoration: InputDecoration(
-                                    border: InputBorder.none,
+                                    border: const OutlineInputBorder(),
                                     isCollapsed: true,
-                                    contentPadding: edgeInsets,
+                                    contentPadding: Platform.isAndroid
+                                        ? const EdgeInsets.fromLTRB(5, 0, 0, 5)
+                                        : edgeInsets,
                                   ),
                                   maxLines: 5,
                                   minLines: 1,
@@ -1792,27 +1799,31 @@ class _PropertyCardState extends State<PropertyCard> {
                                 ),
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.all(0),
-                              alignment: Alignment.topCenter,
-                              height: 23,
-                              child: TextButton(
-                                child: const Text('✖'),
-                                onPressed: () {
-                                  todoList.removeAt(index);
-                                  todoListController.removeAt(index);
-                                  widget.record[template.keys
-                                          .elementAt(widget.index)] =
-                                      todoList.join('////');
-                                  realm.write(() {
-                                    widget.note.noteContext =
-                                        mapToyaml(widget.record);
-                                    widget.note.noteUpdateDate =
-                                        DateTime.now().toUtc();
-                                  });
-                                  setState(() {});
-                                },
+                            GestureDetector(
+                              child: Container(
+                                height: 25,
+                                padding: const EdgeInsets.all(0),
+                                alignment: Alignment.bottomLeft,
+                                child: Icon(
+                                  Icons.close,
+                                  size: 25,
+                                  color: fontColor,
+                                ),
                               ),
+                              onTap: () {
+                                todoList.removeAt(index);
+                                todoListController.removeAt(index);
+                                widget.record[
+                                        template.keys.elementAt(widget.index)] =
+                                    todoList.join('////');
+                                realm.write(() {
+                                  widget.note.noteContext =
+                                      mapToyaml(widget.record);
+                                  widget.note.noteUpdateDate =
+                                      DateTime.now().toUtc();
+                                });
+                                setState(() {});
+                              },
                             ),
                           ],
                         ),
@@ -1827,10 +1838,10 @@ class _PropertyCardState extends State<PropertyCard> {
                                     child: Container(
                                       padding: const EdgeInsets.all(0),
                                       alignment: Alignment.center,
-                                      height: 20,
+                                      height: 25,
                                       child: Icon(
                                         Icons.add,
-                                        size: 20,
+                                        size: 25,
                                         color: fontColor,
                                       ),
                                     ),

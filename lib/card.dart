@@ -449,7 +449,6 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                           (index) => todoList[index] != null
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
                                   children: [
                                     Visibility(
                                       visible:
@@ -485,13 +484,14 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                                           .replaceFirst('- [ ] ', '')
                                           .replaceFirst('- [x] ', ''),
                                       maxLines: 5,
+                                      overflow: TextOverflow.visible,
                                       style: TextStyle(
                                         fontFamily: 'LXGWWenKai',
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                         color: fontColor,
                                       ),
-                                    )
+                                    ),
                                   ],
                                 )
                               : const Row(),
