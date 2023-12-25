@@ -1775,7 +1775,7 @@ class _PropertyCardState extends State<PropertyCard> {
                                   style: textStyle,
                                   controller: todoListController[index],
                                   decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
+                                    border: InputBorder.none,
                                     isCollapsed: true,
                                     contentPadding: Platform.isAndroid
                                         ? const EdgeInsets.fromLTRB(5, 0, 0, 5)

@@ -19,6 +19,7 @@ class DaysInYearHeatmap extends StatelessWidget {
     final List<Color> colorList = [];
     final List<int> dataList = [];
     for (int i = 0; i < level.length + 1; i++) {
+      print('$i/${level.length + 1}');
       colorList.add(color.withOpacity(i / (level.length + 1)));
     }
     for (int i = 0; i < data.length; i++) {
@@ -36,6 +37,8 @@ class DaysInYearHeatmap extends StatelessWidget {
     }
     int weekNum1 = dataList1.length ~/ 7;
     int weekNum2 = dataList2.length ~/ 7;
+    print(level);
+    print(dataList);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -222,19 +225,27 @@ class DaysInYearHeatmap extends StatelessWidget {
 }
 
 int getLevelIndex(num number, List<num> levels) {
-  for (int i = 0; i < levels.length - 1; i++) {
-    if (i == 0) {
-      if (number < levels[i]) {
-        return i;
-      }
+  if (levels.length == 1) {
+    if (number < levels[0]) {
+      return 0;
+    } else {
+      return 1;
     }
-    if (i == levels.length - 2) {
-      if (number >= levels[i + 1]) {
-        return i + 2;
+  } else {
+    for (int i = 0; i < levels.length - 1; i++) {
+      if (i == 0) {
+        if (number < levels[i]) {
+          return 0;
+        }
       }
-    }
-    if (number >= levels[i] && number < levels[i + 1]) {
-      return i + 1;
+      if (i == levels.length - 2) {
+        if (number >= levels[i + 1]) {
+          return i + 2;
+        }
+      }
+      if (number >= levels[i] && number < levels[i + 1]) {
+        return i + 1;
+      }
     }
   }
   return levels.length - 1;

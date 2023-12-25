@@ -721,7 +721,32 @@ class _ReportScreenState extends State<ReportScreen>
                   level: level,
                   firstWeekday: firstDay.weekday,
                   today: -20));
-            } else {}
+            } else {
+              List<num> level = [];
+              List<num> data = [];
+              if (graphSetting.length <= 2) {
+                level.add(1);
+              } else {
+                for (int i = 2; i < graphSetting.length; i++) {
+                  level.add(num.tryParse(graphSetting[i]) ?? level.last);
+                }
+              }
+
+              for (int i = 0; i < (isLeap(firstDay.year) ? 366 : 365); i++) {
+                data.add(0);
+              }
+              for (int i = 0; i < filterRecordList.length; i++) {
+                DateTime tmp = DateTime.parse(filterRecordList[i][dateFlag]);
+                int dayNO = tmp.difference(DateTime(tmp.year)).inDays;
+                data[dayNO] = data[dayNO] + 1;
+              }
+              cardList.add(DaysInYearHeatmap(
+                  data: data,
+                  color: fontColor,
+                  level: level,
+                  firstWeekday: firstDay.weekday,
+                  today: -20));
+            }
           }
         } else {
           List data = [];
