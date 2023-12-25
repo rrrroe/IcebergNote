@@ -80,7 +80,8 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
               propertySettings =
                   template[noteMapOther.keys.elementAt(index)].split(",");
             }
-            if (noteMapOther.values.elementAt(index) != null) {
+            if (noteMapOther.values.elementAt(index) != null &&
+                noteMapOther.values.elementAt(index) != '') {
               switch (propertySettings[1]) {
                 case '长文':
                   return Row(
@@ -447,6 +448,8 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                           todoList.length,
                           (index) => todoList[index] != null
                               ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.max,
                                   children: [
                                     Visibility(
                                       visible:
@@ -481,6 +484,7 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                                       todoList[index]!
                                           .replaceFirst('- [ ] ', '')
                                           .replaceFirst('- [x] ', ''),
+                                      maxLines: 5,
                                       style: TextStyle(
                                         fontFamily: 'LXGWWenKai',
                                         fontSize: 16,

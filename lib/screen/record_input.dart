@@ -34,8 +34,11 @@ List templateTypeList = ['数字', '文本', '单选', '多选', '时间', '日�
 String mapToyaml(Map map) {
   String yaml = '';
   for (var i = 0; i < map.length; i++) {
-    if (map.values.elementAt(i).runtimeType == String) {
+    if (map.values.elementAt(i).runtimeType == String &&
+        map.values.elementAt(i) != '') {
       yaml = '$yaml${map.keys.elementAt(i)}: "${map.values.elementAt(i)}"\n';
+    } else if (map.values.elementAt(i) == null) {
+      yaml = '$yaml${map.keys.elementAt(i)}: \n';
     } else {
       yaml = '$yaml${map.keys.elementAt(i)}: ${map.values.elementAt(i)}\n';
     }
