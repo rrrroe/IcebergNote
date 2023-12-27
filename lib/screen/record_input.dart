@@ -36,7 +36,8 @@ String mapToyaml(Map map) {
   String yaml = '';
   for (var i = 0; i < map.length; i++) {
     if (map.values.elementAt(i).runtimeType == String &&
-        map.values.elementAt(i) != '') {
+        map.values.elementAt(i) != '' &&
+        num.tryParse(map.values.elementAt(i)) == null) {
       yaml = '$yaml${map.keys.elementAt(i)}: "${map.values.elementAt(i)}"\n';
     } else if (map.values.elementAt(i) == null) {
       yaml = '$yaml${map.keys.elementAt(i)}: \n';
