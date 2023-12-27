@@ -19,7 +19,6 @@ class DaysInYearHeatmap extends StatelessWidget {
     final List<Color> colorList = [];
     final List<int> dataList = [];
     for (int i = 0; i < level.length + 1; i++) {
-      print('$i/${level.length + 1}');
       colorList.add(color.withOpacity(i / (level.length + 1)));
     }
     for (int i = 0; i < data.length; i++) {
@@ -37,8 +36,6 @@ class DaysInYearHeatmap extends StatelessWidget {
     }
     int weekNum1 = dataList1.length ~/ 7;
     int weekNum2 = dataList2.length ~/ 7;
-    print(level);
-    print(dataList);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [

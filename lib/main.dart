@@ -10,6 +10,7 @@ import 'package:realm/realm.dart';
 import 'constants.dart';
 import 'home.dart';
 import 'notes.dart';
+import 'settings/record_temlates.dart';
 import 'system/device_id.dart';
 
 class NotesList {
@@ -95,6 +96,8 @@ class NotesList {
 
 var mainnotesList = NotesList();
 late Realm realm;
+Map<String, Map<int, List>> recordTemplates = {};
+Map<String, Map<String, List>> recordTemplatesSettings = {};
 
 void main() {
   final config = Configuration.local([Notes.schema], schemaVersion: 1);
@@ -110,6 +113,7 @@ void main() {
   }
 
   getUniqueId();
+  recordTemplateInit();
   runApp(
     const App(),
   );
