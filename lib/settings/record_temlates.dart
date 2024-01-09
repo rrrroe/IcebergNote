@@ -12,8 +12,6 @@ void recordTemplateInit() {
   for (int i = 0; i < templateNoteList.length; i++) {
     if (templateNoteList[i].noteContext != '' &&
         templateNoteList[i].noteContext.contains('settings')) {
-      print(
-          '${templateNoteList[i].noteProject}    ${loadYaml(templateNoteList[i].noteContext.substring(templateNoteList[i].noteContext.indexOf('settings'))).runtimeType}    ${loadYaml(templateNoteList[i].noteContext.substring(templateNoteList[i].noteContext.indexOf('settings'))).runtimeType}');
       if ((loadYaml(templateNoteList[i].noteContext.substring(
                       0, templateNoteList[i].noteContext.indexOf('settings')))
                   .runtimeType ==

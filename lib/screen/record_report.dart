@@ -59,12 +59,11 @@ class _ReportScreenState extends State<ReportScreen>
   List<Notes> filterNoteList = [];
   List<Map> recordList = [];
   List<Map> filterRecordList = [];
-  late Notes templateNote;
-  late Map noteMap, noteMapOther, templateProperty, template;
+  late Map noteMap, noteMapOther;
   late Color backgroundColor = Colors.white;
   late Color fontColor = Colors.black;
   late List propertySettings1;
-  List graphSettings = [];
+  List<List> graphSettings = [];
   DateFormat ymd = DateFormat('yyyy-MM-dd');
   DateTime now = DateTime.now().toUtc();
   late int weekday;
@@ -74,7 +73,6 @@ class _ReportScreenState extends State<ReportScreen>
   List typeList = ['周报', '月报', '季报', '年报', '自定义'];
   List<String> recordProjectList = [];
   List<num?> graphDataList = [];
-  late List<Notes> recordProjectDistinctList;
   @override
   void initState() {
     super.initState();
@@ -93,14 +91,8 @@ class _ReportScreenState extends State<ReportScreen>
   }
 
   void reportInit() {
-    List<Notes> recordProjectDistinctList = realm
-        .query<Notes>(
-            "noteType == '.表单' AND noteProject !='' DISTINCT(noteProject)")
-        .toList();
-    recordProjectList = [];
-    for (int i = 0; i < recordProjectDistinctList.length; i++) {
-      recordProjectList.add(recordProjectDistinctList[i].noteProject);
-    }
+    recordProjectList = recordTemplates.keys.toList();
+
     if (recordProjectList.isNotEmpty && currentProject == '') {
       currentProject = recordProjectList[0];
     }
@@ -108,48 +100,33 @@ class _ReportScreenState extends State<ReportScreen>
     notesList = realm.query<Notes>(
         "( noteProject == \$0 OR noteProject == \$1 ) AND noteType == '.记录' AND noteIsDeleted != true SORT(noteCreateDate ASC)",
         [currentProject, '$currentProject/']);
-    templateNote = realm.query<Notes>(
-        "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
-        [
-          '.表单',
-          currentProject,
-        ])[0];
-    template = loadYaml(templateNote.noteContext
-        .substring(0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
-    templateProperty = loadYaml(templateNote.noteContext
-        .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
+
     backgroundColor = Color.fromARGB(
       40,
-      templateProperty['color'][0],
-      templateProperty['color'][1],
-      templateProperty['color'][2],
+      recordTemplatesSettings[currentProject]!['color']![0],
+      recordTemplatesSettings[currentProject]!['color']![1],
+      recordTemplatesSettings[currentProject]!['color']![2],
     );
     fontColor = Color.fromARGB(
       255,
-      max(0, min(templateProperty['color'][0] - 50, 255)),
-      max(0, min(templateProperty['color'][1] - 50, 255)),
-      max(0, min(templateProperty['color'][2] - 50, 255)),
+      max(0,
+          min(recordTemplatesSettings[currentProject]!['color']![0] - 50, 255)),
+      max(0,
+          min(recordTemplatesSettings[currentProject]!['color']![1] - 50, 255)),
+      max(0,
+          min(recordTemplatesSettings[currentProject]!['color']![2] - 50, 255)),
     );
 
-    propertySettings1 = template.values.elementAt(0).split(",");
+    propertySettings1 = recordTemplates[currentProject]!.values.elementAt(0);
 
-    // template.forEach((key, value) {
-    //   if (value.toString().split(',')[1] == '日期') {
-    //     dateFlag = key;
-    //   }
-    // });
-
-    if (templateProperty.keys.contains(currentReportDurationType)) {
-      List tmpstr = templateProperty[currentReportDurationType].split(',');
+    if (recordTemplatesSettings[currentProject]!
+        .keys
+        .contains(currentReportDurationType)) {
+      List tmpstr =
+          recordTemplatesSettings[currentProject]![currentReportDurationType]!;
       for (int index = 0; index < tmpstr.length; index++) {
-        List tmp = tmpstr[index].toString().split('-');
-        List tmp1 = [];
-        tmp1.add(int.tryParse(tmp[0]));
-        for (int i = 1; i < tmp.length; i++) {
-          tmp1.add(tmp[i]);
-        }
-        if (tmp1[1] == '日期') {
-          dateFlag = tmp1[0];
+        if (tmpstr[index][1] == '日期') {
+          dateFlag = tmpstr[index][0];
         }
       }
       // print(filterSelect);
@@ -164,21 +141,18 @@ class _ReportScreenState extends State<ReportScreen>
     graphSettings = [];
 
     List<dynamic> filterSelect = [0];
-    if (templateProperty.keys.contains(currentReportDurationType)) {
-      List tmpstr = templateProperty[currentReportDurationType].split(',');
+    if (recordTemplatesSettings[currentProject]!
+        .keys
+        .contains(currentReportDurationType)) {
+      List tmpstr =
+          recordTemplatesSettings[currentProject]![currentReportDurationType]!;
       for (int index = 0; index < tmpstr.length; index++) {
-        List tmp = tmpstr[index].toString().split('-');
-        List tmp1 = [];
-        tmp1.add(int.tryParse(tmp[0]));
-        for (int i = 1; i < tmp.length; i++) {
-          tmp1.add(tmp[i]);
-        }
-        if (tmp1[1] == '过滤' &&
-            template[tmp1[0]].toString().split(',')[1] == '单选') {
-          filterSelect[0] = tmp1[0];
-          filterSelect.addAll(tmp1[2].toString().split('||'));
+        if (tmpstr[index][1] == '过滤' &&
+            recordTemplates[currentProject]![tmpstr[index][0]]![1] == '单选') {
+          filterSelect[0] = tmpstr[index][0];
+          filterSelect.addAll(tmpstr[index][2].toString().split('||'));
         } else {
-          graphSettings.add(tmp1);
+          graphSettings.add(tmpstr[index]);
         }
       }
       // print(filterSelect);
@@ -517,10 +491,11 @@ class _ReportScreenState extends State<ReportScreen>
 
   List<Widget> buildCardList() {
     List<Widget> cardList = [];
-
-    for (var graphSetting in graphSettings) {
-      List propertySettings = template[graphSetting[0]].toString().split(',');
-
+    for (List graphSetting in graphSettings) {
+      List propertySettings =
+          (!recordTemplates[currentProject]!.containsKey(graphSetting[0])
+              ? []
+              : recordTemplates[currentProject]![graphSetting[0]]!);
       if (graphSetting[0] == 0) {
         List data = [];
         for (int i = 0; i < filterRecordList.length; i++) {
@@ -529,12 +504,11 @@ class _ReportScreenState extends State<ReportScreen>
         cardList.add(
             statisticsGenerate('', '条目', graphSetting, data, fontColor, ''));
       }
-      if (template.containsKey(graphSetting[0])) {
+      if (recordTemplates[currentProject]!.containsKey(graphSetting[0])) {
         int durationDayLength = lastDay.difference(firstDay).inDays + 1;
         if (graphSetting[1] == '折线图' || graphSetting[1] == '柱状图') {
           List<num> data = [];
-
-          if (template[graphSetting[0]].toString().split(',')[1] == '数字') {
+          if (recordTemplates[currentProject]![graphSetting[0]]![1] == '数字') {
             switch (currentReportDurationType) {
               case '周报':
                 for (int i = 0; i < durationDayLength; i++) {
@@ -602,11 +576,10 @@ class _ReportScreenState extends State<ReportScreen>
             }
           }
         } else if (graphSetting[1] == '收益曲线图') {
-          if (template.containsKey(graphSetting[0])) {
-            if (template[graphSetting[0]].toString().split(',')[1] == '数字' &&
-                template[int.tryParse(graphSetting[2])]
-                        .toString()
-                        .split(',')[1] ==
+          if (recordTemplates[currentProject]!.containsKey(graphSetting[0])) {
+            if (recordTemplates[currentProject]![graphSetting[0]]![1] == '数字' &&
+                recordTemplates[currentProject]![
+                        int.tryParse(graphSetting[2])]![1] ==
                     '数字') {
               switch (graphSetting[3]) {
                 case '本年':
@@ -699,8 +672,8 @@ class _ReportScreenState extends State<ReportScreen>
             }
           }
         } else if (graphSetting[1] == '日年热力图') {
-          if (template.containsKey(graphSetting[0])) {
-            if (template[graphSetting[0]].toString().split(',')[1] == '数字') {
+          if (recordTemplates[currentProject]!.containsKey(graphSetting[0])) {
+            if (recordTemplates[currentProject]![graphSetting[0]]![1] == '数字') {
               List<num> level = [];
               List<num> data = [];
               for (int i = 2; i < graphSetting.length; i++) {
@@ -770,293 +743,37 @@ class _ReportScreenState extends State<ReportScreen>
           Map noteMapOther = {...noteMap};
           noteMapOther.remove(noteMapOther.keys.first);
           noteMapOther.removeWhere((key, value) => value == null);
-
-          cardList.add(buildRecordCardOfList(filterNoteList[i], 3, context,
-                  reportInit, template, templateProperty)
-              // Card(
-              //   margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-              //   elevation: 0,
-              //   shadowColor: const Color.fromARGB(255, 255, 132, 132),
-              //   color: backgroundColor,
-              //   child: ListTile(
-              //     title: SizedBox(
-              //       height: 40,
-              //       child: Text(
-              //         '${propertySettings1[2] ?? ''}${noteMap[noteMap.keys.first] ?? ''}${propertySettings1[3] ?? ''}',
-              //         maxLines: 1,
-              //         overflow: TextOverflow.fade,
-              //         style: TextStyle(
-              //           fontSize: 20,
-              //           fontWeight: FontWeight.w600,
-              //           color: fontColor,
-              //         ),
-              //       ),
-              //     ),
-              //     subtitle: Wrap(
-              //       spacing: 5,
-              //       runSpacing: 5,
-              //       children: List.generate(
-              //         noteMapOther.length,
-              //         (index) {
-              //           List propertySettings = ['', '', '', ''];
-              //           if (template
-              //               .containsKey(noteMapOther.keys.elementAt(index))) {
-              //             propertySettings =
-              //                 template[noteMapOther.keys.elementAt(index)]
-              //                     .split(",");
-              //           }
-              //           if (noteMapOther.values.elementAt(index) != null) {
-              //             switch (propertySettings[1]) {
-              //               case '长文':
-              //                 return Row(
-              //                   crossAxisAlignment: CrossAxisAlignment.baseline,
-              //                   textBaseline: TextBaseline.ideographic,
-              //                   children: [
-              //                     Container(
-              //                       margin: const EdgeInsets.all(0),
-              //                       padding:
-              //                           const EdgeInsets.fromLTRB(5, 0, 5, 0),
-              //                       decoration: BoxDecoration(
-              //                         borderRadius: BorderRadius.circular(4),
-              //                         color: fontColor,
-              //                       ),
-              //                       child: Text(
-              //                         "${propertySettings[0] ?? ''}",
-              //                         style: const TextStyle(
-              //                           fontFamily: 'LXGWWenKai',
-              //                           fontSize: 16,
-              //                           fontWeight: FontWeight.w600,
-              //                           color: Colors.white,
-              //                         ),
-              //                       ),
-              //                     ),
-              //                     Text(
-              //                       " : ",
-              //                       style: TextStyle(
-              //                         fontFamily: 'LXGWWenKai',
-              //                         fontSize: 16,
-              //                         fontWeight: FontWeight.w600,
-              //                         color: fontColor,
-              //                       ),
-              //                     ),
-              //                     Expanded(
-              //                       child: Text(
-              //                         '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n')}${propertySettings[3] ?? ''}',
-              //                         style: TextStyle(
-              //                           fontSize: 16,
-              //                           fontWeight: FontWeight.w600,
-              //                           color: fontColor,
-              //                         ),
-              //                       ),
-              //                     ),
-              //                   ],
-              //                 );
-              //               case '单选':
-              //               case '多选':
-              //                 List selectedlist = noteMapOther.values
-              //                     .elementAt(index)
-              //                     .toString()
-              //                     .split(', ');
-              //                 return Row(
-              //                   mainAxisSize: MainAxisSize.max,
-              //                   crossAxisAlignment: CrossAxisAlignment.start,
-              //                   children: [
-              //                     Container(
-              //                       margin: const EdgeInsets.all(0),
-              //                       padding:
-              //                           const EdgeInsets.fromLTRB(5, 0, 5, 0),
-              //                       decoration: BoxDecoration(
-              //                         borderRadius: BorderRadius.circular(4),
-              //                         color: fontColor,
-              //                       ),
-              //                       child: Text(
-              //                         "${propertySettings[0] ?? ''}",
-              //                         style: const TextStyle(
-              //                           fontFamily: 'LXGWWenKai',
-              //                           fontSize: 16,
-              //                           fontWeight: FontWeight.w600,
-              //                           color: Colors.white,
-              //                         ),
-              //                       ),
-              //                     ),
-              //                     Text(
-              //                       " : ",
-              //                       style: TextStyle(
-              //                         fontFamily: 'LXGWWenKai',
-              //                         fontSize: 16,
-              //                         fontWeight: FontWeight.w600,
-              //                         color: fontColor,
-              //                       ),
-              //                     ),
-              //                     Expanded(
-              //                       child: Wrap(
-              //                         runSpacing: 5,
-              //                         children: List.generate(
-              //                           selectedlist.length,
-              //                           (index) {
-              //                             return Container(
-              //                               margin: const EdgeInsets.fromLTRB(
-              //                                   0, 0, 5, 0),
-              //                               padding: const EdgeInsets.fromLTRB(
-              //                                   5, 0, 5, 0),
-              //                               decoration: BoxDecoration(
-              //                                 borderRadius:
-              //                                     BorderRadius.circular(20),
-              //                                 color: fontColor,
-              //                               ),
-              //                               child: Text(
-              //                                 selectedlist[index],
-              //                                 style: const TextStyle(
-              //                                   fontFamily: 'LXGWWenKai',
-              //                                   fontSize: 16,
-              //                                   fontWeight: FontWeight.w600,
-              //                                   color: Colors.white,
-              //                                 ),
-              //                               ),
-              //                             );
-              //                           },
-              //                         ),
-              //                       ),
-              //                     ),
-              //                   ],
-              //                 );
-              //               case '时间':
-              //                 return Row(
-              //                   mainAxisSize: MainAxisSize.max,
-              //                   children: [
-              //                     Container(
-              //                       margin: const EdgeInsets.all(0),
-              //                       padding:
-              //                           const EdgeInsets.fromLTRB(5, 0, 5, 0),
-              //                       decoration: BoxDecoration(
-              //                         borderRadius: BorderRadius.circular(4),
-              //                         color: fontColor,
-              //                       ),
-              //                       child: Text(
-              //                         "${propertySettings[0] ?? ''}",
-              //                         style: const TextStyle(
-              //                           fontFamily: 'LXGWWenKai',
-              //                           fontSize: 16,
-              //                           fontWeight: FontWeight.w600,
-              //                           color: Colors.white,
-              //                         ),
-              //                       ),
-              //                     ),
-              //                     Text(
-              //                       noteMapOther.values
-              //                                   .elementAt(index)
-              //                                   .toString()[0] !=
-              //                               '0'
-              //                           ? ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString()}${propertySettings[3] ?? ''}'
-              //                           : ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().substring(2).replaceAll(':', '′')}″${propertySettings[3] ?? ''}',
-              //                       style: TextStyle(
-              //                         fontFamily: 'LXGWWenKai',
-              //                         fontSize: 16,
-              //                         fontWeight: FontWeight.w600,
-              //                         color: fontColor,
-              //                       ),
-              //                     ),
-              //                   ],
-              //                 );
-              //               case '时长':
-              //                 return Row(
-              //                   mainAxisSize: MainAxisSize.max,
-              //                   children: [
-              //                     Container(
-              //                       margin: const EdgeInsets.all(0),
-              //                       padding:
-              //                           const EdgeInsets.fromLTRB(5, 0, 5, 0),
-              //                       decoration: BoxDecoration(
-              //                         borderRadius: BorderRadius.circular(4),
-              //                         color: fontColor,
-              //                       ),
-              //                       child: Text(
-              //                         "${propertySettings[0] ?? ''}",
-              //                         style: const TextStyle(
-              //                           fontFamily: 'LXGWWenKai',
-              //                           fontSize: 16,
-              //                           fontWeight: FontWeight.w600,
-              //                           color: Colors.white,
-              //                         ),
-              //                       ),
-              //                     ),
-              //                     Text(
-              //                       ' : ${noteMapOther.values.elementAt(index).toString().replaceAll('d', '天').replaceAll('h', '时').replaceAll('m', '分').replaceAll('s', '秒').replaceAll('0时', '').replaceAll('0秒', '')}',
-              //                       style: TextStyle(
-              //                         fontFamily: 'LXGWWenKai',
-              //                         fontSize: 16,
-              //                         fontWeight: FontWeight.w600,
-              //                         color: fontColor,
-              //                       ),
-              //                     ),
-              //                   ],
-              //                 );
-              //               default:
-              //                 return Row(
-              //                   mainAxisSize: MainAxisSize.max,
-              //                   children: [
-              //                     Container(
-              //                       margin: const EdgeInsets.all(0),
-              //                       padding:
-              //                           const EdgeInsets.fromLTRB(5, 0, 5, 0),
-              //                       decoration: BoxDecoration(
-              //                         borderRadius: BorderRadius.circular(4),
-              //                         color: fontColor,
-              //                       ),
-              //                       child: Text(
-              //                         "${propertySettings[0] ?? ''}",
-              //                         style: const TextStyle(
-              //                           fontFamily: 'LXGWWenKai',
-              //                           fontSize: 16,
-              //                           fontWeight: FontWeight.w600,
-              //                           color: Colors.white,
-              //                         ),
-              //                       ),
-              //                     ),
-              //                     Text(
-              //                       ' : ${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString().replaceAll('    ', '\n${' ' * (propertySettings[0].runes.length * 2 + 2)}')}${propertySettings[3] ?? ''}',
-              //                       style: TextStyle(
-              //                         fontFamily: 'LXGWWenKai',
-              //                         fontSize: 16,
-              //                         fontWeight: FontWeight.w600,
-              //                         color: fontColor,
-              //                       ),
-              //                     ),
-              //                   ],
-              //                 );
-              //             }
-              //           } else {
-              //             return const SizedBox(height: 0, width: 0);
-              //           }
-              //         },
-              //       ),
-              //     ),
-              //     onTap: () {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (context) => RecordChangePage(
-              //             onPageClosed: () {},
-              //             note: filterNoteList[i],
-              //             mod: 1,
-              //           ),
-              //         ),
-              //       );
-              //     },
-              //     onLongPress: () {
-              //       showModalBottomSheet(
-              //         context: context,
-              //         builder: (context) {
-              //           return BottomPopSheet(
-              //             note: filterNoteList[i],
-              //             onDialogClosed: () {},
-              //           );
-              //         },
-              //       );
-              //     },
-              //   ),
-              // ),
-              );
+          if (graphSetting.length > 2) {
+            List<int> properties = [];
+            List<String> propertiesName =
+                graphSetting[2].toString().split('||');
+            for (int i = 0; i < propertiesName.length; i++) {
+              int? tmp = int.tryParse(propertiesName[i]);
+              if (tmp != null) {
+                properties.add(tmp);
+              }
+            }
+            cardList.add(buildRecordCardOfList(
+                filterNoteList[i], 3, context, reportInit, properties));
+          } else {
+            if (recordTemplatesSettings[currentProject]!['卡片'] != null) {
+              List<int> properties = [];
+              for (int i = 0;
+                  i < recordTemplatesSettings[currentProject]!['卡片']!.length;
+                  i++) {
+                int? tmp = int.tryParse(
+                    recordTemplatesSettings[currentProject]!['卡片']![i]);
+                if (tmp != null) {
+                  properties.add(tmp);
+                }
+              }
+              cardList.add(buildRecordCardOfList(
+                  filterNoteList[i], 3, context, reportInit, properties));
+            } else {
+              cardList.add(buildRecordCardOfList(filterNoteList[i], 3, context,
+                  reportInit, recordTemplates[currentProject]!.keys.toList()));
+            }
+          }
         }
       }
     }

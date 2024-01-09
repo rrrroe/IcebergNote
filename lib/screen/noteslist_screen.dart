@@ -16,7 +16,6 @@ import 'package:icebergnote/screen/input_screen.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:realm/realm.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:yaml/yaml.dart';
 import 'package:image/image.dart' as img;
 
 import '../main.dart';
@@ -940,43 +939,39 @@ class SearchPageState extends State<SearchPage> {
           },
         ),
       );
-    } else if (note.noteType == '.记录' && checkNoteFormat(note)) {
-      var templateNote = realm.query<Notes>(
-          "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
-          [
-            '.表单',
-            note.noteProject,
-          ])[0];
+    } else if (note.noteType == '.记录' &&
+        recordTemplates[note.noteProject] != null &&
+        recordTemplatesSettings[note.noteProject] != null) {
+      // var templateNote = realm.query<Notes>(
+      //     "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
+      //     [
+      //       '.表单',
+      //       note.noteProject,
+      //     ])[0];
 
-      if (note.noteContext == '') {
-        realm.write(() {
-          note.noteContext =
-              templateNote.noteContext.replaceAll(RegExp(r': .*'), ': ');
-        });
+      // if (note.noteContext == '') {
+      //   realm.write(() {
+      //     note.noteContext =
+      //         templateNote.noteContext.replaceAll(RegExp(r': .*'), ': ');
+      //   });
+      // }
+      if (recordTemplatesSettings[note.noteProject]!['卡片'] != null) {
+        List<int> properties = [];
+        for (int i = 0;
+            i < recordTemplatesSettings[note.noteProject]!['卡片']!.length;
+            i++) {
+          int? tmp = int.tryParse(
+              recordTemplatesSettings[note.noteProject]!['卡片']![i]);
+          if (tmp != null) {
+            properties.add(tmp);
+          }
+        }
+        return buildRecordCardOfList(
+            note, widget.mod, context, refreshList, properties);
+      } else {
+        return buildRecordCardOfList(note, widget.mod, context, refreshList,
+            recordTemplates[note.noteProject]!.keys.toList());
       }
-      // Map noteMap = loadYaml(note.noteContext) as Map;
-      // Map noteMapOther = {...noteMap};
-      // noteMapOther.remove(noteMapOther.keys.first);
-      // noteMapOther.removeWhere((key, value) => value == null);
-      Map template = loadYaml(templateNote.noteContext.substring(
-          0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
-      Map templateProperty = loadYaml(templateNote.noteContext
-          .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
-      // Color backgroundColor = Color.fromARGB(
-      //   40,
-      //   templateProperty['color'][0],
-      //   templateProperty['color'][1],
-      //   templateProperty['color'][2],
-      // );
-      // Color fontColor = Color.fromARGB(
-      //   255,
-      //   max(0, min(templateProperty['color'][0] - 50, 255)),
-      //   max(0, min(templateProperty['color'][1] - 50, 255)),
-      //   max(0, min(templateProperty['color'][2] - 50, 255)),
-      // );
-      // List propertySettings1 = template.values.elementAt(0).split(",");
-      return buildRecordCardOfList(
-          note, widget.mod, context, refreshList, template, templateProperty);
       // return Card(
       //   margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
       //   elevation: 0,

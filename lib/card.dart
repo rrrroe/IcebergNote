@@ -4,49 +4,37 @@ import 'package:flutter/material.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:icebergnote/screen/record_input.dart';
 import 'package:yaml/yaml.dart';
+import 'main.dart';
 import 'screen/noteslist_screen.dart';
 
 Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
-    VoidCallback refreshList, Map template, Map templateProperty) {
-  // var templateNote = realm.query<Notes>(
-  //     "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
-  //     [
-  //       '.表单',
-  //       note.noteProject,
-  //     ])[0];
-
-  // if (note.noteContext == '') {
-  //   realm.write(() {
-  //     note.noteContext =
-  //         templateNote.noteContext.replaceAll(RegExp(r': .*'), ': ');
-  //   });
-  // }
-
-  // Map template = loadYaml(templateNote.noteContext
-  //     .substring(0, templateNote.noteContext.indexOf('settings'))) as YamlMap;
-  // Map templateProperty = loadYaml(templateNote.noteContext
-  //     .substring(templateNote.noteContext.indexOf('settings'))) as YamlMap;
+    VoidCallback refreshList, List<int> properties) {
   Map noteMapInit = loadYaml(note.noteContext) as Map;
-  Map noteMap = template.map((key, value) {
+  Map noteMap = recordTemplates[note.noteProject]!.map((key, value) {
     MapEntry entry = MapEntry(key, noteMapInit[key]);
     return entry;
   });
   Map noteMapOther = {...noteMap};
   noteMapOther.remove(noteMapOther.keys.first);
   noteMapOther.removeWhere((key, value) => value == null);
+  noteMapOther.removeWhere((key, value) => !properties.contains(key));
   Color backgroundColor = Color.fromARGB(
     40,
-    templateProperty['color'][0],
-    templateProperty['color'][1],
-    templateProperty['color'][2],
+    recordTemplatesSettings[note.noteProject]!['color']![0],
+    recordTemplatesSettings[note.noteProject]!['color']![1],
+    recordTemplatesSettings[note.noteProject]!['color']![2],
   );
   Color fontColor = Color.fromARGB(
     255,
-    max(0, min(templateProperty['color'][0] - 50, 255)),
-    max(0, min(templateProperty['color'][1] - 50, 255)),
-    max(0, min(templateProperty['color'][2] - 50, 255)),
+    max(0,
+        min(recordTemplatesSettings[note.noteProject]!['color']![0] - 50, 255)),
+    max(0,
+        min(recordTemplatesSettings[note.noteProject]!['color']![1] - 50, 255)),
+    max(0,
+        min(recordTemplatesSettings[note.noteProject]!['color']![2] - 50, 255)),
   );
-  List propertySettings1 = template.values.elementAt(0).split(",");
+  List propertySettings1 =
+      recordTemplates[note.noteProject]!.values.elementAt(0);
   return Card(
     margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
     elevation: 0,
@@ -76,9 +64,10 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
           noteMapOther.length,
           (index) {
             List propertySettings = ['', '', '', ''];
-            if (template.containsKey(noteMapOther.keys.elementAt(index))) {
-              propertySettings =
-                  template[noteMapOther.keys.elementAt(index)].split(",");
+            if (recordTemplates[note.noteProject]!
+                .containsKey(noteMapOther.keys.elementAt(index))) {
+              propertySettings = recordTemplates[note.noteProject]![
+                  noteMapOther.keys.elementAt(index)]!;
             }
             if (noteMapOther.values.elementAt(index) != null &&
                 noteMapOther.values.elementAt(index) != '') {
