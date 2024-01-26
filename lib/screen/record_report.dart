@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:icebergnote/chart/heatmap.dart';
 import 'package:icebergnote/screen/noteslist_screen.dart';
 import 'package:icebergnote/screen/record_graph_benifit.dart';
@@ -838,6 +837,13 @@ class _ReportScreenState extends State<ReportScreen>
         } else if (graphSetting[1] == '表格') {
           List<int> properties = [];
           List<String> propertiesName = graphSetting[2].toString().split('||');
+          List<double?> propertiesLength = [];
+          if (graphSetting.length > 3) {
+            List<String> tmp = graphSetting[3].toString().split('||');
+            for (int i = 0; i < tmp.length; i++) {
+              propertiesLength.add(double.tryParse(tmp[i]));
+            }
+          }
           for (int i = 0; i < propertiesName.length; i++) {
             int? tmp = int.tryParse(propertiesName[i]);
             if (tmp != null) {
@@ -847,7 +853,6 @@ class _ReportScreenState extends State<ReportScreen>
           if (properties == []) {
             properties = recordTemplates[currentProject]!.keys.toList();
           }
-
           cardList.add(
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -898,7 +903,8 @@ class _ReportScreenState extends State<ReportScreen>
                                   recordTemplates[currentProject]![
                                       properties[index2]]!,
                                   index,
-                                  properties[index2]),
+                                  properties[index2],
+                                  propertiesLength[index2]),
                             ));
                           }),
                       border: TableBorder.all(color: fontColor, width: 2),
@@ -912,76 +918,79 @@ class _ReportScreenState extends State<ReportScreen>
     return cardList;
   }
 
-  Widget recordTableCellGenerate(
-      dynamic content, List propertySetting, int i, int property) {
+  Widget recordTableCellGenerate(dynamic content, List propertySetting, int i,
+      int property, double? length) {
     List<String> selectList = propertySetting.last.toString().split("||");
     List<String> currentList =
         filterRecordList[i][property].toString().split(", ");
     switch (propertySetting[1]) {
       case '单选':
         return GestureDetector(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (ctx) {
-                return InputSelectAlertDialog(
-                  onSubmitted: (text) {
-                    Map recordTmp = Map.from(filterRecordList[i]);
-                    recordTmp[property] = text;
-                    realm.write(() {
-                      filterNoteList[i].noteContext = mapToyaml(recordTmp);
-                      filterNoteList[i].noteUpdateDate = DateTime.now().toUtc();
-                    });
-                    reportInit();
-                    setState(() {});
-                    // List testList = (text.split(', '));
-                    // List newList =
-                    //     (propertySetting.last.toString().split('||'));
-                    // for (int i = 0; i < testList.length; i++) {
-                    //   if (!newList.contains(testList[i])) {
-                    //     Notes templateNote = realm.query<Notes>(
-                    //         "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
-                    //         [
-                    //           '.表单',
-                    //           currentProject,
-                    //         ])[0];
-                    //     realm.write(() {
-                    //       templateNote.noteContext = templateNote.noteContext
-                    //           .replaceAll(propertySetting.join(','),
-                    //               '${propertySetting.join(',')}||${testList[i]}');
-                    //       templateNote.noteUpdateDate = DateTime.now().toUtc();
-                    //     });
-                    //   }
-                    // }
-                  },
-                  currentList: currentList,
-                  selectList: selectList,
-                  fontColor: fontColor,
-                  isMultiSelect: false,
-                  backgroundColor: backgroundColor,
-                );
-              },
-            );
-          },
-          child: Container(
-            height: 23,
-            margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: fontColor,
-            ),
-            child: Text(
-              content.toString(),
-              style: const TextStyle(
-                fontFamily: 'LXGWWenKai',
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (ctx) {
+                  return InputSelectAlertDialog(
+                    onSubmitted: (text) {
+                      Map recordTmp = Map.from(filterRecordList[i]);
+                      recordTmp[property] = text;
+                      realm.write(() {
+                        filterNoteList[i].noteContext = mapToyaml(recordTmp);
+                        filterNoteList[i].noteUpdateDate =
+                            DateTime.now().toUtc();
+                      });
+                      reportInit();
+                      setState(() {});
+                      // List testList = (text.split(', '));
+                      // List newList =
+                      //     (propertySetting.last.toString().split('||'));
+                      // for (int i = 0; i < testList.length; i++) {
+                      //   if (!newList.contains(testList[i])) {
+                      //     Notes templateNote = realm.query<Notes>(
+                      //         "noteType == \$0 AND noteProject == \$1 AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT(1)",
+                      //         [
+                      //           '.表单',
+                      //           currentProject,
+                      //         ])[0];
+                      //     realm.write(() {
+                      //       templateNote.noteContext = templateNote.noteContext
+                      //           .replaceAll(propertySetting.join(','),
+                      //               '${propertySetting.join(',')}||${testList[i]}');
+                      //       templateNote.noteUpdateDate = DateTime.now().toUtc();
+                      //     });
+                      //   }
+                      // }
+                    },
+                    currentList: currentList,
+                    selectList: selectList,
+                    fontColor: fontColor,
+                    isMultiSelect: false,
+                    backgroundColor: backgroundColor,
+                  );
+                },
+              );
+            },
+            child: SizedBox(
+              width: length,
+              child: Container(
+                height: 23,
+                margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: fontColor,
+                ),
+                child: Text(
+                  content.toString(),
+                  style: const TextStyle(
+                    fontFamily: 'LXGWWenKai',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
               ),
-            ),
-          ),
-        );
+            ));
 
       case '多选':
         List selectedlist = content.toString().split(', ');
@@ -1021,7 +1030,7 @@ class _ReportScreenState extends State<ReportScreen>
           onTap: () {},
           child: Container(
             alignment: Alignment.centerLeft,
-            width: 300,
+            width: length,
             height: 25,
             child: Text(
               content.toString(),
