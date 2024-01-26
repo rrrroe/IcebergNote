@@ -21,6 +21,7 @@ import 'package:image/image.dart' as img;
 import '../main.dart';
 import '../constants.dart';
 import '../card.dart';
+import 'check_list.dart';
 import 'record_input.dart';
 import 'search_screen.dart';
 
@@ -339,7 +340,7 @@ class BottomRecordTypeSheet extends StatelessWidget {
               itemCount: recordProjectList.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  leading: const Icon(Icons.folder),
+                  leading: const Icon(Icons.data_thresholding),
                   title: Text(recordProjectList[index]),
                   onTap: () {
                     Navigator.pop(context);
@@ -354,23 +355,34 @@ class BottomRecordTypeSheet extends StatelessWidget {
                         DateTime.utc(1970, 1, 1),
                         DateTime.utc(1970, 1, 1),
                         DateTime.utc(1970, 1, 1),
-                        noteProject: recordProjectList[index],
-                        noteType: '.记录');
+                        noteProject: recordProjectList[index].contains('~')
+                            ? recordProjectList[index]
+                            : '',
+                        noteType: recordProjectList[index].contains('.')
+                            ? recordProjectList[index]
+                            : '.记录');
                     realm.write(() {
                       realm.add<Notes>(note, update: true);
                     });
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RecordChangePage(
-                          onPageClosed: () {
-                            onDialogClosed();
-                          },
-                          note: note,
-                          mod: 0,
+                    if (recordProjectList[index].contains('~')) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RecordChangePage(
+                            onPageClosed: () {
+                              onDialogClosed();
+                            },
+                            note: note,
+                            mod: 0,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    } else if (recordProjectList[index] == '.清单') {
+                      Get.to(() => CheckListEditWidget(note: note));
+                    } else if (recordProjectList[index].contains('.')) {
+                      Get.to(() =>
+                          ChangePage(onPageClosed: () {}, note: note, mod: 0));
+                    }
                   },
                 );
               },
@@ -1513,8 +1525,8 @@ class SearchPageState extends State<SearchPage> {
     }
   }
 
-  void showOtherMenu() {
-    List<String> recordProjectList = [];
+  void showCreateTypeMenu() {
+    List<String> recordProjectList = ['.待办', '.清单'];
     List<Notes> recordProjectDistinctList = realm
         .query<Notes>(
             "noteType == '.表单' AND noteProject !='' DISTINCT(noteProject)")
@@ -1593,7 +1605,7 @@ class SearchPageState extends State<SearchPage> {
     return Scaffold(
       floatingActionButton: GestureDetector(
           onLongPress: () {
-            showOtherMenu();
+            showCreateTypeMenu();
           },
           child: FloatingActionButton(
               onPressed: () {

@@ -964,7 +964,6 @@ class _ReportScreenState extends State<ReportScreen>
             );
           },
           child: Container(
-            width: 45,
             height: 23,
             margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
             padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
