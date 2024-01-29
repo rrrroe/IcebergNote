@@ -870,30 +870,19 @@ class _ReportScreenState extends State<ReportScreen>
                                 decoration: BoxDecoration(color: fontColor),
                                 children: List.generate(
                                     properties.length,
-                                    (index) => Text(
-                                          recordTemplates[currentProject]![
-                                              properties[index]]![0],
-                                          style: const TextStyle(
+                                    (index) => Container(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            recordTemplates[currentProject]![
+                                                properties[index]]![0],
+                                            style: const TextStyle(
                                               fontSize: 16,
-                                              color: Colors.white),
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
                                         ))),
                           ] +
-                          // List.generate(filterRecordList.length, (index) {
-                          //   return TableRow(
-                          //       children: List.generate(
-                          //           properties.length,
-                          //           (index2) => Text(
-                          //                 filterRecordList[index]
-                          //                             [properties[index2]] ==
-                          //                         null
-                          //                     ? ''
-                          //                     : filterRecordList[index]
-                          //                             [properties[index2]]
-                          //                         .toString(),
-                          //                 style: TextStyle(
-                          //                     fontSize: 20, color: fontColor),
-                          //               )));
-                          // })+
                           List.generate(filterRecordList.length, (index) {
                             return TableRow(
                                 children: List.generate(
@@ -970,10 +959,11 @@ class _ReportScreenState extends State<ReportScreen>
                 },
               );
             },
-            child: SizedBox(
+            child: Container(
               width: length,
+              padding: const EdgeInsets.all(3),
               child: Container(
-                height: 23,
+                height: 25,
                 margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                 padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                 decoration: BoxDecoration(
@@ -991,7 +981,6 @@ class _ReportScreenState extends State<ReportScreen>
                 ),
               ),
             ));
-
       case '多选':
         List selectedlist = content.toString().split(', ');
         return GestureDetector(
@@ -1025,10 +1014,30 @@ class _ReportScreenState extends State<ReportScreen>
             ),
           ),
         );
+      case '数字':
+        return GestureDetector(
+          onTap: () {},
+          child: Container(
+            padding: const EdgeInsets.all(0),
+            alignment: Alignment.center,
+            width: length,
+            height: 25,
+            child: Text(
+              content.toString(),
+              maxLines: null,
+              style: TextStyle(
+                color: fontColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        );
       default:
         return GestureDetector(
           onTap: () {},
           child: Container(
+            padding: const EdgeInsets.all(0),
             alignment: Alignment.centerLeft,
             width: length,
             height: 25,
