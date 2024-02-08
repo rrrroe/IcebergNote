@@ -378,7 +378,12 @@ class BottomRecordTypeSheet extends StatelessWidget {
                         ),
                       );
                     } else if (recordProjectList[index] == '.清单') {
-                      Get.to(() => CheckListEditWidget(note: note));
+                      Get.to(() => CheckListEditPage(
+                            note: note,
+                            onPageClosed: () {
+                              onDialogClosed();
+                            },
+                          ));
                     } else if (recordProjectList[index].contains('.')) {
                       Get.to(() =>
                           ChangePage(onPageClosed: () {}, note: note, mod: 0));
@@ -1352,6 +1357,175 @@ class SearchPageState extends State<SearchPage> {
       //     },
       //   ),
       // );
+    } else if (note.noteType == '.清单') {
+      return GestureDetector(
+        child: Card(
+          margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+          elevation: 0,
+          shadowColor: Colors.grey,
+          color: const Color.fromARGB(20, 0, 140, 198),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Visibility(
+                  visible: note.noteTitle != "",
+                  child: SizedBox(
+                    child: note.noteTitle.contains(searchText) &&
+                            searchText != ''
+                        ? buildRichText(
+                            note.noteTitle,
+                            searchText,
+                            const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Color.fromARGB(255, 0, 140, 198)),
+                            TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    const ui.Color.fromARGB(255, 0, 140, 198),
+                                backgroundColor: Colors.yellow[100],
+                                fontFamily: 'LXGWWenKai'),
+                          )
+                        : Text(
+                            note.noteTitle,
+                            maxLines: 5,
+                            textAlign: TextAlign.start,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Color.fromARGB(255, 0, 140, 198),
+                                fontFamily: 'LXGWWenKai'),
+                          ),
+                  ),
+                ),
+                Visibility(
+                  visible: note.noteTitle != "",
+                  child: const SizedBox(
+                    height: 5,
+                  ),
+                ),
+                Visibility(
+                  visible: note.noteContext != "",
+                  child: note.noteContext.contains(searchText) &&
+                          searchText != ''
+                      ? buildRichText(
+                          note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
+                          searchText,
+                          const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontFamily: 'LXGWWenKai'),
+                          TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              backgroundColor: Colors.yellow[100],
+                              fontFamily: 'LXGWWenKai'),
+                        )
+                      : Text(
+                          note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 5,
+                          style: const TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                ),
+                // Text(
+                //   '${note.noteContext.length + note.noteTitle.length}${note.noteCreatTime.length > 19 ? '${note.noteCreatTime.substring(0, 19)}创建       ' : note.noteCreatTime}${note.noteUpdateTime.length > 19 ? '${note.noteUpdateTime.substring(0, 19)}修改' : note.noteUpdateTime}',
+                //   maxLines: 1,
+                //   style: const TextStyle(
+                //     fontSize: 10,
+                //   ),
+                // ),
+                Visibility(
+                  visible:
+                      note.noteType + note.noteProject + note.noteFolder != "",
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 70,
+                        padding: const EdgeInsets.all(0),
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          note.noteType,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Color.fromARGB(255, 56, 128, 186),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(0),
+                        alignment: Alignment.centerLeft,
+                        width: 79,
+                        child: Text(
+                          note.noteProject,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Color.fromARGB(255, 215, 55, 55),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(0),
+                        alignment: Alignment.centerLeft,
+                        width: 150,
+                        child: Text(
+                          note.noteFolder,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Color.fromARGB(255, 4, 123, 60),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CheckListEditPage(
+                onPageClosed: () {
+                  refreshList();
+                },
+                note: note,
+              ),
+            ),
+          );
+        },
+        onLongPress: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              if (widget.mod == 2) {
+                return BottomPopSheetDeleted(
+                  note: note,
+                  onDialogClosed: () {
+                    refreshList();
+                  },
+                );
+              } else {
+                return BottomPopSheet(
+                  note: note,
+                  onDialogClosed: () {
+                    refreshList();
+                  },
+                );
+              }
+            },
+          );
+        },
+      );
     } else {
       return GestureDetector(
         child: Card(

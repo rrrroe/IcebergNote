@@ -5,6 +5,7 @@ import 'package:realm/realm.dart';
 import '../constants.dart';
 import '../notes.dart';
 import '../main.dart';
+import 'check_list.dart';
 import 'record_input.dart';
 import 'rich_input_screen.dart';
 
@@ -551,6 +552,11 @@ class ChangePageState extends State<ChangePage> {
                               ),
                             ),
                           );
+                        } else if (widget.note.noteType == '.清单') {
+                          Get.to(() => CheckListEditPage(
+                                note: widget.note,
+                                onPageClosed: () {},
+                              ));
                         } else {
                           Get.to(const RichEditorPage());
                         }
