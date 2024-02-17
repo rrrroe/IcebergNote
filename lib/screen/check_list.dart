@@ -25,7 +25,7 @@ class Todo {
   String todoToString() {
     String tmp = '';
     tmp += 'title: "$title"\n';
-    tmp += 'content: "$content"\n';
+    tmp += 'content: "${content.replaceAll('\n', '<br>')}"\n';
     tmp += 'finishState: $finishState\n';
     tmp +=
         'createTime: ${createTime == null ? '' : '${dateTimeFormat.format(createTime!)}Z'}\n';
@@ -51,7 +51,8 @@ Todo stringToTodo(String s) {
 
   if (map['title'] != null) todo.title = map['title'].toString();
 
-  if (map['content'] != null) todo.content = map['content'].toString();
+  if (map['content'] != null)
+    todo.content = map['content'].toString().replaceAll('<br>', '\n');
 
   if (map['finishState'].runtimeType == int)
     todo.finishState = map['finishState'];
@@ -197,13 +198,14 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                       children: [
                                         Row(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                              CrossAxisAlignment.center,
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
                                             Container(
                                               alignment: Alignment.center,
                                               width: 35,
+                                              height: 35,
                                               child: Checkbox.adaptive(
                                                 fillColor:
                                                     MaterialStateProperty.all(
@@ -288,10 +290,10 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                               child: Container(
                                                 padding:
                                                     const EdgeInsets.all(0),
-                                                alignment: Alignment.topLeft,
+                                                alignment: Alignment.center,
                                                 child: TextField(
                                                   keyboardType:
-                                                      TextInputType.text,
+                                                      TextInputType.multiline,
                                                   textAlign: TextAlign.start,
                                                   style: checkTextStyle[
                                                       todoList[index]
@@ -309,7 +311,6 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                         : const EdgeInsets.all(
                                                             0),
                                                   ),
-                                                  maxLines: 5,
                                                   minLines: 1,
                                                   onChanged: (value) async {
                                                     todoList[index].title =
@@ -375,6 +376,8 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                               : const EdgeInsets
                                                                   .all(0),
                                                     ),
+                                                    maxLines: 10,
+                                                    minLines: 1,
                                                     onChanged: (value) async {
                                                       todoList[index].content =
                                                           value;
@@ -383,7 +386,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                               const SizedBox(height: 5),
                                               Container(
                                                 padding:
-                                                    const EdgeInsets.all(00),
+                                                    const EdgeInsets.all(0),
                                                 child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
