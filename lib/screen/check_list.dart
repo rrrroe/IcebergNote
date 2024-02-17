@@ -9,6 +9,8 @@ import 'package:icebergnote/notes.dart';
 import 'package:intl/intl.dart';
 import 'package:yaml/yaml.dart';
 
+final dateTimeFormat = DateFormat("yyyy-MM-dd HH:mm:ss'Z'");
+
 class Todo {
   String title = '';
   String content = '';
@@ -25,11 +27,16 @@ class Todo {
     tmp += 'title: "$title"\n';
     tmp += 'content: "$content"\n';
     tmp += 'finishState: $finishState\n';
-    tmp += 'createTime: ${createTime ?? ''}\n';
-    tmp += 'startTime: ${startTime ?? ''}\n';
-    tmp += 'finishTime: ${finishTime ?? ''}\n';
-    tmp += 'alarmTime: ${alarmTime ?? ''}\n';
-    tmp += 'giveUpTime: ${giveUpTime ?? ''}\n';
+    tmp +=
+        'createTime: ${createTime == null ? '' : '${dateTimeFormat.format(createTime!)}Z'}\n';
+    tmp +=
+        'startTime: ${startTime == null ? '' : '${dateTimeFormat.format(startTime!)}Z'}\n';
+    tmp +=
+        'finishTime: ${finishTime == null ? '' : '${dateTimeFormat.format(finishTime!)}Z'}\n';
+    tmp +=
+        'alarmTime: ${alarmTime == null ? '' : '${dateTimeFormat.format(alarmTime!)}Z'}\n';
+    tmp +=
+        'giveUpTime: ${giveUpTime == null ? '' : '${dateTimeFormat.format(giveUpTime!)}Z'}\n';
     tmp += 'priority: $priority\n';
     tmp += 'isCollapsed: $isCollapsed';
     return tmp;
@@ -48,9 +55,17 @@ Todo stringToTodo(String s) {
 
   if (map['finishState'].runtimeType == int)
     todo.finishState = map['finishState'];
-  if (map['createTime'] != '')
-    todo.createTime = DateFormat("yyyy-MM-dd HH:mm:ss.SSSZ")
-        .parseUtc(map['createTime'].toString());
+  if (map['createTime'] != '' && map['createTime'] != null)
+    todo.createTime = dateTimeFormat.parseUtc(map['createTime'].toString());
+  if (map['startTime'] != '' && map['startTime'] != null)
+    todo.startTime = dateTimeFormat.parseUtc(map['startTime'].toString());
+  if (map['finishTime'] != '' && map['finishTime'] != null)
+    todo.finishTime = dateTimeFormat.parseUtc(map['finishTime'].toString());
+  if (map['alarmTime'] != '' && map['alarmTime'] != null)
+    todo.alarmTime = dateTimeFormat.parseUtc(map['alarmTime'].toString());
+  if (map['giveUpTime'] != '' && map['giveUpTime'] != null)
+    todo.giveUpTime = dateTimeFormat.parseUtc(map['giveUpTime'].toString());
+
   if (map['priority'].runtimeType == int) todo.priority = map['priority'];
   if (map['isCollapsed'].runtimeType == bool)
     todo.isCollapsed = map['isCollapsed'];
@@ -99,12 +114,8 @@ class CheckListEditPageState extends State<CheckListEditPage> {
   Color backgroundColor = const Color.fromARGB(20, 48, 207, 121);
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     todoList = stringToTodoList(widget.note.noteContext);
     for (int i = 0; i < todoList.length; i++) {
       todoListController.add(TextEditingController());
@@ -113,6 +124,15 @@ class CheckListEditPageState extends State<CheckListEditPage> {
       todoListContentController.add(TextEditingController());
       todoListContentController[i].text = todoList[i].content;
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     List<TextStyle> checkTextStyle = [
       const TextStyle(
         fontSize: 20,
@@ -177,7 +197,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                       children: [
                                         Row(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.center,
+                                              CrossAxisAlignment.start,
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
@@ -204,13 +224,56 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                         ? false
                                                         : null,
                                                 tristate: true,
-                                                onChanged: (bool? value) async {
-                                                  todoList[index].finishState++;
+                                                onChanged: (bool? value) {
+                                                  todoList[index].finishState =
+                                                      todoList[index]
+                                                              .finishState +
+                                                          1;
                                                   if (todoList[index]
                                                           .finishState >
-                                                      3) {
+                                                      1) {
                                                     todoList[index]
                                                         .finishState = 0;
+                                                  }
+                                                  switch (todoList[index]
+                                                      .finishState) {
+                                                    case 0:
+                                                      todoList[index]
+                                                          .startTime = null;
+                                                      todoList[index]
+                                                          .finishTime = null;
+                                                      todoList[index]
+                                                          .giveUpTime = null;
+                                                      break;
+                                                    case 1:
+                                                      todoList[index]
+                                                              .finishTime =
+                                                          DateTime.now()
+                                                              .toUtc();
+                                                      todoList[index]
+                                                          .giveUpTime = null;
+
+                                                      break;
+                                                    case 2:
+                                                      todoList[index]
+                                                              .startTime =
+                                                          DateTime.now()
+                                                              .toUtc();
+                                                      todoList[index]
+                                                          .finishTime = null;
+                                                      todoList[index]
+                                                          .giveUpTime = null;
+                                                      break;
+                                                    case 3:
+                                                      todoList[index]
+                                                              .giveUpTime =
+                                                          DateTime.now()
+                                                              .toUtc();
+                                                      todoList[index]
+                                                          .startTime = null;
+                                                      todoList[index]
+                                                          .finishTime = null;
+                                                      break;
                                                   }
                                                   realm.write(() {
                                                     widget.note.noteContext =
@@ -323,8 +386,78 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                     const EdgeInsets.all(00),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.end,
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
+                                                    Column(
+                                                      children: [
+                                                        Visibility(
+                                                          visible: todoList[
+                                                                      index]
+                                                                  .createTime !=
+                                                              null,
+                                                          child: Text(
+                                                            '创建时间：${todoList[index].createTime != null ? todoList[index].createTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        12),
+                                                          ),
+                                                        ),
+                                                        Visibility(
+                                                          visible: todoList[
+                                                                      index]
+                                                                  .startTime !=
+                                                              null,
+                                                          child: Text(
+                                                            '开始时间：${todoList[index].startTime != null ? todoList[index].startTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        12),
+                                                          ),
+                                                        ),
+                                                        Visibility(
+                                                          visible: todoList[
+                                                                      index]
+                                                                  .finishTime !=
+                                                              null,
+                                                          child: Text(
+                                                            '完成时间：${todoList[index].finishTime != null ? todoList[index].finishTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        12),
+                                                          ),
+                                                        ),
+                                                        Visibility(
+                                                          visible: todoList[
+                                                                      index]
+                                                                  .alarmTime !=
+                                                              null,
+                                                          child: Text(
+                                                            '提醒时间：${todoList[index].alarmTime != null ? todoList[index].alarmTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        12),
+                                                          ),
+                                                        ),
+                                                        Visibility(
+                                                          visible: todoList[
+                                                                      index]
+                                                                  .giveUpTime !=
+                                                              null,
+                                                          child: Text(
+                                                            '放弃时间：${todoList[index].giveUpTime != null ? todoList[index].giveUpTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        12),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                     GestureDetector(
                                                       child: Container(
                                                         padding:
@@ -347,6 +480,10 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                               todoListToString(
                                                                   todoList);
                                                         });
+                                                        todoListController
+                                                            .removeAt(index);
+                                                        todoListContentController
+                                                            .removeAt(index);
                                                         setState(() {});
                                                       },
                                                     ),
@@ -389,6 +526,10 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                     TextEditingController());
                                                 todoListController.last.text =
                                                     '';
+                                                todoListContentController.add(
+                                                    TextEditingController());
+                                                todoListContentController
+                                                    .last.text = '';
                                                 realm.write(() {
                                                   widget.note.noteContext =
                                                       todoListToString(
