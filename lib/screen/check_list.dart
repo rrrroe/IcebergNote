@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/notes.dart';
+import 'package:intl/intl.dart';
+import 'package:yaml/yaml.dart';
 
 class Todo {
   String title = '';
   String content = '';
   int finishState = 0; //0：未完成，1：已完成，2：进行中，3：已放弃//
+  DateTime? createTime = DateTime.now().toUtc();
   DateTime? startTime;
   DateTime? finishTime;
   DateTime? alarmTime;
@@ -18,26 +21,39 @@ class Todo {
   int priority = 0; //0：无，1：低，2：中，3：高//
   bool isCollapsed = true;
   String todoToString() {
-    return '$title////$content////$finishState////$startTime////$finishTime////$alarmTime////$giveUpTime////$priority////$isCollapsed';
+    String tmp = '';
+    tmp += 'title: "$title"\n';
+    tmp += 'content: "$content"\n';
+    tmp += 'finishState: $finishState\n';
+    tmp += 'createTime: ${createTime ?? ''}\n';
+    tmp += 'startTime: ${startTime ?? ''}\n';
+    tmp += 'finishTime: ${finishTime ?? ''}\n';
+    tmp += 'alarmTime: ${alarmTime ?? ''}\n';
+    tmp += 'giveUpTime: ${giveUpTime ?? ''}\n';
+    tmp += 'priority: $priority\n';
+    tmp += 'isCollapsed: $isCollapsed';
+    return tmp;
   }
 }
 
 Todo stringToTodo(String s) {
-  List<String> tmp = s.split('////');
   Todo todo = Todo();
-  if (tmp.isNotEmpty) todo.title = tmp[0];
-  if (tmp.length > 1) todo.content = tmp[1];
-  if (tmp.length > 2) todo.finishState = int.tryParse(tmp[2]) ?? 0;
-  if (tmp.length > 3 && tmp[3] != 'null')
-    todo.startTime = DateTime.tryParse(tmp[3]);
-  if (tmp.length > 4 && tmp[4] != 'null')
-    todo.finishTime = DateTime.tryParse(tmp[4]);
-  if (tmp.length > 5 && tmp[5] != 'null')
-    todo.alarmTime = DateTime.tryParse(tmp[5]);
-  if (tmp.length > 6 && tmp[6] != 'null')
-    todo.giveUpTime = DateTime.tryParse(tmp[6]);
-  if (tmp.length > 7) todo.priority = int.tryParse(tmp[7]) ?? 0;
-  if (tmp.length > 8) todo.isCollapsed = tmp[8] != 'false';
+  if (s == '') return todo;
+
+  var map = loadYaml(s);
+
+  if (map['title'] != null) todo.title = map['title'].toString();
+
+  if (map['content'] != null) todo.content = map['content'].toString();
+
+  if (map['finishState'].runtimeType == int)
+    todo.finishState = map['finishState'];
+  if (map['createTime'] != '')
+    todo.createTime = DateFormat("yyyy-MM-dd HH:mm:ss.SSSZ")
+        .parseUtc(map['createTime'].toString());
+  if (map['priority'].runtimeType == int) todo.priority = map['priority'];
+  if (map['isCollapsed'].runtimeType == bool)
+    todo.isCollapsed = map['isCollapsed'];
   return todo;
 }
 
