@@ -174,196 +174,134 @@ class CheckListEditPageState extends State<CheckListEditPage> {
         ),
         body: Stack(
           children: [
-            Column(
-              children: [
-                Container(
-                  color: backgroundColor,
-                  padding: const EdgeInsets.all(10),
-                  margin: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 10,
-                        child: Padding(
-                          padding: const EdgeInsets.all(0),
-                          child: Container(
-                            constraints: const BoxConstraints(
-                              minHeight: 30,
-                            ),
-                            alignment: Alignment.center,
-                            child: Column(
-                              children: List.generate(
-                                    todoList.length,
-                                    (index) => Column(
-                                      children: [
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              alignment: Alignment.center,
-                                              width: 35,
-                                              height: 35,
-                                              child: Checkbox.adaptive(
-                                                fillColor:
-                                                    MaterialStateProperty.all(
-                                                        const Color.fromARGB(
-                                                            0, 0, 0, 0)),
-                                                checkColor: todoList[index]
-                                                            .finishState ==
-                                                        3
-                                                    ? Colors.grey
-                                                    : fontColor,
-                                                value: todoList[index]
-                                                            .finishState ==
-                                                        1
-                                                    ? true
-                                                    : todoList[index]
-                                                                .finishState ==
-                                                            0
-                                                        ? false
-                                                        : null,
-                                                tristate: true,
-                                                onChanged: (bool? value) {
-                                                  todoList[index].finishState =
-                                                      todoList[index]
-                                                              .finishState +
-                                                          1;
-                                                  if (todoList[index]
-                                                          .finishState >
-                                                      1) {
-                                                    todoList[index]
-                                                        .finishState = 0;
-                                                  }
-                                                  switch (todoList[index]
-                                                      .finishState) {
-                                                    case 0:
-                                                      todoList[index]
-                                                          .startTime = null;
-                                                      todoList[index]
-                                                          .finishTime = null;
-                                                      todoList[index]
-                                                          .giveUpTime = null;
-                                                      break;
-                                                    case 1:
-                                                      todoList[index]
-                                                              .finishTime =
-                                                          DateTime.now()
-                                                              .toUtc();
-                                                      todoList[index]
-                                                          .giveUpTime = null;
-
-                                                      break;
-                                                    case 2:
-                                                      todoList[index]
-                                                              .startTime =
-                                                          DateTime.now()
-                                                              .toUtc();
-                                                      todoList[index]
-                                                          .finishTime = null;
-                                                      todoList[index]
-                                                          .giveUpTime = null;
-                                                      break;
-                                                    case 3:
-                                                      todoList[index]
-                                                              .giveUpTime =
-                                                          DateTime.now()
-                                                              .toUtc();
-                                                      todoList[index]
-                                                          .startTime = null;
-                                                      todoList[index]
-                                                          .finishTime = null;
-                                                      break;
-                                                  }
-                                                  realm.write(() {
-                                                    widget.note.noteContext =
-                                                        todoListToString(
-                                                            todoList);
-                                                  });
-                                                  setState(() {});
-                                                },
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(0),
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    color: backgroundColor,
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.all(20),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 10,
+                          child: Padding(
+                            padding: const EdgeInsets.all(0),
+                            child: Container(
+                              constraints: const BoxConstraints(
+                                minHeight: 30,
+                              ),
+                              alignment: Alignment.center,
+                              child: Column(
+                                children: List.generate(
+                                      todoList.length,
+                                      (index) => Column(
+                                        children: [
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
                                                 alignment: Alignment.center,
-                                                child: TextField(
-                                                  keyboardType:
-                                                      TextInputType.multiline,
-                                                  textAlign: TextAlign.start,
-                                                  style: checkTextStyle[
+                                                width: 35,
+                                                height: 35,
+                                                child: Checkbox.adaptive(
+                                                  fillColor:
+                                                      MaterialStateProperty.all(
+                                                          const Color.fromARGB(
+                                                              0, 0, 0, 0)),
+                                                  checkColor: todoList[index]
+                                                              .finishState ==
+                                                          3
+                                                      ? Colors.grey
+                                                      : fontColor,
+                                                  value: todoList[index]
+                                                              .finishState ==
+                                                          1
+                                                      ? true
+                                                      : todoList[index]
+                                                                  .finishState ==
+                                                              0
+                                                          ? false
+                                                          : null,
+                                                  tristate: true,
+                                                  onChanged: (bool? value) {
+                                                    todoList[index]
+                                                            .finishState =
+                                                        todoList[index]
+                                                                .finishState +
+                                                            1;
+                                                    if (todoList[index]
+                                                            .finishState >
+                                                        1) {
                                                       todoList[index]
-                                                          .finishState],
-                                                  controller:
-                                                      todoListController[index],
-                                                  decoration: InputDecoration(
-                                                    border: InputBorder.none,
-                                                    isCollapsed: true,
-                                                    contentPadding: Platform
-                                                            .isAndroid
-                                                        ? const EdgeInsets
-                                                            .fromLTRB(
-                                                            5, 0, 0, 5)
-                                                        : const EdgeInsets.all(
-                                                            0),
-                                                  ),
-                                                  minLines: 1,
-                                                  onChanged: (value) async {
-                                                    todoList[index].title =
-                                                        value;
+                                                          .finishState = 0;
+                                                    }
+                                                    switch (todoList[index]
+                                                        .finishState) {
+                                                      case 0:
+                                                        todoList[index]
+                                                            .startTime = null;
+                                                        todoList[index]
+                                                            .finishTime = null;
+                                                        todoList[index]
+                                                            .giveUpTime = null;
+                                                        break;
+                                                      case 1:
+                                                        todoList[index]
+                                                                .finishTime =
+                                                            DateTime.now()
+                                                                .toUtc();
+                                                        todoList[index]
+                                                            .giveUpTime = null;
+
+                                                        break;
+                                                      case 2:
+                                                        todoList[index]
+                                                                .startTime =
+                                                            DateTime.now()
+                                                                .toUtc();
+                                                        todoList[index]
+                                                            .finishTime = null;
+                                                        todoList[index]
+                                                            .giveUpTime = null;
+                                                        break;
+                                                      case 3:
+                                                        todoList[index]
+                                                                .giveUpTime =
+                                                            DateTime.now()
+                                                                .toUtc();
+                                                        todoList[index]
+                                                            .startTime = null;
+                                                        todoList[index]
+                                                            .finishTime = null;
+                                                        break;
+                                                    }
+                                                    realm.write(() {
+                                                      widget.note.noteContext =
+                                                          todoListToString(
+                                                              todoList);
+                                                    });
+                                                    setState(() {});
                                                   },
                                                 ),
                                               ),
-                                            ),
-                                            GestureDetector(
-                                              child: Container(
-                                                height: 25,
-                                                padding:
-                                                    const EdgeInsets.all(0),
-                                                alignment: Alignment.bottomLeft,
-                                                child: Icon(
-                                                  todoList[index].isCollapsed
-                                                      ? Icons.arrow_right
-                                                      : Icons.arrow_drop_down,
-                                                  size: 25,
-                                                  color: fontColor,
-                                                ),
-                                              ),
-                                              onTap: () {
-                                                todoList[index].isCollapsed =
-                                                    !todoList[index]
-                                                        .isCollapsed;
-
-                                                realm.write(() {
-                                                  widget.note.noteContext =
-                                                      todoListToString(
-                                                          todoList);
-                                                });
-                                                setState(() {});
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                        Visibility(
-                                          visible: !todoList[index].isCollapsed,
-                                          child: Column(
-                                            children: [
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                color: Colors.white,
-                                                child: TextField(
+                                              Expanded(
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(0),
+                                                  alignment: Alignment.center,
+                                                  child: TextField(
+                                                    keyboardType:
+                                                        TextInputType.multiline,
                                                     textAlign: TextAlign.start,
-                                                    style: const TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.black54,
-                                                    ),
+                                                    style: checkTextStyle[
+                                                        todoList[index]
+                                                            .finishState],
                                                     controller:
-                                                        todoListContentController[
+                                                        todoListController[
                                                             index],
                                                     decoration: InputDecoration(
                                                       border: InputBorder.none,
@@ -376,185 +314,256 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                               : const EdgeInsets
                                                                   .all(0),
                                                     ),
-                                                    maxLines: 10,
                                                     minLines: 1,
                                                     onChanged: (value) async {
-                                                      todoList[index].content =
+                                                      todoList[index].title =
                                                           value;
-                                                    }),
-                                              ),
-                                              const SizedBox(height: 5),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.all(0),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Column(
-                                                      children: [
-                                                        Visibility(
-                                                          visible: todoList[
-                                                                      index]
-                                                                  .createTime !=
-                                                              null,
-                                                          child: Text(
-                                                            '创建时间：${todoList[index].createTime != null ? todoList[index].createTime!.toLocal().toString().substring(0, 19) : ''}',
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        12),
-                                                          ),
-                                                        ),
-                                                        Visibility(
-                                                          visible: todoList[
-                                                                      index]
-                                                                  .startTime !=
-                                                              null,
-                                                          child: Text(
-                                                            '开始时间：${todoList[index].startTime != null ? todoList[index].startTime!.toLocal().toString().substring(0, 19) : ''}',
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        12),
-                                                          ),
-                                                        ),
-                                                        Visibility(
-                                                          visible: todoList[
-                                                                      index]
-                                                                  .finishTime !=
-                                                              null,
-                                                          child: Text(
-                                                            '完成时间：${todoList[index].finishTime != null ? todoList[index].finishTime!.toLocal().toString().substring(0, 19) : ''}',
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        12),
-                                                          ),
-                                                        ),
-                                                        Visibility(
-                                                          visible: todoList[
-                                                                      index]
-                                                                  .alarmTime !=
-                                                              null,
-                                                          child: Text(
-                                                            '提醒时间：${todoList[index].alarmTime != null ? todoList[index].alarmTime!.toLocal().toString().substring(0, 19) : ''}',
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        12),
-                                                          ),
-                                                        ),
-                                                        Visibility(
-                                                          visible: todoList[
-                                                                      index]
-                                                                  .giveUpTime !=
-                                                              null,
-                                                          child: Text(
-                                                            '放弃时间：${todoList[index].giveUpTime != null ? todoList[index].giveUpTime!.toLocal().toString().substring(0, 19) : ''}',
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        12),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    GestureDetector(
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(0),
-                                                        alignment: Alignment
-                                                            .bottomLeft,
-                                                        child: Icon(
-                                                          Icons.delete,
-                                                          size: 25,
-                                                          color: fontColor,
-                                                        ),
-                                                      ),
-                                                      onTap: () {
-                                                        todoList
-                                                            .removeAt(index);
-                                                        realm.write(() {
-                                                          widget.note
-                                                                  .noteContext =
-                                                              todoListToString(
-                                                                  todoList);
-                                                        });
-                                                        todoListController
-                                                            .removeAt(index);
-                                                        todoListContentController
-                                                            .removeAt(index);
-                                                        setState(() {});
-                                                      },
-                                                    ),
-                                                  ],
+                                                    },
+                                                  ),
                                                 ),
+                                              ),
+                                              GestureDetector(
+                                                child: Container(
+                                                  height: 25,
+                                                  padding:
+                                                      const EdgeInsets.all(0),
+                                                  alignment:
+                                                      Alignment.bottomLeft,
+                                                  child: Icon(
+                                                    todoList[index].isCollapsed
+                                                        ? Icons.arrow_right
+                                                        : Icons.arrow_drop_down,
+                                                    size: 25,
+                                                    color: fontColor,
+                                                  ),
+                                                ),
+                                                onTap: () {
+                                                  todoList[index].isCollapsed =
+                                                      !todoList[index]
+                                                          .isCollapsed;
+
+                                                  realm.write(() {
+                                                    widget.note.noteContext =
+                                                        todoListToString(
+                                                            todoList);
+                                                  });
+                                                  setState(() {});
+                                                },
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        Divider(
-                                          color: backgroundColor,
-                                          thickness: 3,
-                                        ),
-                                      ],
-                                    ),
-                                  ) +
-                                  List.generate(
-                                    1,
-                                    (index) => Column(
-                                      children: [
-                                        Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            Expanded(child: Container()),
-                                            GestureDetector(
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(0),
-                                                alignment: Alignment.center,
-                                                height: 25,
-                                                child: Icon(
-                                                  Icons.add,
-                                                  size: 25,
-                                                  color: fontColor,
+                                          Visibility(
+                                            visible:
+                                                !todoList[index].isCollapsed,
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  color: Colors.white,
+                                                  child: TextField(
+                                                      textAlign:
+                                                          TextAlign.start,
+                                                      style: const TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.black54,
+                                                      ),
+                                                      controller:
+                                                          todoListContentController[
+                                                              index],
+                                                      decoration:
+                                                          InputDecoration(
+                                                        border:
+                                                            InputBorder.none,
+                                                        isCollapsed: true,
+                                                        contentPadding: Platform
+                                                                .isAndroid
+                                                            ? const EdgeInsets
+                                                                .fromLTRB(
+                                                                5, 0, 0, 5)
+                                                            : const EdgeInsets
+                                                                .all(0),
+                                                      ),
+                                                      maxLines: 10,
+                                                      minLines: 1,
+                                                      onChanged: (value) async {
+                                                        todoList[index]
+                                                            .content = value;
+                                                      }),
                                                 ),
-                                              ),
-                                              onTap: () {
-                                                todoList.add(Todo());
-                                                todoListController.add(
-                                                    TextEditingController());
-                                                todoListController.last.text =
-                                                    '';
-                                                todoListContentController.add(
-                                                    TextEditingController());
-                                                todoListContentController
-                                                    .last.text = '';
-                                                realm.write(() {
-                                                  widget.note.noteContext =
-                                                      todoListToString(
-                                                          todoList);
-                                                });
-                                                setState(() {});
-                                              },
+                                                const SizedBox(height: 5),
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.all(0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Column(
+                                                        children: [
+                                                          Visibility(
+                                                            visible: todoList[
+                                                                        index]
+                                                                    .createTime !=
+                                                                null,
+                                                            child: Text(
+                                                              '创建时间：${todoList[index].createTime != null ? todoList[index].createTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          12),
+                                                            ),
+                                                          ),
+                                                          Visibility(
+                                                            visible: todoList[
+                                                                        index]
+                                                                    .startTime !=
+                                                                null,
+                                                            child: Text(
+                                                              '开始时间：${todoList[index].startTime != null ? todoList[index].startTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          12),
+                                                            ),
+                                                          ),
+                                                          Visibility(
+                                                            visible: todoList[
+                                                                        index]
+                                                                    .finishTime !=
+                                                                null,
+                                                            child: Text(
+                                                              '完成时间：${todoList[index].finishTime != null ? todoList[index].finishTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          12),
+                                                            ),
+                                                          ),
+                                                          Visibility(
+                                                            visible: todoList[
+                                                                        index]
+                                                                    .alarmTime !=
+                                                                null,
+                                                            child: Text(
+                                                              '提醒时间：${todoList[index].alarmTime != null ? todoList[index].alarmTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          12),
+                                                            ),
+                                                          ),
+                                                          Visibility(
+                                                            visible: todoList[
+                                                                        index]
+                                                                    .giveUpTime !=
+                                                                null,
+                                                            child: Text(
+                                                              '放弃时间：${todoList[index].giveUpTime != null ? todoList[index].giveUpTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          12),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      GestureDetector(
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(0),
+                                                          alignment: Alignment
+                                                              .bottomLeft,
+                                                          child: Icon(
+                                                            Icons.delete,
+                                                            size: 25,
+                                                            color: fontColor,
+                                                          ),
+                                                        ),
+                                                        onTap: () {
+                                                          todoList
+                                                              .removeAt(index);
+                                                          realm.write(() {
+                                                            widget.note
+                                                                    .noteContext =
+                                                                todoListToString(
+                                                                    todoList);
+                                                          });
+                                                          todoListController
+                                                              .removeAt(index);
+                                                          todoListContentController
+                                                              .removeAt(index);
+                                                          setState(() {});
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            Expanded(child: Container()),
-                                          ],
-                                        ),
-                                      ],
+                                          ),
+                                          Divider(
+                                            color: backgroundColor,
+                                            thickness: 3,
+                                          ),
+                                        ],
+                                      ),
+                                    ) +
+                                    List.generate(
+                                      1,
+                                      (index) => Column(
+                                        children: [
+                                          Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Expanded(child: Container()),
+                                              GestureDetector(
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(0),
+                                                  alignment: Alignment.center,
+                                                  height: 25,
+                                                  child: Icon(
+                                                    Icons.add,
+                                                    size: 25,
+                                                    color: fontColor,
+                                                  ),
+                                                ),
+                                                onTap: () {
+                                                  todoList.add(Todo());
+                                                  todoListController.add(
+                                                      TextEditingController());
+                                                  todoListController.last.text =
+                                                      '';
+                                                  todoListContentController.add(
+                                                      TextEditingController());
+                                                  todoListContentController
+                                                      .last.text = '';
+                                                  realm.write(() {
+                                                    widget.note.noteContext =
+                                                        todoListToString(
+                                                            todoList);
+                                                  });
+                                                  setState(() {});
+                                                },
+                                              ),
+                                              Expanded(child: Container()),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Positioned(
               bottom: 0,
