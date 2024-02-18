@@ -1437,87 +1437,88 @@ class SearchPageState extends State<SearchPage> {
                   ),
                 ),
                 Visibility(
-                    visible: note.noteContext != "",
-                    child: note.noteContext.contains(searchText) &&
-                            searchText != ''
-                        ? buildRichText(
-                            note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
-                            searchText,
-                            const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontFamily: 'LXGWWenKai'),
-                            TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                backgroundColor: Colors.yellow[100],
-                                fontFamily: 'LXGWWenKai'),
-                          )
-                        : Column(
-                            children: List.generate(
-                              todoList.length,
-                              (index) => Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    alignment: Alignment.center,
-                                    width: 35,
-                                    height: 35,
-                                    child: Checkbox.adaptive(
-                                      fillColor: MaterialStateProperty.all(
-                                          const Color.fromARGB(0, 0, 0, 0)),
-                                      checkColor:
-                                          todoList[index].finishState == 3
-                                              ? Colors.grey
-                                              : fontColor,
-                                      value: todoList[index].finishState == 1
-                                          ? true
-                                          : todoList[index].finishState == 0
-                                              ? false
-                                              : null,
-                                      tristate: true,
-                                      onChanged: (bool? value) {
-                                        todoList[index].finishState =
-                                            todoList[index].finishState + 1;
-                                        if (todoList[index].finishState > 1) {
-                                          todoList[index].finishState = 0;
-                                        }
-                                        switch (todoList[index].finishState) {
-                                          case 0:
-                                            todoList[index].startTime = null;
-                                            todoList[index].finishTime = null;
-                                            todoList[index].giveUpTime = null;
-                                            break;
-                                          case 1:
-                                            todoList[index].finishTime =
-                                                DateTime.now().toUtc();
-                                            todoList[index].giveUpTime = null;
+                  visible: note.noteContext != "",
+                  child: note.noteContext.contains(searchText) &&
+                          searchText != ''
+                      ? buildRichText(
+                          note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
+                          searchText,
+                          const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontFamily: 'LXGWWenKai'),
+                          TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              backgroundColor: Colors.yellow[100],
+                              fontFamily: 'LXGWWenKai'),
+                        )
+                      : Column(
+                          children: List.generate(
+                            todoList.length,
+                            (index) => Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Checkbox.adaptive(
+                                  fillColor: MaterialStateProperty.all(
+                                      const Color.fromARGB(0, 0, 0, 0)),
+                                  checkColor: todoList[index].finishState == 3
+                                      ? Colors.grey
+                                      : fontColor,
+                                  value: todoList[index].finishState == 1
+                                      ? true
+                                      : todoList[index].finishState == 0
+                                          ? false
+                                          : null,
+                                  tristate: true,
+                                  onChanged: (bool? value) {
+                                    todoList[index].finishState =
+                                        todoList[index].finishState + 1;
+                                    if (todoList[index].finishState > 1) {
+                                      todoList[index].finishState = 0;
+                                    }
+                                    switch (todoList[index].finishState) {
+                                      case 0:
+                                        todoList[index].startTime = null;
+                                        todoList[index].finishTime = null;
+                                        todoList[index].giveUpTime = null;
+                                        break;
+                                      case 1:
+                                        todoList[index].finishTime =
+                                            DateTime.now().toUtc();
+                                        todoList[index].giveUpTime = null;
 
-                                            break;
-                                        }
-                                        realm.write(() {
-                                          note.noteContext =
-                                              todoListToString(todoList);
-                                        });
-                                        setState(() {});
-                                      },
-                                    ),
+                                        break;
+                                    }
+                                    realm.write(() {
+                                      note.noteContext =
+                                          todoListToString(todoList);
+                                    });
+                                    setState(() {});
+                                  },
+                                ),
+                                Flexible(
+                                  child: Text(
+                                    todoList[index].title,
+                                    textAlign: TextAlign.left,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    softWrap: true,
+                                    style: checkTextStyle[
+                                        todoList[index].finishState],
                                   ),
-                                  Container(
-                                    padding: const EdgeInsets.all(0),
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      todoList[index].title,
-                                      textAlign: TextAlign.left,
-                                      style: checkTextStyle[
-                                          todoList[index].finishState],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                                Divider(
+                                  color: backgroundColor,
+                                  thickness: 3,
+                                ),
+                              ],
                             ),
-                          )),
+                          ),
+                        ),
+                ),
                 Visibility(
                   visible:
                       note.noteType + note.noteProject + note.noteFolder != "",
