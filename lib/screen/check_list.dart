@@ -600,6 +600,24 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                 ),
               ),
             ),
+            Positioned(
+              bottom: 50,
+              right: 20,
+              child: FloatingActionButton(
+                onPressed: () {
+                  todoList.add(Todo());
+                  todoListController.add(TextEditingController());
+                  todoListController.last.text = '';
+                  todoListContentController.add(TextEditingController());
+                  todoListContentController.last.text = '';
+                  realm.write(() {
+                    widget.note.noteContext = todoListToString(todoList);
+                  });
+                  setState(() {});
+                },
+                child: const Icon(Icons.add),
+              ),
+            ),
           ],
         ),
       ),
