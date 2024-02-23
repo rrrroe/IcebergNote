@@ -230,14 +230,14 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                         children: [
                                           Row(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                                                CrossAxisAlignment.start,
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
                                               Container(
                                                 alignment: Alignment.center,
                                                 width: 35,
-                                                height: 35,
+                                                height: 26,
                                                 child: Checkbox.adaptive(
                                                   fillColor:
                                                       MaterialStateProperty.all(
@@ -346,6 +346,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                                   .all(0),
                                                     ),
                                                     minLines: 1,
+                                                    maxLines: 3,
                                                     onChanged: (value) async {
                                                       todoList[index].title =
                                                           value;
@@ -389,8 +390,10 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                             child: Column(
                                               children: [
                                                 Container(
-                                                  padding:
-                                                      const EdgeInsets.all(10),
+                                                  margin: EdgeInsets.fromLTRB(
+                                                      0, 10, 0, 0),
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      0, 10, 0, 10),
                                                   color: Colors.white,
                                                   child: TextField(
                                                       textAlign:
@@ -440,10 +443,10 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                                 null,
                                                             child: Text(
                                                               '创建时间：${todoList[index].createTime != null ? todoList[index].createTime!.toLocal().toString().substring(0, 19) : ''}',
-                                                              style:
-                                                                  const TextStyle(
-                                                                      fontSize:
-                                                                          12),
+                                                              style: const TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors
+                                                                      .black54),
                                                             ),
                                                           ),
                                                           Visibility(
