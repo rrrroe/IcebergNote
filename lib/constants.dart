@@ -40,10 +40,11 @@ enum ColorSeed {
 }
 
 enum ScreenSelected {
-  component(0),
-  todo(1),
-  color(2),
-  elevation(3);
+  star(0),
+  component(1),
+  todo(2),
+  color(3),
+  elevation(4);
 
   const ScreenSelected(this.value);
   final int value;

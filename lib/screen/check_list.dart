@@ -390,10 +390,12 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                             child: Column(
                                               children: [
                                                 Container(
-                                                  margin: EdgeInsets.fromLTRB(
-                                                      0, 10, 0, 0),
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      0, 10, 0, 10),
+                                                  margin:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 10, 0, 0),
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 10, 0, 10),
                                                   color: Colors.white,
                                                   child: TextField(
                                                       textAlign:

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/login_screen.dart';
 import 'package:icebergnote/screen/review_screen.dart';
+import 'package:icebergnote/screen/star_screen.dart';
 import 'package:icebergnote/system/device_id.dart';
 import 'package:icebergnote/users.dart';
 import 'screen/import_screen.dart';
@@ -46,12 +47,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   bool controllerInitialized = false;
   bool showMediumSizeLayout = false;
   bool showLargeSizeLayout = false;
-  int screenIndex = ScreenSelected.component.value;
-  final SearchPage searchPage = SearchPage(
+  int screenIndex = ScreenSelected.star.index;
+  final StarPage starPage = const StarPage(
     mod: 0,
     txt: '',
   );
-  final SearchPage searchPage2 = SearchPage(
+  final SearchPage searchPage = SearchPage(
     mod: 0,
     txt: '',
   );
@@ -117,11 +118,21 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Widget createScreenFor(
       ScreenSelected screenSelected, bool showNavBarExample) {
     switch (screenSelected) {
+      case ScreenSelected.star:
+        return Expanded(
+          child: OneTwoTransition(
+            animation: railAnimation,
+            one: starPage,
+            two: SecondComponentList(
+              scaffoldKey: scaffoldKey,
+            ),
+          ),
+        );
       case ScreenSelected.component:
         return Expanded(
           child: OneTwoTransition(
             animation: railAnimation,
-            one: searchPage2,
+            one: searchPage,
             two: SecondComponentList(
               scaffoldKey: scaffoldKey,
             ),
@@ -155,7 +166,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ),
         );
       default:
-        return searchPage;
+        return starPage;
     }
   }
 

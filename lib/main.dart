@@ -92,6 +92,13 @@ class NotesList {
       }
     }
   }
+
+  searchStar(String n, int m) {
+    visibleItemCount = visibleItemCount + m;
+    notesList = realm.query<Notes>(
+        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteIsStarred == true ) AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT($visibleItemCount)",
+        [n]);
+  }
 }
 
 var mainnotesList = NotesList();

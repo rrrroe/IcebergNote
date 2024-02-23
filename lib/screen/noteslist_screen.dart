@@ -317,7 +317,7 @@ class BottomPopSheet extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.star),
-            title: Text(note.noteIsStarred == true ? '星标' : '取消星标'),
+            title: Text(note.noteIsStarred == true ? '取消星标' : '星标'),
             onTap: () {
               realm.write(() {
                 note.noteIsStarred = !note.noteIsStarred;
@@ -499,6 +499,9 @@ class SearchPageState extends State<SearchPage> {
         case 3:
           searchnotesList.searchTodo(searchText, 0);
           break;
+        case 4:
+          searchnotesList.searchStar(searchText, 0);
+          break;
       }
       _scrollController.jumpTo(scrollPosition);
     });
@@ -519,6 +522,9 @@ class SearchPageState extends State<SearchPage> {
           break;
         case 3:
           searchnotesList.searchTodo(searchText, 0);
+          break;
+        case 4:
+          searchnotesList.searchStar(searchText, 0);
           break;
       }
     });
@@ -542,6 +548,9 @@ class SearchPageState extends State<SearchPage> {
         break;
       case 3:
         searchnotesList.searchTodo(searchText, 0);
+        break;
+      case 4:
+        searchnotesList.searchStar(searchText, 0);
         break;
     }
     List<Notes> typeDistinctList = realm
@@ -606,6 +615,9 @@ class SearchPageState extends State<SearchPage> {
           case 3:
             searchnotesList.searchTodo(searchText, 50);
             break;
+          case 4:
+            searchnotesList.searchStar(searchText, 50);
+            break;
         }
         refreshList();
       });
@@ -626,6 +638,9 @@ class SearchPageState extends State<SearchPage> {
           case 3:
             searchnotesList.searchTodo(searchText, 0);
             break;
+          case 4:
+            searchnotesList.searchStar(searchText, 0);
+            break;
         }
         refreshList();
         setState(() {});
@@ -634,7 +649,7 @@ class SearchPageState extends State<SearchPage> {
   }
 
   PreferredSizeWidget buildAppBar() {
-    if (widget.mod == 0) {
+    if (widget.mod == 0 || widget.mod == 4) {
       return PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
         child: Row(
@@ -1854,6 +1869,9 @@ class SearchPageState extends State<SearchPage> {
         case 3:
           searchnotesList.searchTodo(searchText, 15);
           break;
+        case 4:
+          searchnotesList.searchStar(searchText, 15);
+          break;
       }
       refreshList();
     });
@@ -2821,6 +2839,12 @@ class _ProgressIndicatorsState extends State<ProgressIndicators> {
 }
 
 const List<NavigationDestination> appBarDestinations = [
+  NavigationDestination(
+    tooltip: '',
+    icon: Icon(Icons.star_border_outlined),
+    label: 'Stars',
+    selectedIcon: Icon(Icons.star),
+  ),
   NavigationDestination(
     tooltip: '',
     icon: Icon(Icons.widgets_outlined),
