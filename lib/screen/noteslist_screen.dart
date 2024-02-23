@@ -315,6 +315,18 @@ class BottomPopSheet extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.star),
+            title: Text(note.noteIsStarred == true ? '星标' : '取消星标'),
+            onTap: () {
+              realm.write(() {
+                note.noteIsStarred = !note.noteIsStarred;
+                note.noteUpdateDate = DateTime.now().toUtc();
+              });
+              onDialogClosed();
+              Navigator.pop(context);
+            },
+          ),
         ],
       ),
     );
