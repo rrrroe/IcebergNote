@@ -314,6 +314,10 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                       widget.note.noteContext =
                                                           todoListToString(
                                                               todoList);
+                                                      widget.note
+                                                              .noteUpdateDate =
+                                                          DateTime.now()
+                                                              .toUtc();
                                                     });
                                                     setState(() {});
                                                   },
@@ -378,6 +382,8 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                     widget.note.noteContext =
                                                         todoListToString(
                                                             todoList);
+                                                    widget.note.noteUpdateDate =
+                                                        DateTime.now().toUtc();
                                                   });
                                                   setState(() {});
                                                 },
@@ -526,6 +532,10 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                                     .noteContext =
                                                                 todoListToString(
                                                                     todoList);
+                                                            widget.note
+                                                                    .noteUpdateDate =
+                                                                DateTime.now()
+                                                                    .toUtc();
                                                           });
                                                           todoListController
                                                               .removeAt(index);
@@ -585,6 +595,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                       onPressed: () {
                         realm.write(() {
                           widget.note.noteContext = todoListToString(todoList);
+                          widget.note.noteUpdateDate = DateTime.now().toUtc();
                         });
                         widget.onPageClosed();
                         Get.back();
@@ -607,6 +618,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                   todoListContentController.last.text = '';
                   realm.write(() {
                     widget.note.noteContext = todoListToString(todoList);
+                    widget.note.noteUpdateDate = DateTime.now().toUtc();
                   });
                   setState(() {});
                 },
