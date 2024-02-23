@@ -111,6 +111,8 @@ class CheckListEditPageState extends State<CheckListEditPage> {
   List<Todo> todoList = [];
   List<TextEditingController> todoListController = [];
   List<TextEditingController> todoListContentController = [];
+  TextEditingController titleController = TextEditingController();
+
   Color fontColor = const Color.fromARGB(255, 48, 207, 121);
   Color backgroundColor = const Color.fromARGB(20, 48, 207, 121);
 
@@ -174,26 +176,55 @@ class CheckListEditPageState extends State<CheckListEditPage> {
         ),
         body: Stack(
           children: [
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    color: backgroundColor,
-                    padding: const EdgeInsets.all(10),
-                    margin: const EdgeInsets.all(20),
-                    child: Row(
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
                       children: [
-                        Expanded(
-                          flex: 10,
-                          child: Padding(
-                            padding: const EdgeInsets.all(0),
-                            child: Container(
-                              constraints: const BoxConstraints(
-                                minHeight: 30,
-                              ),
-                              alignment: Alignment.center,
-                              child: Column(
-                                children: List.generate(
+                        Container(
+                          margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                          child: TextField(
+                            textAlign: TextAlign.center,
+                            controller: titleController,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            minLines: 1,
+                            maxLines: 2,
+                            decoration: const InputDecoration(
+                                labelText: "标题",
+                                labelStyle: TextStyle(
+                                  color: Colors.grey,
+                                )),
+                            onChanged: (value) async {
+                              await realm.writeAsync(() {
+                                widget.note.noteTitle = value;
+                                widget.note.noteUpdateDate =
+                                    DateTime.now().toUtc();
+                              });
+                            },
+                          ),
+                        ),
+                        Container(
+                          color: backgroundColor,
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.all(20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 10,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(0),
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      minHeight: 30,
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Column(
+                                        children: List.generate(
                                       todoList.length,
                                       (index) => Column(
                                         children: [
@@ -510,60 +541,19 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                           ),
                                         ],
                                       ),
-                                    ) +
-                                    List.generate(
-                                      1,
-                                      (index) => Column(
-                                        children: [
-                                          Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              Expanded(child: Container()),
-                                              GestureDetector(
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(0),
-                                                  alignment: Alignment.center,
-                                                  height: 25,
-                                                  child: Icon(
-                                                    Icons.add,
-                                                    size: 25,
-                                                    color: fontColor,
-                                                  ),
-                                                ),
-                                                onTap: () {
-                                                  todoList.add(Todo());
-                                                  todoListController.add(
-                                                      TextEditingController());
-                                                  todoListController.last.text =
-                                                      '';
-                                                  todoListContentController.add(
-                                                      TextEditingController());
-                                                  todoListContentController
-                                                      .last.text = '';
-                                                  realm.write(() {
-                                                    widget.note.noteContext =
-                                                        todoListToString(
-                                                            todoList);
-                                                  });
-                                                  setState(() {});
-                                                },
-                                              ),
-                                              Expanded(child: Container()),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                    )),
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
+                        Container(height: 250)
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             Positioned(
               bottom: 0,
