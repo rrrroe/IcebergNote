@@ -232,12 +232,14 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                                MainAxisAlignment.start,
                                             children: [
                                               Container(
-                                                alignment: Alignment.center,
+                                                alignment: Alignment.topCenter,
                                                 width: 35,
-                                                height: 26,
+                                                height: Platform.isAndroid
+                                                    ? 34
+                                                    : 26,
                                                 child: Checkbox.adaptive(
                                                   fillColor:
                                                       MaterialStateProperty.all(

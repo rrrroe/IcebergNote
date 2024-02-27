@@ -1488,43 +1488,47 @@ class SearchPageState extends State<SearchPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                Checkbox.adaptive(
-                                  fillColor: MaterialStateProperty.all(
-                                      const Color.fromARGB(0, 0, 0, 0)),
-                                  checkColor: todoList[index].finishState == 3
-                                      ? Colors.grey
-                                      : fontColor,
-                                  value: todoList[index].finishState == 1
-                                      ? true
-                                      : todoList[index].finishState == 0
-                                          ? false
-                                          : null,
-                                  tristate: true,
-                                  onChanged: (bool? value) {
-                                    todoList[index].finishState =
-                                        todoList[index].finishState + 1;
-                                    if (todoList[index].finishState > 1) {
-                                      todoList[index].finishState = 0;
-                                    }
-                                    switch (todoList[index].finishState) {
-                                      case 0:
-                                        todoList[index].startTime = null;
-                                        todoList[index].finishTime = null;
-                                        todoList[index].giveUpTime = null;
-                                        break;
-                                      case 1:
-                                        todoList[index].finishTime =
-                                            DateTime.now().toUtc();
-                                        todoList[index].giveUpTime = null;
+                                Container(
+                                  height: 30,
+                                  alignment: Alignment.center,
+                                  child: Checkbox.adaptive(
+                                    fillColor: MaterialStateProperty.all(
+                                        const Color.fromARGB(0, 0, 0, 0)),
+                                    checkColor: todoList[index].finishState == 3
+                                        ? Colors.grey
+                                        : fontColor,
+                                    value: todoList[index].finishState == 1
+                                        ? true
+                                        : todoList[index].finishState == 0
+                                            ? false
+                                            : null,
+                                    tristate: true,
+                                    onChanged: (bool? value) {
+                                      todoList[index].finishState =
+                                          todoList[index].finishState + 1;
+                                      if (todoList[index].finishState > 1) {
+                                        todoList[index].finishState = 0;
+                                      }
+                                      switch (todoList[index].finishState) {
+                                        case 0:
+                                          todoList[index].startTime = null;
+                                          todoList[index].finishTime = null;
+                                          todoList[index].giveUpTime = null;
+                                          break;
+                                        case 1:
+                                          todoList[index].finishTime =
+                                              DateTime.now().toUtc();
+                                          todoList[index].giveUpTime = null;
 
-                                        break;
-                                    }
-                                    realm.write(() {
-                                      note.noteContext =
-                                          todoListToString(todoList);
-                                    });
-                                    setState(() {});
-                                  },
+                                          break;
+                                      }
+                                      realm.write(() {
+                                        note.noteContext =
+                                            todoListToString(todoList);
+                                      });
+                                      setState(() {});
+                                    },
+                                  ),
                                 ),
                                 Flexible(
                                   child: Text(
@@ -1536,10 +1540,6 @@ class SearchPageState extends State<SearchPage> {
                                     style: checkTextStyle[
                                         todoList[index].finishState],
                                   ),
-                                ),
-                                Divider(
-                                  color: backgroundColor,
-                                  thickness: 3,
                                 ),
                               ],
                             ),
