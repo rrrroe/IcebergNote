@@ -689,43 +689,47 @@ class StarPageState extends State<StarPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                Checkbox.adaptive(
-                                  fillColor: MaterialStateProperty.all(
-                                      const Color.fromARGB(0, 0, 0, 0)),
-                                  checkColor: todoList[index].finishState == 3
-                                      ? Colors.grey
-                                      : fontColor,
-                                  value: todoList[index].finishState == 1
-                                      ? true
-                                      : todoList[index].finishState == 0
-                                          ? false
-                                          : null,
-                                  tristate: true,
-                                  onChanged: (bool? value) {
-                                    todoList[index].finishState =
-                                        todoList[index].finishState + 1;
-                                    if (todoList[index].finishState > 1) {
-                                      todoList[index].finishState = 0;
-                                    }
-                                    switch (todoList[index].finishState) {
-                                      case 0:
-                                        todoList[index].startTime = null;
-                                        todoList[index].finishTime = null;
-                                        todoList[index].giveUpTime = null;
-                                        break;
-                                      case 1:
-                                        todoList[index].finishTime =
-                                            DateTime.now().toUtc();
-                                        todoList[index].giveUpTime = null;
+                                Container(
+                                  height: 30,
+                                  alignment: Alignment.center,
+                                  child: Checkbox.adaptive(
+                                    fillColor: MaterialStateProperty.all(
+                                        const Color.fromARGB(0, 0, 0, 0)),
+                                    checkColor: todoList[index].finishState == 3
+                                        ? Colors.grey
+                                        : fontColor,
+                                    value: todoList[index].finishState == 1
+                                        ? true
+                                        : todoList[index].finishState == 0
+                                            ? false
+                                            : null,
+                                    tristate: true,
+                                    onChanged: (bool? value) {
+                                      todoList[index].finishState =
+                                          todoList[index].finishState + 1;
+                                      if (todoList[index].finishState > 1) {
+                                        todoList[index].finishState = 0;
+                                      }
+                                      switch (todoList[index].finishState) {
+                                        case 0:
+                                          todoList[index].startTime = null;
+                                          todoList[index].finishTime = null;
+                                          todoList[index].giveUpTime = null;
+                                          break;
+                                        case 1:
+                                          todoList[index].finishTime =
+                                              DateTime.now().toUtc();
+                                          todoList[index].giveUpTime = null;
 
-                                        break;
-                                    }
-                                    realm.write(() {
-                                      note.noteContext =
-                                          todoListToString(todoList);
-                                    });
-                                    setState(() {});
-                                  },
+                                          break;
+                                      }
+                                      realm.write(() {
+                                        note.noteContext =
+                                            todoListToString(todoList);
+                                      });
+                                      setState(() {});
+                                    },
+                                  ),
                                 ),
                                 Flexible(
                                   child: Text(
@@ -737,10 +741,6 @@ class StarPageState extends State<StarPage> {
                                     style: checkTextStyle[
                                         todoList[index].finishState],
                                   ),
-                                ),
-                                Divider(
-                                  color: backgroundColor,
-                                  thickness: 3,
                                 ),
                               ],
                             ),
@@ -1004,42 +1004,71 @@ class StarPageState extends State<StarPage> {
     }
   }
 
+  void showCreateTypeMenu() {
+    List<String> recordProjectList = ['.待办', '.清单'];
+    List<Notes> recordProjectDistinctList = realm
+        .query<Notes>(
+            "noteType == '.表单' AND noteProject !='' DISTINCT(noteProject)")
+        .toList();
+    for (int i = 0; i < recordProjectDistinctList.length; i++) {
+      recordProjectList.add(recordProjectDistinctList[i].noteProject);
+    }
+    if (recordProjectList.isEmpty) {
+      poplog(2, '', context);
+      return;
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BottomRecordTypeSheet(
+            recordProjectList: recordProjectList,
+            onDialogClosed: () {
+              refreshList();
+            },
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Notes note = Notes(
-              Uuid.v4(),
-              '',
-              '',
-              '',
-              DateTime.now().toUtc(),
-              DateTime.now().toUtc(),
-              DateTime.utc(1970, 1, 1),
-              DateTime.utc(1970, 1, 1),
-              DateTime.utc(1970, 1, 1),
-              DateTime.utc(1970, 1, 1),
-              noteType: '.todo',
-              noteFinishState: '未完',
-            );
-            realm.write(() {
-              realm.add<Notes>(note, update: true);
-            });
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChangePage(
-                  onPageClosed: () {
-                    refreshList();
-                  },
-                  note: note,
-                  mod: 0,
-                ),
-              ),
-            );
+      floatingActionButton: GestureDetector(
+          onLongPress: () {
+            showCreateTypeMenu();
           },
-          child: const Icon(Icons.add)),
+          child: FloatingActionButton(
+              onPressed: () {
+                Notes note = Notes(
+                  Uuid.v4(),
+                  '',
+                  '',
+                  '',
+                  DateTime.now().toUtc(),
+                  DateTime.now().toUtc(),
+                  DateTime.utc(1970, 1, 1),
+                  DateTime.utc(1970, 1, 1),
+                  DateTime.utc(1970, 1, 1),
+                  DateTime.utc(1970, 1, 1),
+                );
+                realm.write(() {
+                  realm.add<Notes>(note, update: true);
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChangePage(
+                      onPageClosed: () {
+                        refreshList();
+                      },
+                      note: note,
+                      mod: 0,
+                    ),
+                  ),
+                );
+              },
+              child: const Icon(Icons.add))),
       body: Column(
         children: [
           Expanded(
