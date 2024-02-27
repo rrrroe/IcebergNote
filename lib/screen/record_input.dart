@@ -1660,7 +1660,8 @@ class _PropertyCardState extends State<PropertyCard> {
       });
     }
     List<String> todoList = [];
-    if (widget.record[template.keys.elementAt(widget.index)] != '') {
+    if (widget.record[template.keys.elementAt(widget.index)] != '' &&
+        widget.record[template.keys.elementAt(widget.index)] != null) {
       todoList = widget.record[template.keys.elementAt(widget.index)]
           .toString()
           .split('////');
