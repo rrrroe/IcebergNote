@@ -28,6 +28,11 @@ class CheckListCardState extends State<CheckListCard> {
   @override
   Widget build(BuildContext context) {
     List<Todo> todoList = stringToTodoList(widget.note.noteContext);
+    for (int i = 0; i < todoList.length; i++) {
+      if (todoList[i].finishState == 1 || todoList[i].finishState == 3) {
+        todoList.removeAt(i);
+      }
+    }
     Color fontColor = const Color.fromARGB(255, 48, 207, 121);
     List<TextStyle> checkTextStyle = [
       const TextStyle(
