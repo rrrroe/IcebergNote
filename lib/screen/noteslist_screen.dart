@@ -12,6 +12,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/postgresql/sync.dart';
+import 'package:icebergnote/screen/card/checkListCard.dart';
 import 'package:icebergnote/screen/input_screen.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:realm/realm.dart';
@@ -1385,250 +1386,12 @@ class SearchPageState extends State<SearchPage> {
       //   ),
       // );
     } else if (note.noteType == '.清单') {
-      List<Todo> todoList = stringToTodoList(note.noteContext);
-      Color fontColor = const Color.fromARGB(255, 48, 207, 121);
-      Color backgroundColor = const Color.fromARGB(20, 48, 207, 121);
-      List<TextStyle> checkTextStyle = [
-        const TextStyle(
-          fontSize: 20,
-          color: Colors.black,
-        ),
-        TextStyle(
-          fontSize: 20,
-          color: fontColor,
-          decoration: TextDecoration.lineThrough,
-          decorationStyle: TextDecorationStyle.solid,
-          decorationColor: fontColor,
-        ),
-        TextStyle(
-          fontSize: 20,
-          color: fontColor,
-        ),
-        const TextStyle(
-          fontSize: 20,
-          color: Colors.grey,
-          decoration: TextDecoration.lineThrough,
-          decorationStyle: TextDecorationStyle.solid,
-          decorationColor: Colors.grey,
-        ),
-      ];
-      return GestureDetector(
-        child: Card(
-          margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-          elevation: 0,
-          shadowColor: Colors.grey,
-          color: const Color.fromARGB(20, 0, 140, 198),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Visibility(
-                  visible: note.noteTitle != "",
-                  child: SizedBox(
-                    child: note.noteTitle.contains(searchText) &&
-                            searchText != ''
-                        ? buildRichText(
-                            note.noteTitle,
-                            searchText,
-                            const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: Color.fromARGB(255, 0, 140, 198)),
-                            TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color:
-                                    const ui.Color.fromARGB(255, 0, 140, 198),
-                                backgroundColor: Colors.yellow[100],
-                                fontFamily: 'LXGWWenKai'),
-                          )
-                        : Text(
-                            note.noteTitle,
-                            maxLines: 5,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: Color.fromARGB(255, 0, 140, 198),
-                                fontFamily: 'LXGWWenKai'),
-                          ),
-                  ),
-                ),
-                Visibility(
-                  visible: note.noteTitle != "",
-                  child: const SizedBox(
-                    height: 5,
-                  ),
-                ),
-                Visibility(
-                  visible: note.noteContext != "",
-                  child: note.noteContext.contains(searchText) &&
-                          searchText != ''
-                      ? buildRichText(
-                          note.noteContext.replaceAll(RegExp('\n|/n'), '  '),
-                          searchText,
-                          const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontFamily: 'LXGWWenKai'),
-                          TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              backgroundColor: Colors.yellow[100],
-                              fontFamily: 'LXGWWenKai'),
-                        )
-                      : Column(
-                          children: List.generate(
-                            todoList.length,
-                            (index) => Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Container(
-                                  height: 30,
-                                  alignment: Alignment.center,
-                                  child: Checkbox.adaptive(
-                                    fillColor: MaterialStateProperty.all(
-                                        const Color.fromARGB(0, 0, 0, 0)),
-                                    checkColor: todoList[index].finishState == 3
-                                        ? Colors.grey
-                                        : fontColor,
-                                    value: todoList[index].finishState == 1
-                                        ? true
-                                        : todoList[index].finishState == 0
-                                            ? false
-                                            : null,
-                                    tristate: true,
-                                    onChanged: (bool? value) {
-                                      todoList[index].finishState =
-                                          todoList[index].finishState + 1;
-                                      if (todoList[index].finishState > 1) {
-                                        todoList[index].finishState = 0;
-                                      }
-                                      switch (todoList[index].finishState) {
-                                        case 0:
-                                          todoList[index].startTime = null;
-                                          todoList[index].finishTime = null;
-                                          todoList[index].giveUpTime = null;
-                                          break;
-                                        case 1:
-                                          todoList[index].finishTime =
-                                              DateTime.now().toUtc();
-                                          todoList[index].giveUpTime = null;
-
-                                          break;
-                                      }
-                                      realm.write(() {
-                                        note.noteContext =
-                                            todoListToString(todoList);
-                                      });
-                                      setState(() {});
-                                    },
-                                  ),
-                                ),
-                                Flexible(
-                                  child: Text(
-                                    todoList[index].title,
-                                    textAlign: TextAlign.left,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    softWrap: true,
-                                    style: checkTextStyle[
-                                        todoList[index].finishState],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                ),
-                Visibility(
-                  visible:
-                      note.noteType + note.noteProject + note.noteFolder != "",
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 70,
-                        padding: const EdgeInsets.all(0),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          note.noteType,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color.fromARGB(255, 56, 128, 186),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(0),
-                        alignment: Alignment.centerLeft,
-                        width: 79,
-                        child: Text(
-                          note.noteProject,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color.fromARGB(255, 215, 55, 55),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(0),
-                        alignment: Alignment.centerLeft,
-                        width: 150,
-                        child: Text(
-                          note.noteFolder,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color.fromARGB(255, 4, 123, 60),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CheckListEditPage(
-                onPageClosed: () {
-                  refreshList();
-                },
-                note: note,
-              ),
-            ),
-          );
-        },
-        onLongPress: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              if (widget.mod == 2) {
-                return BottomPopSheetDeleted(
-                  note: note,
-                  onDialogClosed: () {
-                    refreshList();
-                  },
-                );
-              } else {
-                return BottomPopSheet(
-                  note: note,
-                  onDialogClosed: () {
-                    refreshList();
-                  },
-                );
-              }
-            },
-          );
-        },
+      return CheckListCard(
+        note: note,
+        mod: mod,
+        context: context,
+        refreshList: refreshList,
+        searchText: searchText,
       );
     } else {
       return GestureDetector(
@@ -1708,13 +1471,6 @@ class SearchPageState extends State<SearchPage> {
                           ),
                         ),
                 ),
-                // Text(
-                //   '${note.noteContext.length + note.noteTitle.length}${note.noteCreatTime.length > 19 ? '${note.noteCreatTime.substring(0, 19)}创建       ' : note.noteCreatTime}${note.noteUpdateTime.length > 19 ? '${note.noteUpdateTime.substring(0, 19)}修改' : note.noteUpdateTime}',
-                //   maxLines: 1,
-                //   style: const TextStyle(
-                //     fontSize: 10,
-                //   ),
-                // ),
                 Visibility(
                   visible:
                       note.noteType + note.noteProject + note.noteFolder != "",
@@ -1812,22 +1568,18 @@ class SearchPageState extends State<SearchPage> {
     for (int i = 0; i < recordProjectDistinctList.length; i++) {
       recordProjectList.add(recordProjectDistinctList[i].noteProject);
     }
-    if (recordProjectList.isEmpty) {
-      poplog(2, '', context);
-      return;
-    } else {
-      showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return BottomRecordTypeSheet(
-            recordProjectList: recordProjectList,
-            onDialogClosed: () {
-              refreshList();
-            },
-          );
-        },
-      );
-    }
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return BottomRecordTypeSheet(
+          recordProjectList: recordProjectList,
+          onDialogClosed: () {
+            refreshList();
+          },
+        );
+      },
+    );
   }
 
   Future<void> syncDate() async {

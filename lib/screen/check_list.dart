@@ -112,7 +112,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
   List<TextEditingController> todoListController = [];
   List<TextEditingController> todoListContentController = [];
   TextEditingController titleController = TextEditingController();
-
+  bool isAll = false;
   Color fontColor = const Color.fromARGB(255, 48, 207, 121);
   Color backgroundColor = const Color.fromARGB(20, 48, 207, 121);
 
@@ -172,7 +172,19 @@ class CheckListEditPageState extends State<CheckListEditPage> {
             },
           ),
           title: const Text(""),
-          actions: const [],
+          actions: [
+            IconButton(
+                icon: isAll
+                    ? const Icon(Icons.all_inbox)
+                    : const Icon(Icons.inbox),
+                onPressed: () {
+                  isAll = !isAll;
+                  setState(() {});
+                }),
+            const SizedBox(
+              width: 10,
+            )
+          ],
         ),
         body: Stack(
           children: [
