@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:icebergnote/card.dart';
-import 'package:icebergnote/screen/card/checkListCard.dart';
-import 'package:icebergnote/screen/check_list.dart';
+import 'package:icebergnote/screen/card/check_list_card.dart';
 import 'package:icebergnote/screen/search_screen.dart';
 import 'package:realm/realm.dart';
 import 'dart:ui' as ui;

@@ -645,18 +645,3 @@ class CheckListEditPageState extends State<CheckListEditPage> {
     );
   }
 }
-
-class buildCheckListCardOfList extends StatefulWidget {
-  const buildCheckListCardOfList({super.key});
-
-  @override
-  State<buildCheckListCardOfList> createState() =>
-      _buildCheckListCardOfListState();
-}
-
-class _buildCheckListCardOfListState extends State<buildCheckListCardOfList> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}

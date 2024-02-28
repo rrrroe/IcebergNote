@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:icebergnote/main.dart';
 import 'package:icebergnote/notes.dart';
-import 'package:icebergnote/screen/check_list.dart';
+import 'package:icebergnote/screen/input_screen.dart';
 import 'package:icebergnote/screen/search_screen.dart';
 import 'dart:ui' as ui;
 import '../noteslist_screen.dart';
 
-class CheckListCard extends StatefulWidget {
-  const CheckListCard(
+class TodoCard extends StatefulWidget {
+  const TodoCard(
       {super.key,
       required this.note,
       required this.mod,
@@ -21,39 +20,12 @@ class CheckListCard extends StatefulWidget {
   final VoidCallback refreshList;
   final String searchText;
   @override
-  State<CheckListCard> createState() => CheckListCardState();
+  State<TodoCard> createState() => TodoCardState();
 }
 
-class CheckListCardState extends State<CheckListCard> {
+class TodoCardState extends State<TodoCard> {
   @override
   Widget build(BuildContext context) {
-    List<Todo> todoList = stringToTodoList(widget.note.noteContext);
-    Color fontColor = const Color.fromARGB(255, 48, 207, 121);
-    Color backgroundColor = const Color.fromARGB(20, 48, 207, 121);
-    List<TextStyle> checkTextStyle = [
-      const TextStyle(
-        fontSize: 20,
-        color: Colors.black,
-      ),
-      TextStyle(
-        fontSize: 20,
-        color: fontColor,
-        decoration: TextDecoration.lineThrough,
-        decorationStyle: TextDecorationStyle.solid,
-        decorationColor: fontColor,
-      ),
-      TextStyle(
-        fontSize: 20,
-        color: fontColor,
-      ),
-      const TextStyle(
-        fontSize: 20,
-        color: Colors.grey,
-        decoration: TextDecoration.lineThrough,
-        decorationStyle: TextDecorationStyle.solid,
-        decorationColor: Colors.grey,
-      ),
-    ];
     return GestureDetector(
       child: Card(
         margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
@@ -122,69 +94,13 @@ class CheckListCardState extends State<CheckListCard> {
                             backgroundColor: Colors.yellow[100],
                             fontFamily: 'LXGWWenKai'),
                       )
-                    : Column(
-                        children: List.generate(
-                          todoList.length,
-                          (index) => Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Container(
-                                height: 30,
-                                alignment: Alignment.center,
-                                child: Checkbox.adaptive(
-                                  fillColor: MaterialStateProperty.all(
-                                      const Color.fromARGB(0, 0, 0, 0)),
-                                  checkColor: todoList[index].finishState == 3
-                                      ? Colors.grey
-                                      : fontColor,
-                                  value: todoList[index].finishState == 1
-                                      ? true
-                                      : todoList[index].finishState == 0
-                                          ? false
-                                          : null,
-                                  tristate: true,
-                                  onChanged: (bool? value) {
-                                    todoList[index].finishState =
-                                        todoList[index].finishState + 1;
-                                    if (todoList[index].finishState > 1) {
-                                      todoList[index].finishState = 0;
-                                    }
-                                    switch (todoList[index].finishState) {
-                                      case 0:
-                                        todoList[index].startTime = null;
-                                        todoList[index].finishTime = null;
-                                        todoList[index].giveUpTime = null;
-                                        break;
-                                      case 1:
-                                        todoList[index].finishTime =
-                                            DateTime.now().toUtc();
-                                        todoList[index].giveUpTime = null;
-
-                                        break;
-                                    }
-                                    realm.write(() {
-                                      widget.note.noteContext =
-                                          todoListToString(todoList);
-                                    });
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                              Flexible(
-                                child: Text(
-                                  todoList[index].title,
-                                  textAlign: TextAlign.left,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: true,
-                                  style: checkTextStyle[
-                                      todoList[index].finishState],
-                                ),
-                              ),
-                            ],
-                          ),
+                    : Text(
+                        widget.note.noteContext
+                            .replaceAll(RegExp('\n|/n'), '  '),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 5,
+                        style: const TextStyle(
+                          fontSize: 16,
                         ),
                       ),
               ),
@@ -242,11 +158,12 @@ class CheckListCardState extends State<CheckListCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CheckListEditPage(
+            builder: (context) => ChangePage(
               onPageClosed: () {
                 widget.refreshList();
               },
               note: widget.note,
+              mod: 1,
             ),
           ),
         );
