@@ -28,11 +28,6 @@ class CheckListCardState extends State<CheckListCard> {
   @override
   Widget build(BuildContext context) {
     List<Todo> todoList = stringToTodoList(widget.note.noteContext);
-    for (int i = 0; i < todoList.length; i++) {
-      if (todoList[i].finishState == 1 || todoList[i].finishState == 3) {
-        todoList.removeAt(i);
-      }
-    }
     Color fontColor = const Color.fromARGB(255, 48, 207, 121);
     List<TextStyle> checkTextStyle = [
       const TextStyle(
@@ -129,65 +124,69 @@ class CheckListCardState extends State<CheckListCard> {
                     : Column(
                         children: List.generate(
                           todoList.length,
-                          (index) => Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Container(
-                                height: 30,
-                                alignment: Alignment.center,
-                                child: Checkbox.adaptive(
-                                  fillColor: MaterialStateProperty.all(
-                                      const Color.fromARGB(0, 0, 0, 0)),
-                                  checkColor: todoList[index].finishState == 3
-                                      ? Colors.grey
-                                      : fontColor,
-                                  value: todoList[index].finishState == 1
-                                      ? true
-                                      : todoList[index].finishState == 0
-                                          ? false
-                                          : null,
-                                  tristate: true,
-                                  onChanged: (bool? value) {
-                                    todoList[index].finishState =
-                                        todoList[index].finishState + 1;
-                                    if (todoList[index].finishState > 1) {
-                                      todoList[index].finishState = 0;
-                                    }
-                                    switch (todoList[index].finishState) {
-                                      case 0:
-                                        todoList[index].startTime = null;
-                                        todoList[index].finishTime = null;
-                                        todoList[index].giveUpTime = null;
-                                        break;
-                                      case 1:
-                                        todoList[index].finishTime =
-                                            DateTime.now().toUtc();
-                                        todoList[index].giveUpTime = null;
+                          (index) => Visibility(
+                            visible: todoList[index].finishState == 0 ||
+                                todoList[index].finishState == 2,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Container(
+                                  height: 30,
+                                  alignment: Alignment.center,
+                                  child: Checkbox.adaptive(
+                                    fillColor: MaterialStateProperty.all(
+                                        const Color.fromARGB(0, 0, 0, 0)),
+                                    checkColor: todoList[index].finishState == 3
+                                        ? Colors.grey
+                                        : fontColor,
+                                    value: todoList[index].finishState == 1
+                                        ? true
+                                        : todoList[index].finishState == 0
+                                            ? false
+                                            : null,
+                                    tristate: true,
+                                    onChanged: (bool? value) {
+                                      todoList[index].finishState =
+                                          todoList[index].finishState + 1;
+                                      if (todoList[index].finishState > 1) {
+                                        todoList[index].finishState = 0;
+                                      }
+                                      switch (todoList[index].finishState) {
+                                        case 0:
+                                          todoList[index].startTime = null;
+                                          todoList[index].finishTime = null;
+                                          todoList[index].giveUpTime = null;
+                                          break;
+                                        case 1:
+                                          todoList[index].finishTime =
+                                              DateTime.now().toUtc();
+                                          todoList[index].giveUpTime = null;
 
-                                        break;
-                                    }
-                                    realm.write(() {
-                                      widget.note.noteContext =
-                                          todoListToString(todoList);
-                                    });
-                                    setState(() {});
-                                  },
+                                          break;
+                                      }
+                                      realm.write(() {
+                                        widget.note.noteContext =
+                                            todoListToString(todoList);
+                                      });
+                                      setState(() {});
+                                    },
+                                  ),
                                 ),
-                              ),
-                              Flexible(
-                                child: Text(
-                                  todoList[index].title,
-                                  textAlign: TextAlign.left,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: true,
-                                  style: checkTextStyle[
-                                      todoList[index].finishState],
+                                Flexible(
+                                  child: Text(
+                                    todoList[index].title,
+                                    textAlign: TextAlign.left,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    softWrap: true,
+                                    style: checkTextStyle[
+                                        todoList[index].finishState],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
