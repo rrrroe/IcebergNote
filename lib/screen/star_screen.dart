@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:icebergnote/card.dart';
 import 'package:icebergnote/screen/card/check_list_card.dart';
-import 'package:icebergnote/screen/card/normal_card.dart';
 import 'package:icebergnote/screen/card/todo_card.dart';
+import 'package:icebergnote/screen/card/normal_card.dart';
 import 'package:realm/realm.dart';
 
 import '../main.dart';
