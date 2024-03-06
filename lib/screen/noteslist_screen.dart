@@ -24,7 +24,7 @@ import 'package:image/image.dart' as img;
 import '../main.dart';
 import '../constants.dart';
 import '../card.dart';
-import 'check_list.dart';
+import 'check_list_input.dart';
 import 'record_input.dart';
 
 const rowDividerincrease = SizedBox(width: 20);

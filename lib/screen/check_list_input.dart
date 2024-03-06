@@ -109,6 +109,7 @@ class CheckListEditPage extends StatefulWidget {
 
 class CheckListEditPageState extends State<CheckListEditPage> {
   List<Todo> todoList = [];
+  List<int> todoCount = [0, 0, 0, 0];
   List<TextEditingController> todoListController = [];
   List<TextEditingController> todoListContentController = [];
   TextEditingController titleController = TextEditingController();
@@ -121,8 +122,16 @@ class CheckListEditPageState extends State<CheckListEditPage> {
     super.initState();
     todoList = stringToTodoList(widget.note.noteContext);
     for (int i = 0; i < todoList.length; i++) {
+      if (todoList[i].finishState == 1) {
+        todoCount[1]++;
+      } else if (todoList[i].finishState == 2) {
+        todoCount[2]++;
+      } else if (todoList[i].finishState == 3) {
+        todoCount[3]++;
+      } else {
+        todoCount[0]++;
+      }
       todoListController.add(TextEditingController());
-
       todoListController[i].text = todoList[i].title;
       todoListContentController.add(TextEditingController());
       todoListContentController[i].text = todoList[i].content;
@@ -615,7 +624,38 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                             ],
                           ),
                         ),
-                        Container(height: 250)
+                        SizedBox(
+                          height: 250,
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 40),
+                              Table(
+                                children: [
+                                  TableRow(children: [
+                                    const Text('合计', textAlign: TextAlign.end),
+                                    Text('    ${todoList.length}'),
+                                  ]),
+                                  TableRow(children: [
+                                    const Text('未完成', textAlign: TextAlign.end),
+                                    Text('    ${todoCount[0]}'),
+                                  ]),
+                                  TableRow(children: [
+                                    const Text('已完成', textAlign: TextAlign.end),
+                                    Text('    ${todoCount[1]}'),
+                                  ]),
+                                  TableRow(children: [
+                                    const Text('进行中', textAlign: TextAlign.end),
+                                    Text('    ${todoCount[2]}'),
+                                  ]),
+                                  TableRow(children: [
+                                    const Text('已放弃', textAlign: TextAlign.end),
+                                    Text('    ${todoCount[3]}'),
+                                  ]),
+                                ],
+                              )
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),

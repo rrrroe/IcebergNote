@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/notes.dart';
-import 'package:icebergnote/screen/check_list.dart';
+import 'package:icebergnote/screen/check_list_input.dart';
 import 'package:icebergnote/screen/search_screen.dart';
 import 'dart:ui' as ui;
 import '../noteslist_screen.dart';
@@ -28,6 +28,7 @@ class CheckListCardState extends State<CheckListCard> {
   @override
   Widget build(BuildContext context) {
     List<Todo> todoList = stringToTodoList(widget.note.noteContext);
+    List<int> todoCount = [0, 0, 0, 0];
     Color fontColor = const Color.fromARGB(255, 48, 207, 121);
     List<TextStyle> checkTextStyle = [
       const TextStyle(
@@ -53,6 +54,17 @@ class CheckListCardState extends State<CheckListCard> {
         decorationColor: Colors.grey,
       ),
     ];
+    for (int i = 0; i < todoList.length; i++) {
+      if (todoList[i].finishState == 1) {
+        todoCount[1]++;
+      } else if (todoList[i].finishState == 2) {
+        todoCount[2]++;
+      } else if (todoList[i].finishState == 3) {
+        todoCount[3]++;
+      } else {
+        todoCount[0]++;
+      }
+    }
     return GestureDetector(
       child: Card(
         margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
@@ -96,6 +108,22 @@ class CheckListCardState extends State<CheckListCard> {
                               fontFamily: 'LXGWWenKai'),
                         ),
                 ),
+              ),
+              Row(
+                children: [
+                  Visibility(
+                      visible: todoCount[0] > 0,
+                      child: Text('未完成 ${todoCount[0]}   ')),
+                  Visibility(
+                      visible: todoCount[1] > 0,
+                      child: Text('已完成 ${todoCount[1]}   ')),
+                  Visibility(
+                      visible: todoCount[2] > 0,
+                      child: Text('进行中 ${todoCount[2]}   ')),
+                  Visibility(
+                      visible: todoCount[3] > 0,
+                      child: Text('已放弃 ${todoCount[3]}   ')),
+                ],
               ),
               Visibility(
                 visible: widget.note.noteTitle != "",
