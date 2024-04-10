@@ -755,7 +755,7 @@ class SearchPageState extends State<SearchPage> {
               onPressed: () {
                 var result = realm.query<Notes>(
                     "noteIsDeleted == true SORT(noteCreateDate DESC)");
-                for (int i = 0; i < result.length; i++) {
+                for (int i = 0; result.isNotEmpty;) {
                   realm.write(() {
                     realm.delete(result[i]);
                   });
