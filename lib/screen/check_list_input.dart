@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/notes.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:intl/intl.dart';
 import 'package:yaml/yaml.dart';
 
@@ -690,6 +691,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                           widget.note.noteUpdateDate = DateTime.now().toUtc();
                         });
                         widget.onPageClosed();
+                        syncNoteToRemote(widget.note);
                         Get.back();
                       },
                       child: const Text('保存'),

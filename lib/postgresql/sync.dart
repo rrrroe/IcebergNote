@@ -396,10 +396,6 @@ Future<void> allLocalToRemote() async {
 
   for (int i = 0; i < localResults.length; i++) {
     syncProcessController.syncProcessReplace('上传进度: $i', '上传进度: ${i + 1}');
-
-    if (i == 74) {
-      continue;
-    }
     await postgreSQLConnection.execute(insertRemote(localResults[i], id!));
   }
   //100条大概半分钟
@@ -628,4 +624,15 @@ String insertRemote(Notes note, String id) {
 
 String insertOrUpdateRemote(Notes note, String id) {
   return "INSERT INTO u$id.n$id VALUES ('${note.id}', '${note.noteFolder}', '${note.noteTitle}', '${note.noteContext}', '${note.noteType}', '${note.noteProject}', '${note.noteTags}', '${note.noteAttachments}', '${note.noteReferences}', '${note.noteSource}', '${note.noteAuthor}', '${note.noteNext}', '${note.noteLast}', '${note.notePlace}', '${note.noteIsStarred}', '${note.noteIsLocked}', '${note.noteIstodo}', '${note.noteIsDeleted}', '${note.noteIsShared}', '${note.noteIsAchive}', '${note.noteFinishState}', '${note.noteIsReviewed}', '${note.noteCreateDate}','${note.noteUpdateDate}', '${note.noteAchiveDate}', '${note.noteDeleteDate}', '${note.noteFinishDate}', '${note.noteAlarmDate}') ON CONFLICT (id) DO UPDATE SET folder = '${note.noteFolder}', title = '${note.noteTitle}', context = '${note.noteContext}', type = '${note.noteType}', project = '${note.noteProject}', tags = '${note.noteTags}', attachments = '${note.noteAttachments}', ref = '${note.noteReferences}', source = '${note.noteSource}', author = '${note.noteAuthor}', next = '${note.noteNext}', last = '${note.noteLast}', place = '${note.notePlace}', isstarred = '${note.noteIsStarred}', islocked = '${note.noteIsLocked}', istodo = '${note.noteIstodo}', isdeleted = '${note.noteIsDeleted}', isshared = '${note.noteIsShared}', isachived = '${note.noteIsAchive}', finishstate = '${note.noteFinishState}', isreviewed = '${note.noteIsReviewed}', createdate = '${note.noteCreateDate}', updatedate = '${note.noteUpdateDate}', achivedate = '${note.noteAchiveDate}', deletedate = '${note.noteDeleteDate}', finishdate = '${note.noteFinishDate}', alarmdate = '${note.noteAlarmDate}'";
+}
+
+void syncNoteToRemote(Notes note) async {
+  PostgreSQLConnection? postgreSQLConnection = PostgreSQLConnection(
+      "111.229.224.55", 5432, "users",
+      username: "admin", password: "456321rrRR");
+  final SharedPreferences userLocalInfo = await SharedPreferences.getInstance();
+  id = userLocalInfo.getString('userID');
+  await postgreSQLConnection.open();
+  await postgreSQLConnection.execute(insertRemote(note, id!));
+  await postgreSQLConnection.close();
 }

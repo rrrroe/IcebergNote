@@ -1,6 +1,7 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:realm/realm.dart';
 import '../constants.dart';
 import '../notes.dart';
@@ -587,6 +588,7 @@ class ChangePageState extends State<ChangePage> {
                     TextButton(
                       onPressed: () {
                         save();
+                        syncNoteToRemote(widget.note);
                         Navigator.pop(context);
                         widget.onPageClosed();
                       },

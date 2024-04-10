@@ -7,6 +7,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pickers/time_picker/model/date_mode.dart';
 import 'package:flutter_pickers/time_picker/model/suffix.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/noteslist_screen.dart';
 import 'package:yaml/yaml.dart';
 import '../constants.dart';
@@ -509,6 +510,7 @@ class RecordChangePageState extends State<RecordChangePage> {
                     TextButton(
                       onPressed: () {
                         save();
+                        syncNoteToRemote(widget.note);
                         Navigator.pop(context);
                         widget.onPageClosed();
                       },
@@ -2490,6 +2492,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                     TextButton(
                       onPressed: () {
                         save();
+                        syncNoteToRemote(widget.note);
                         Navigator.pop(context);
                         widget.onPageClosed();
                       },
