@@ -630,9 +630,14 @@ void syncNoteToRemote(Notes note) async {
   PostgreSQLConnection? postgreSQLConnection = PostgreSQLConnection(
       "111.229.224.55", 5432, "users",
       username: "admin", password: "456321rrRR");
+  print(1);
   final SharedPreferences userLocalInfo = await SharedPreferences.getInstance();
   id = userLocalInfo.getString('userID');
+  print(2);
   await postgreSQLConnection.open();
-  await postgreSQLConnection.execute(insertRemote(note, id!));
+  print(3);
+  await postgreSQLConnection.execute(insertOrUpdateRemote(note, id!));
+  print(4);
   await postgreSQLConnection.close();
+  print(5);
 }
