@@ -316,9 +316,9 @@ class _ReportScreenState extends State<ReportScreen>
             }).toList(),
           ),
           Expanded(child: Container()),
-          IconButton(
-            icon: const Icon(Icons.fit_screen_outlined),
-            onPressed: () async {
+          GestureDetector(
+            child: const Icon(Icons.fit_screen_outlined),
+            onTap: () async {
               // PermissionUtil.requestAll();
               Uint8List pngBytes = await onScreenshot(20);
               // ignore: use_build_context_synchronously
