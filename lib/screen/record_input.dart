@@ -816,7 +816,8 @@ class _PropertyCardState extends State<PropertyCard> {
                     isCollapsed: true,
                     contentPadding: edgeInsets,
                   ),
-                  minLines: 2,
+                  minLines: 1,
+                  maxLines: null,
                   onChanged: (value) {
                     widget.record[template.keys.elementAt(widget.index)] =
                         value.replaceAll('\n', '    ').trim();
