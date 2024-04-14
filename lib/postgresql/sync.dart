@@ -454,16 +454,13 @@ Future<void> allRemoteToLocal() async {
 }
 
 Future<void> exchangeSmart() async {
-  SyncProcessController syncProcessController = Get.find();
-  syncProcessController
-      .syncProcessAddLine('--------------------开始增量同步--------------------');
-
   final SharedPreferences userLocalInfo = await SharedPreferences.getInstance();
   DateTime lastRefresh = DateTime.parse(
           userLocalInfo.getString('refreshdate') ??
               '1969-01-01 00:00:00.000000')
-      .add(const Duration(days: -3));
+      .add(const Duration(days: -10));
   userLocalInfo.setString('refreshdate', DateTime.now().toUtc().toString());
+  id = userLocalInfo.getString('userID');
   RealmResults<Notes> localNewNotes = realm.query<Notes>(
       "noteUpdateDate > \$0 SORT(noteUpdateDate ASC)", [lastRefresh]);
   PostgreSQLConnection? postgreSQLConnection = PostgreSQLConnection(
@@ -473,30 +470,6 @@ Future<void> exchangeSmart() async {
   var remoteNewNotes = await postgreSQLConnection
       .query("SELECT * FROM u$id.n$id WHERE updatedate > '$lastRefresh'");
   List<int> synced = [];
-  // if (remoteNewNotes.isEmpty && localNewNotes.isNotEmpty) {
-  //   setState(() {
-  //     syncProcess = '$syncProcess\n云端为空  开始单向上传';
-  //   });
-  //   await allLocalToRemote();
-  //   setState(() {
-  //     syncProcess = '$syncProcess\n上传完成';
-  //   });
-  // } else if (remoteNewNotes.isNotEmpty && localNewNotes.isEmpty) {
-  //   setState(() {
-  //     syncProcess = '$syncProcess\n本地为空  开始单向下载';
-  //   });
-  //   await allRemoteToLocal();
-  //   setState(() {
-  //     syncProcess = '$syncProcess\n下载完成';
-  //   });
-  // } else if (remoteNewNotes.isNotEmpty && localNewNotes.isEmpty) {
-  //   setState(() {
-  //     syncProcess = '$syncProcess\n双端为空  无需同步';
-  //   });
-  // } else {
-
-  syncProcessController
-      .syncProcessAddLine('处理本地数据: 0 / ${localNewNotes.length}');
 
   for (int i = 0; i < localNewNotes.length; i++) {
     if (remoteNewNotes.isEmpty) {
@@ -521,10 +494,7 @@ Future<void> exchangeSmart() async {
         }
       }
     }
-    syncProcessController.syncProcessReplace('处理本地数据: $i', '处理本地数据: ${i + 1}');
   }
-  syncProcessController
-      .syncProcessAddLine('处理云端数据: 0 / ${remoteNewNotes.length}');
 
   for (int j = 0; j < remoteNewNotes.length; j++) {
     if (synced.contains(j)) {
@@ -537,11 +507,7 @@ Future<void> exchangeSmart() async {
         updateLocal(existedNote.first, remoteNewNotes[j]);
       } else {}
     }
-    syncProcessController.syncProcessReplace('处理云端数据: $j', '处理云端数据: ${j + 1}');
   }
-
-  syncProcessController
-      .syncProcessAddLine('--------------------增量同步成功--------------------');
   postgreSQLConnection.close();
 }
 

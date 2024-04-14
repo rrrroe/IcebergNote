@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/login_screen.dart';
 import 'package:realm/realm.dart';
 import 'constants.dart';
@@ -106,7 +108,7 @@ late Realm realm;
 Map<String, Map<int, List>> recordTemplates = {};
 Map<String, Map<String, List>> recordTemplatesSettings = {};
 
-void main() {
+void main() async {
   final config = Configuration.local([Notes.schema], schemaVersion: 1);
   realm = Realm(config);
 
@@ -121,6 +123,14 @@ void main() {
 
   getUniqueId();
   recordTemplateInit();
+
+  try {
+    await exchangeSmart().timeout(const Duration(seconds: 3));
+  } catch (e) {
+    if (kDebugMode) {
+      print('超时');
+    }
+  }
   runApp(
     const App(),
   );
