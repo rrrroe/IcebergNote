@@ -394,39 +394,51 @@ class TodoPageState extends State<TodoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Notes note = Notes(
-              Uuid.v4(),
-              '',
-              '',
-              '',
-              DateTime.now().toUtc(),
-              DateTime.now().toUtc(),
-              DateTime.utc(1970, 1, 1),
-              DateTime.utc(1970, 1, 1),
-              DateTime.utc(1970, 1, 1),
-              DateTime.utc(1970, 1, 1),
-              noteType: '.todo',
-              noteFinishState: '未完',
-            );
-            realm.write(() {
-              realm.add<Notes>(note, update: true);
-            });
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChangePage(
-                  onPageClosed: () {
+      floatingActionButton: GestureDetector(
+          onLongPress: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return BottomNoteTypeSheet(
+                  noteTypeList: defaultAddTypeList,
+                  onDialogClosed: () {
                     refreshList();
                   },
-                  note: note,
-                  mod: 0,
-                ),
-              ),
+                );
+              },
             );
           },
-          child: const Icon(Icons.add)),
+          child: FloatingActionButton(
+              onPressed: () {
+                Notes note = Notes(
+                  Uuid.v4(),
+                  '',
+                  '',
+                  '',
+                  DateTime.now().toUtc(),
+                  DateTime.now().toUtc(),
+                  DateTime.utc(1970, 1, 1),
+                  DateTime.utc(1970, 1, 1),
+                  DateTime.utc(1970, 1, 1),
+                  DateTime.utc(1970, 1, 1),
+                );
+                realm.write(() {
+                  realm.add<Notes>(note, update: true);
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChangePage(
+                      onPageClosed: () {
+                        refreshList();
+                      },
+                      note: note,
+                      mod: 0,
+                    ),
+                  ),
+                );
+              },
+              child: const Icon(Icons.add))),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
         child: Row(

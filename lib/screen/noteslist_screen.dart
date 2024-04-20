@@ -242,6 +242,104 @@ class BottomPopSheet extends StatelessWidget {
   }
 }
 
+class BottomNoteTypeSheet extends StatelessWidget {
+  const BottomNoteTypeSheet(
+      {Key? key, required this.noteTypeList, required this.onDialogClosed})
+      : super(key: key);
+  final List<String> noteTypeList;
+  final VoidCallback onDialogClosed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: noteTypeList.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: const Icon(Icons.data_thresholding),
+                  title: Text(noteTypeList[index]),
+                  onTap: () {
+                    if (noteTypeList[index] == '.记录') {
+                      Navigator.pop(context);
+                      List<String> recordProjectList = [];
+                      List<Notes> recordProjectDistinctList = realm
+                          .query<Notes>(
+                              "noteType == '.表单' AND noteProject !='' DISTINCT(noteProject)")
+                          .toList();
+                      for (int i = 0;
+                          i < recordProjectDistinctList.length;
+                          i++) {
+                        recordProjectList
+                            .add(recordProjectDistinctList[i].noteProject);
+                      }
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return BottomRecordTypeSheet(
+                            onDialogClosed: () {},
+                            recordProjectList: recordProjectList,
+                          );
+                        },
+                      );
+                    } else if (noteTypeList[index] == '.清单') {
+                      Navigator.pop(context);
+                      Notes note = Notes(
+                          Uuid.v4(),
+                          '',
+                          '',
+                          '',
+                          DateTime.now().toUtc(),
+                          DateTime.now().toUtc(),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          noteType: noteTypeList[index]);
+                      realm.write(() {
+                        realm.add<Notes>(note, update: true);
+                      });
+                      Get.to(() => CheckListEditPage(
+                            note: note,
+                            onPageClosed: () {
+                              onDialogClosed();
+                            },
+                          ));
+                    } else {
+                      Navigator.pop(context);
+                      Notes note = Notes(
+                          Uuid.v4(),
+                          '',
+                          '',
+                          '',
+                          DateTime.now().toUtc(),
+                          DateTime.now().toUtc(),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          noteType: noteTypeList[index]);
+                      realm.write(() {
+                        realm.add<Notes>(note, update: true);
+                      });
+                      Get.to(() =>
+                          ChangePage(onPageClosed: () {}, note: note, mod: 0));
+                    }
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class BottomRecordTypeSheet extends StatelessWidget {
   const BottomRecordTypeSheet(
       {Key? key, required this.recordProjectList, required this.onDialogClosed})
@@ -276,39 +374,23 @@ class BottomRecordTypeSheet extends StatelessWidget {
                         DateTime.utc(1970, 1, 1),
                         DateTime.utc(1970, 1, 1),
                         DateTime.utc(1970, 1, 1),
-                        noteProject: recordProjectList[index].contains('~')
-                            ? recordProjectList[index]
-                            : '',
-                        noteType: recordProjectList[index].contains('.')
-                            ? recordProjectList[index]
-                            : '.记录');
+                        noteProject: recordProjectList[index],
+                        noteType: '.记录');
                     realm.write(() {
                       realm.add<Notes>(note, update: true);
                     });
-                    if (recordProjectList[index].contains('~')) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RecordChangePage(
-                            onPageClosed: () {
-                              onDialogClosed();
-                            },
-                            note: note,
-                            mod: 0,
-                          ),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RecordChangePage(
+                          onPageClosed: () {
+                            onDialogClosed();
+                          },
+                          note: note,
+                          mod: 0,
                         ),
-                      );
-                    } else if (recordProjectList[index] == '.清单') {
-                      Get.to(() => CheckListEditPage(
-                            note: note,
-                            onPageClosed: () {
-                              onDialogClosed();
-                            },
-                          ));
-                    } else if (recordProjectList[index].contains('.')) {
-                      Get.to(() =>
-                          ChangePage(onPageClosed: () {}, note: note, mod: 0));
-                    }
+                      ),
+                    );
                   },
                 );
               },
@@ -825,29 +907,6 @@ class SearchPageState extends State<SearchPage> {
     }
   }
 
-  void showCreateTypeMenu() {
-    List<String> recordProjectList = ['.待办', '.清单'];
-    List<Notes> recordProjectDistinctList = realm
-        .query<Notes>(
-            "noteType == '.表单' AND noteProject !='' DISTINCT(noteProject)")
-        .toList();
-    for (int i = 0; i < recordProjectDistinctList.length; i++) {
-      recordProjectList.add(recordProjectDistinctList[i].noteProject);
-    }
-
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return BottomRecordTypeSheet(
-          recordProjectList: recordProjectList,
-          onDialogClosed: () {
-            refreshList();
-          },
-        );
-      },
-    );
-  }
-
   Future<void> syncDate() async {
     if (isSyncing == 0) {
       isSyncing++;
@@ -904,7 +963,17 @@ class SearchPageState extends State<SearchPage> {
     return Scaffold(
       floatingActionButton: GestureDetector(
           onLongPress: () {
-            showCreateTypeMenu();
+            showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return BottomNoteTypeSheet(
+                  noteTypeList: defaultAddTypeList,
+                  onDialogClosed: () {
+                    refreshList();
+                  },
+                );
+              },
+            );
           },
           child: FloatingActionButton(
               onPressed: () {

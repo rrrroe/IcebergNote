@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:icebergnote/card.dart';
+import 'package:icebergnote/constants.dart';
 import 'package:icebergnote/screen/card/check_list_card.dart';
 import 'package:icebergnote/screen/card/todo_card.dart';
 import 'package:icebergnote/screen/card/normal_card.dart';
@@ -117,35 +118,22 @@ class StarPageState extends State<StarPage> {
     }
   }
 
-  void showCreateTypeMenu() {
-    List<String> recordProjectList = ['.待办', '.清单'];
-    List<Notes> recordProjectDistinctList = realm
-        .query<Notes>(
-            "noteType == '.表单' AND noteProject !='' DISTINCT(noteProject)")
-        .toList();
-    for (int i = 0; i < recordProjectDistinctList.length; i++) {
-      recordProjectList.add(recordProjectDistinctList[i].noteProject);
-    }
-
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return BottomRecordTypeSheet(
-          recordProjectList: recordProjectList,
-          onDialogClosed: () {
-            refreshList();
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: GestureDetector(
           onLongPress: () {
-            showCreateTypeMenu();
+            showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return BottomNoteTypeSheet(
+                  noteTypeList: defaultAddTypeList,
+                  onDialogClosed: () {
+                    refreshList();
+                  },
+                );
+              },
+            );
           },
           child: FloatingActionButton(
               onPressed: () {
