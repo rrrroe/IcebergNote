@@ -586,7 +586,7 @@ class ChangePageState extends State<ChangePage> {
                       child: const Text('复制'),
                     ),
                     TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         save();
                         syncNoteToRemote(widget.note);
                         Navigator.pop(context);

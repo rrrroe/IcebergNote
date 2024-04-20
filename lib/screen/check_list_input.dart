@@ -685,7 +685,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                       child: const Text('复制'),
                     ),
                     TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         realm.write(() {
                           widget.note.noteContext = todoListToString(todoList);
                           widget.note.noteUpdateDate = DateTime.now().toUtc();
