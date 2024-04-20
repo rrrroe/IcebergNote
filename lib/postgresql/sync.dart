@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/main.dart';
@@ -454,61 +455,86 @@ Future<void> allRemoteToLocal() async {
 }
 
 Future<void> exchangeSmart() async {
-  final SharedPreferences userLocalInfo = await SharedPreferences.getInstance();
-  DateTime lastRefresh = DateTime.parse(
-          userLocalInfo.getString('refreshdate') ??
-              '1969-01-01 00:00:00.000000')
-      .add(const Duration(days: -10));
-  userLocalInfo.setString('refreshdate', DateTime.now().toUtc().toString());
-  id = userLocalInfo.getString('userID');
-  RealmResults<Notes> localNewNotes = realm.query<Notes>(
-      "noteUpdateDate > \$0 SORT(noteUpdateDate ASC)", [lastRefresh]);
   PostgreSQLConnection? postgreSQLConnection = PostgreSQLConnection(
       "111.229.224.55", 5432, "users",
       username: "admin", password: "456321rrRR");
-  await postgreSQLConnection.open();
-  var remoteNewNotes = await postgreSQLConnection
-      .query("SELECT * FROM u$id.n$id WHERE updatedate > '$lastRefresh'");
-  List<int> synced = [];
-
-  for (int i = 0; i < localNewNotes.length; i++) {
-    if (remoteNewNotes.isEmpty) {
-      await postgreSQLConnection
-          .execute(insertOrUpdateRemote(localNewNotes[i], id!));
-    }
-    for (int j = 0; j < remoteNewNotes.length; j++) {
-      if (localNewNotes[i].id.toString() == remoteNewNotes[j][0]) {
-        synced.add(j);
-        if (localNewNotes[i].noteUpdateDate.isAfter(remoteNewNotes[j][23])) {
-          await postgreSQLConnection
-              .execute(updateRemote(localNewNotes[i], id!));
-        } else if (localNewNotes[i].noteUpdateDate == remoteNewNotes[j][23]) {
+  try {
+    final SharedPreferences userLocalInfo =
+        await SharedPreferences.getInstance();
+    DateTime lastRefresh = DateTime.parse(
+            userLocalInfo.getString('refreshdate') ??
+                '1969-01-01 00:00:00.000000')
+        .add(const Duration(days: -10));
+    userLocalInfo.setString('refreshdate', DateTime.now().toUtc().toString());
+    id = userLocalInfo.getString('userID');
+    RealmResults<Notes> localNewNotes = realm.query<Notes>(
+        "noteUpdateDate > \$0 SORT(noteUpdateDate ASC)", [lastRefresh]);
+    PostgreSQLConnection? postgreSQLConnection = PostgreSQLConnection(
+        "111.229.224.55", 5432, "users",
+        username: "admin", password: "456321rrRR");
+    await postgreSQLConnection.open();
+    var remoteNewNotes = await postgreSQLConnection
+        .query("SELECT * FROM u$id.n$id WHERE updatedate > '$lastRefresh'");
+    List<int> synced = [];
+    for (int i = 0; i < localNewNotes.length; i++) {
+      if (remoteNewNotes.isEmpty) {
+        await postgreSQLConnection
+            .execute(insertOrUpdateRemote(localNewNotes[i], id!));
+      }
+      for (int j = 0; j < remoteNewNotes.length; j++) {
+        if (localNewNotes[i].id.toString() == remoteNewNotes[j][0]) {
+          synced.add(j);
+          if (localNewNotes[i].noteUpdateDate.isAfter(remoteNewNotes[j][23])) {
+            await postgreSQLConnection
+                .execute(updateRemote(localNewNotes[i], id!));
+          } else if (localNewNotes[i].noteUpdateDate == remoteNewNotes[j][23]) {
+          } else {
+            await updateLocal(localNewNotes[i], remoteNewNotes[j]);
+          }
+          break;
         } else {
-          await updateLocal(localNewNotes[i], remoteNewNotes[j]);
-        }
-        break;
-      } else {
-        if (j == remoteNewNotes.length - 1) {
-          await postgreSQLConnection
-              .execute(insertOrUpdateRemote(localNewNotes[i], id!));
+          if (j == remoteNewNotes.length - 1) {
+            await postgreSQLConnection
+                .execute(insertOrUpdateRemote(localNewNotes[i], id!));
+          }
         }
       }
     }
-  }
 
-  for (int j = 0; j < remoteNewNotes.length; j++) {
-    if (synced.contains(j)) {
-    } else {
-      RealmResults<Notes> existedNote = realm
-          .query<Notes>("id == \$0", [Uuid.fromString(remoteNewNotes[j][0])]);
-      if (existedNote.isEmpty) {
-        insertLocal(remoteNewNotes[j]);
-      } else if (existedNote.length == 1) {
-        updateLocal(existedNote.first, remoteNewNotes[j]);
-      } else {}
+    for (int j = 0; j < remoteNewNotes.length; j++) {
+      if (synced.contains(j)) {
+      } else {
+        RealmResults<Notes> existedNote = realm
+            .query<Notes>("id == \$0", [Uuid.fromString(remoteNewNotes[j][0])]);
+        if (existedNote.isEmpty) {
+          insertLocal(remoteNewNotes[j]);
+        } else if (existedNote.length == 1) {
+          updateLocal(existedNote.first, remoteNewNotes[j]);
+        } else {}
+      }
     }
+    // Get.snackbar(
+    //   '同步成功',
+    //   '',
+    //   duration: const Duration(seconds: 1),
+    //   backgroundColor: const Color.fromARGB(60, 0, 140, 198),
+    // );
+    if (kDebugMode) {
+      print('同步成功');
+    }
+  } catch (e) {
+    // Get.snackbar(
+    //   '同步失败',
+    //   e.toString(),
+    //   duration: const Duration(seconds: 3),
+    //   backgroundColor: const Color.fromARGB(60, 0, 140, 198),
+    // );
+    if (kDebugMode) {
+      print('同步失败:$e');
+    }
+  } finally {
+    postgreSQLConnection.close();
   }
-  postgreSQLConnection.close();
 }
 
 Future<void> compareLR1(Notes note, List result) async {}

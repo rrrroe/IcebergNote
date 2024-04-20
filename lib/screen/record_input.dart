@@ -2744,6 +2744,8 @@ class _InputSelectAlertDialogState extends State<InputSelectAlertDialog> {
                           } else {
                             widget.currentList.remove(filterSelectList[index]);
                           }
+                          _controller.text = '';
+                          filterSelectList = List.from(widget.selectList);
                         });
                       },
                       child: Container(
