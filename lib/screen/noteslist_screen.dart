@@ -1031,7 +1031,7 @@ class SearchPageState extends State<SearchPage> {
                   itemBuilder: (context, index) {
                     return buildCard(
                       searchnotesList.notesList[index],
-                      index,
+                      0,
                     );
                   },
                 ),

@@ -28,7 +28,7 @@ class CheckListCardState extends State<CheckListCard> {
   @override
   Widget build(BuildContext context) {
     List<Todo> todoList = stringToTodoList(widget.note.noteContext);
-    List<int> todoCount = [0, 0, 0, 0];
+    List<int> todoCountResults = [0, 0, 0, 0];
     Color fontColor = const Color.fromARGB(255, 48, 207, 121);
     List<TextStyle> checkTextStyle = [
       const TextStyle(
@@ -56,13 +56,13 @@ class CheckListCardState extends State<CheckListCard> {
     ];
     for (int i = 0; i < todoList.length; i++) {
       if (todoList[i].finishState == 1) {
-        todoCount[1]++;
+        todoCountResults[1]++;
       } else if (todoList[i].finishState == 2) {
-        todoCount[2]++;
+        todoCountResults[2]++;
       } else if (todoList[i].finishState == 3) {
-        todoCount[3]++;
+        todoCountResults[3]++;
       } else {
-        todoCount[0]++;
+        todoCountResults[0]++;
       }
     }
     return GestureDetector(
@@ -112,17 +112,17 @@ class CheckListCardState extends State<CheckListCard> {
               Row(
                 children: [
                   Visibility(
-                      visible: todoCount[0] > 0,
-                      child: Text('未完成 ${todoCount[0]}   ')),
+                      visible: todoCountResults[0] > 0,
+                      child: Text('未完成 ${todoCountResults[0]}   ')),
                   Visibility(
-                      visible: todoCount[1] > 0,
-                      child: Text('已完成 ${todoCount[1]}   ')),
+                      visible: todoCountResults[1] > 0,
+                      child: Text('已完成 ${todoCountResults[1]}   ')),
                   Visibility(
-                      visible: todoCount[2] > 0,
-                      child: Text('进行中 ${todoCount[2]}   ')),
+                      visible: todoCountResults[2] > 0,
+                      child: Text('进行中 ${todoCountResults[2]}   ')),
                   Visibility(
-                      visible: todoCount[3] > 0,
-                      child: Text('已放弃 ${todoCount[3]}   ')),
+                      visible: todoCountResults[3] > 0,
+                      child: Text('已放弃 ${todoCountResults[3]}   ')),
                 ],
               ),
               Visibility(

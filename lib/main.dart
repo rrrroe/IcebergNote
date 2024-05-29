@@ -75,7 +75,7 @@ class NotesList {
   searchTodo(String n, int m) {
     visibleItemCount = visibleItemCount + m;
     notesList = realm.query<Notes>(
-        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType == '.TODO' OR noteType == '.todo' OR noteType == '.Todo' OR noteType == '.待办' ) SORT(noteCreateDate DESC) LIMIT($visibleItemCount)",
+        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType == '.TODO' OR noteType == '.todo' OR noteType == '.Todo' OR noteType == '.待办' OR noteType == '.清单' ) SORT(noteCreateDate DESC) LIMIT($visibleItemCount)",
         [n]);
   }
 
@@ -84,6 +84,22 @@ class NotesList {
     visibleItemCount = visibleItemCount + m;
     notesList = realm.query<Notes>(
         "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType CONTAINS[c] \$1 AND noteProject CONTAINS[c] \$2 AND noteFolder CONTAINS[c] \$3 AND noteFinishState CONTAINS[c] \$4 ) AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT($visibleItemCount)",
+        [n, type, project, folder, finishstate]);
+    if (notesList.isEmpty != true) {
+      if (notesList[0].noteTitle + notesList[0].noteContext == '') {
+        realm.write(() {
+          realm.delete(notesList[0]);
+          visibleItemCount = visibleItemCount - 1;
+        });
+      }
+    }
+  }
+
+  searchallTodo(String n, int m, String type, String project, String folder,
+      String finishstate) {
+    visibleItemCount = visibleItemCount + m;
+    notesList = realm.query<Notes>(
+        "( noteTitle CONTAINS[c] \$0 OR noteContext CONTAINS[c] \$0 ) AND ( noteType == '.TODO' OR noteType == '.todo' OR noteType == '.Todo' OR noteType == '.待办' OR noteType == '.清单' ) AND ( noteProject CONTAINS[c] \$2 AND noteFolder CONTAINS[c] \$3 AND noteFinishState CONTAINS[c] \$4 ) AND noteIsDeleted != true SORT(noteCreateDate DESC) LIMIT($visibleItemCount)",
         [n, type, project, folder, finishstate]);
     if (notesList.isEmpty != true) {
       if (notesList[0].noteTitle + notesList[0].noteContext == '') {

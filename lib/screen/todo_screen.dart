@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:icebergnote/screen/card/check_list_card.dart';
+import 'package:icebergnote/screen/card/normal_card.dart';
+import 'package:icebergnote/screen/card/todo_card.dart';
 import 'package:realm/realm.dart';
 
 import '../constants.dart';
@@ -34,8 +37,8 @@ class TodoPageState extends State<TodoPage> {
   void refreshList() {
     double scrollPosition = _scrollController.position.pixels;
     setState(() {
-      searchnotesList.searchall(searchText, 0, '.todo', searchProject,
-          searchFolder, searchFinishState);
+      searchnotesList.searchallTodo(searchText, 0, '(.todo)|(.清单)',
+          searchProject, searchFolder, searchFinishState);
 
       _scrollController.jumpTo(scrollPosition);
     });
@@ -46,7 +49,7 @@ class TodoPageState extends State<TodoPage> {
     super.initState();
     _scrollController.addListener(_scrollListener);
 
-    searchnotesList.searchall(
+    searchnotesList.searchallTodo(
         searchText, 0, '.todo', searchProject, searchFolder, searchFinishState);
 
     List<Notes> folderDistinctList = realm
@@ -90,7 +93,7 @@ class TodoPageState extends State<TodoPage> {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
       setState(() {
-        searchnotesList.searchall(searchText, 50, '.todo', searchProject,
+        searchnotesList.searchallTodo(searchText, 50, '.todo', searchProject,
             searchFolder, searchFinishState);
 
         refreshList();
@@ -104,289 +107,33 @@ class TodoPageState extends State<TodoPage> {
     }
   }
 
-  Widget buildCard(Notes note) {
+  Widget buildCard(Notes note, int mod) {
     if (note.noteType == '.TODO' ||
         note.noteType == '.todo' ||
         note.noteType == '.待办' ||
         note.noteType == '.Todo') {
-      return Card(
-        color: note.noteFinishState == '已完'
-            ? const Color.fromARGB(20, 200, 200, 200)
-            : const Color.fromARGB(20, 0, 123, 128),
-        margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
-        elevation: 0,
-        shadowColor: Theme.of(context).primaryColor,
-        child: ListTile(
-          minVerticalPadding: 1,
-          title: CheckboxListTile(
-            title: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChangePage(
-                      onPageClosed: () {
-                        refreshList();
-                      },
-                      note: note,
-                      mod: 1,
-                    ),
-                  ),
-                );
-              },
-              child: Text(
-                note.noteTitle,
-                style: TextStyle(
-                  color: note.noteFinishState == '已完'
-                      ? const Color.fromARGB(255, 200, 200, 200)
-                      : const Color.fromARGB(255, 0, 123, 128),
-                  decoration: note.noteFinishState == '已完'
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-            value: note.noteFinishState == '已完',
-            onChanged: (value) {
-              if (value == true) {
-                setState(() {
-                  realm.write(() {
-                    note.noteFinishState = '已完';
-                    note.noteFinishDate = DateTime.now().toUtc();
-                    note.noteUpdateDate = DateTime.now().toUtc();
-                  });
-                });
-              } else {
-                realm.write(() {
-                  setState(() {
-                    note.noteFinishState = '未完';
-                    note.noteUpdateDate = DateTime.now().toUtc();
-                  });
-                });
-              }
-            },
-          ),
-          subtitle: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Visibility(
-                visible: note.noteContext != "",
-                child: Text(
-                  note.noteContext,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: note.noteFinishState == '已完'
-                        ? const Color.fromARGB(255, 200, 200, 200)
-                        : const Color.fromARGB(255, 0, 0, 0),
-                    decoration: note.noteFinishState == '已完'
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              const Visibility(
-                visible: true,
-                child: Row(
-                  children: [
-                    // Container(
-                    //   width: 70,
-                    //   padding: const EdgeInsets.all(0),
-                    //   alignment: Alignment.centerLeft,
-                    //   child: Text(
-                    //     note.noteType,
-                    //     style: const TextStyle(
-                    //       fontSize: 10,
-                    //     ),
-                    //   ),
-                    // ),
-                    // Container(
-                    //   padding: const EdgeInsets.all(0),
-                    //   alignment: Alignment.centerLeft,
-                    //   width: 79,
-                    //   child: Text(
-                    //     note.noteProject,
-                    //     style: const TextStyle(
-                    //       fontSize: 10,
-                    //     ),
-                    //   ),
-                    // ),
-                    // Container(
-                    //   padding: const EdgeInsets.all(0),
-                    //   alignment: Alignment.centerLeft,
-                    //   width: 150,
-                    //   child: Text(
-                    //     note.noteFolder,
-                    //     style: const TextStyle(
-                    //       fontSize: 10,
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
-                ),
-              )
-            ],
-          ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChangePage(
-                  onPageClosed: () {
-                    refreshList();
-                  },
-                  note: note,
-                  mod: 1,
-                ),
-              ),
-            );
-          },
-          onLongPress: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                if (widget.mod == 2) {
-                  return BottomPopSheetDeleted(
-                    note: note,
-                    onDialogClosed: () {
-                      refreshList();
-                    },
-                  );
-                } else {
-                  return BottomPopSheet(
-                    note: note,
-                    onDialogClosed: () {
-                      refreshList();
-                    },
-                  );
-                }
-              },
-            );
-          },
-        ),
+      return TodoCard(
+        note: note,
+        mod: mod,
+        context: context,
+        refreshList: refreshList,
+        searchText: searchText,
+      );
+    } else if (note.noteType == '.清单') {
+      return CheckListCard(
+        note: note,
+        mod: mod,
+        context: context,
+        refreshList: refreshList,
+        searchText: searchText,
       );
     } else {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-        elevation: 3, // 阴影大小
-        shadowColor: Colors.grey,
-        child: ListTile(
-          title: Row(
-            children: [
-              Visibility(
-                visible: note.noteTitle != "",
-                child: Text(
-                  note.noteTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.fade,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              const Spacer(),
-            ],
-          ),
-          subtitle: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Visibility(
-                visible: note.noteContext != "",
-                child: Text(
-                  note.noteContext,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 5,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              Visibility(
-                visible:
-                    note.noteType + note.noteProject + note.noteFolder != "",
-                child: Row(
-                  children: [
-                    Container(
-                      width: 70,
-                      padding: const EdgeInsets.all(0),
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        note.noteType,
-                        style: const TextStyle(
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(0),
-                      alignment: Alignment.centerLeft,
-                      width: 79,
-                      child: Text(
-                        note.noteProject,
-                        style: const TextStyle(
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(0),
-                      alignment: Alignment.centerLeft,
-                      width: 150,
-                      child: Text(
-                        note.noteFolder,
-                        style: const TextStyle(
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChangePage(
-                  onPageClosed: () {
-                    refreshList();
-                  },
-                  note: note,
-                  mod: 1,
-                ),
-              ),
-            );
-          },
-          onLongPress: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                if (widget.mod == 2) {
-                  return BottomPopSheetDeleted(
-                    note: note,
-                    onDialogClosed: () {
-                      refreshList();
-                    },
-                  );
-                } else {
-                  return BottomPopSheet(
-                    note: note,
-                    onDialogClosed: () {
-                      refreshList();
-                    },
-                  );
-                }
-              },
-            );
-          },
-        ),
+      return NormalCard(
+        note: note,
+        mod: mod,
+        context: context,
+        refreshList: refreshList,
+        searchText: searchText,
       );
     }
   }
@@ -598,7 +345,7 @@ class TodoPageState extends State<TodoPage> {
                   onTap: () {
                     HapticFeedback.lightImpact();
                   },
-                  child: buildCard(searchnotesList.notesList[index]),
+                  child: buildCard(searchnotesList.notesList[index], 0),
                 );
               },
             ),

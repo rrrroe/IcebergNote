@@ -110,7 +110,7 @@ class CheckListEditPage extends StatefulWidget {
 
 class CheckListEditPageState extends State<CheckListEditPage> {
   List<Todo> todoList = [];
-  List<int> todoCount = [0, 0, 0, 0];
+  List<int> todoCountResults = [0, 0, 0, 0];
   List<TextEditingController> todoListController = [];
   List<TextEditingController> todoListContentController = [];
   TextEditingController titleController = TextEditingController();
@@ -118,19 +118,35 @@ class CheckListEditPageState extends State<CheckListEditPage> {
   Color fontColor = const Color.fromARGB(255, 48, 207, 121);
   Color backgroundColor = const Color.fromARGB(20, 48, 207, 121);
 
+  List<int> todoCount() {
+    List<int> todoCountResults = [0, 0, 0, 0];
+    for (int i = 0; i < todoList.length; i++) {
+      if (todoList[i].finishState == 1) {
+        todoCountResults[1]++;
+      } else if (todoList[i].finishState == 2) {
+        todoCountResults[2]++;
+      } else if (todoList[i].finishState == 3) {
+        todoCountResults[3]++;
+      } else if (todoList[i].finishState == 0) {
+        todoCountResults[0]++;
+      }
+    }
+    return todoCountResults;
+  }
+
   @override
   void initState() {
     super.initState();
     todoList = stringToTodoList(widget.note.noteContext);
     for (int i = 0; i < todoList.length; i++) {
       if (todoList[i].finishState == 1) {
-        todoCount[1]++;
+        todoCountResults[1]++;
       } else if (todoList[i].finishState == 2) {
-        todoCount[2]++;
+        todoCountResults[2]++;
       } else if (todoList[i].finishState == 3) {
-        todoCount[3]++;
+        todoCountResults[3]++;
       } else {
-        todoCount[0]++;
+        todoCountResults[0]++;
       }
       todoListController.add(TextEditingController());
       todoListController[i].text = todoList[i].title;
@@ -350,6 +366,8 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                                 null;
                                                             break;
                                                         }
+                                                        todoCountResults =
+                                                            todoCount();
                                                         realm.write(() {
                                                           widget.note
                                                                   .noteContext =
@@ -359,6 +377,20 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                                   .noteUpdateDate =
                                                               DateTime.now()
                                                                   .toUtc();
+                                                          if (todoCountResults[
+                                                                      0] ==
+                                                                  0 &&
+                                                              todoCountResults[
+                                                                      0] ==
+                                                                  0) {
+                                                            widget.note
+                                                                    .noteFinishState =
+                                                                '已完';
+                                                          } else {
+                                                            widget.note
+                                                                    .noteFinishState =
+                                                                '未完';
+                                                          }
                                                         });
                                                         setState(() {});
                                                       },
@@ -638,19 +670,19 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                   ]),
                                   TableRow(children: [
                                     const Text('未完成', textAlign: TextAlign.end),
-                                    Text('    ${todoCount[0]}'),
+                                    Text('    ${todoCountResults[0]}'),
                                   ]),
                                   TableRow(children: [
                                     const Text('已完成', textAlign: TextAlign.end),
-                                    Text('    ${todoCount[1]}'),
+                                    Text('    ${todoCountResults[1]}'),
                                   ]),
                                   TableRow(children: [
                                     const Text('进行中', textAlign: TextAlign.end),
-                                    Text('    ${todoCount[2]}'),
+                                    Text('    ${todoCountResults[2]}'),
                                   ]),
                                   TableRow(children: [
                                     const Text('已放弃', textAlign: TextAlign.end),
-                                    Text('    ${todoCount[3]}'),
+                                    Text('    ${todoCountResults[3]}'),
                                   ]),
                                 ],
                               )
