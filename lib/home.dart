@@ -49,7 +49,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   bool showLargeSizeLayout = false;
   int screenIndex = ScreenSelected.star.index;
   final StarPage starPage = const StarPage(
-    mod: 0,
+    mod: 4,
     txt: '',
   );
   final SearchPage searchPage = SearchPage(

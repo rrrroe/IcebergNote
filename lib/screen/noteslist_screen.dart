@@ -640,7 +640,7 @@ class SearchPageState extends State<SearchPage> {
   }
 
   PreferredSizeWidget buildAppBar() {
-    if (widget.mod == 0 || widget.mod == 4) {
+    if (widget.mod == 0 || widget.mod == 3) {
       return PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
         child: Row(
@@ -863,7 +863,7 @@ class SearchPageState extends State<SearchPage> {
         note.noteType == '.Todo') {
       return TodoCard(
         note: note,
-        mod: mod,
+        mod: mod, //mod: 0-正常 1-搜索 2-回收站 3-待办 4-星标
         context: context,
         refreshList: refreshList,
         searchText: searchText,
