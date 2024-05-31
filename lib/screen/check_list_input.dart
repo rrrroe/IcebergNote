@@ -117,6 +117,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
   bool isAll = false;
   Color fontColor = const Color.fromARGB(255, 48, 207, 121);
   Color backgroundColor = const Color.fromARGB(20, 48, 207, 121);
+  bool isAutofocus = false;
 
   List<int> todoCount() {
     List<int> todoCountResults = [0, 0, 0, 0];
@@ -416,6 +417,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                         controller:
                                                             todoListController[
                                                                 index],
+                                                        autofocus: isAutofocus,
                                                         decoration:
                                                             InputDecoration(
                                                           border:
@@ -738,6 +740,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
               right: 20,
               child: FloatingActionButton(
                 onPressed: () {
+                  isAutofocus = true;
                   todoList.add(Todo());
                   todoListController.add(TextEditingController());
                   todoListController.last.text = '';
