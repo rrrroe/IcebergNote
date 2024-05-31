@@ -88,7 +88,8 @@ class CheckListCardState extends State<CheckListCard> {
                           const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
-                              color: Color.fromARGB(255, 0, 140, 198)),
+                              color: Color.fromARGB(255, 0, 140, 198),
+                              fontFamily: 'LXGWWenKai'),
                           TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
