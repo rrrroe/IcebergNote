@@ -138,6 +138,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
   void initState() {
     super.initState();
     todoList = stringToTodoList(widget.note.noteContext);
+    titleController.text = widget.note.noteTitle;
     for (int i = 0; i < todoList.length; i++) {
       if (todoList[i].finishState == 1) {
         todoCountResults[1]++;
