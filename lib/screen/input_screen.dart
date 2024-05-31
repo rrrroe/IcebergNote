@@ -492,29 +492,32 @@ class ChangePageState extends State<ChangePage> {
                               ),
                             ],
                           ),
-                          TextField(
-                            focusNode: focusNode,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              height: 2,
-                              wordSpacing: 4,
+                          Container(
+                            constraints: const BoxConstraints(maxWidth: 800),
+                            child: TextField(
+                              focusNode: focusNode,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                height: 2,
+                                wordSpacing: 4,
+                              ),
+                              controller: contentController,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                              ),
+                              maxLines: null,
+                              minLines: 6,
+                              onChanged: (value) async {
+                                await realm.writeAsync(() {
+                                  widget.note.noteContext = value;
+                                  widget.note.noteUpdateDate =
+                                      DateTime.now().toUtc();
+                                });
+                                // setState(() {
+                                //   wordCount2 = value.length;
+                                // });
+                              },
                             ),
-                            controller: contentController,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                            ),
-                            maxLines: null,
-                            minLines: 6,
-                            onChanged: (value) async {
-                              await realm.writeAsync(() {
-                                widget.note.noteContext = value;
-                                widget.note.noteUpdateDate =
-                                    DateTime.now().toUtc();
-                              });
-                              // setState(() {
-                              //   wordCount2 = value.length;
-                              // });
-                            },
                           ),
                         ],
                       ),
