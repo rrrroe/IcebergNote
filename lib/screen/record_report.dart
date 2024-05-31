@@ -609,7 +609,7 @@ class _ReportScreenState extends State<ReportScreen>
                   fontColor: fontColor,
                   dataList: data,
                   currentReportDurationType: currentReportDurationType,
-                  title: '',
+                  title: recordTemplates[currentProject]![graphSetting[0]]![0],
                   unit: propertySettings[3],
                   length: data.length,
                 ),

@@ -69,22 +69,38 @@ class _LineChartSampleState extends State<LineChartSample> {
 
     maxX = widget.length - 1;
 
-    return Container(
-      margin: const EdgeInsets.only(left: 0, right: 25, top: 25, bottom: 0),
-      child: AspectRatio(
-        aspectRatio: 1.70,
-        child: Padding(
-          padding: const EdgeInsets.only(
-            right: 18,
-            left: 12,
-            top: 24,
-            bottom: 12,
-          ),
-          child: LineChart(
-            mainData(),
+    return Stack(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(left: 0, right: 25, top: 0, bottom: 0),
+          child: AspectRatio(
+            aspectRatio: 1.70,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: 18,
+                left: 12,
+                top: 24,
+                bottom: 12,
+              ),
+              child: LineChart(
+                mainData(),
+              ),
+            ),
           ),
         ),
-      ),
+        Positioned(
+          child: Container(
+            alignment: Alignment.center,
+            child: Text(
+              widget.title,
+              style: TextStyle(
+                  color: widget.fontColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -222,7 +238,9 @@ class _LineChartSampleState extends State<LineChartSample> {
       ),
       borderData: FlBorderData(
         show: true,
-        border: Border.all(color: widget.fontColor),
+        border: Border(
+            left: BorderSide(color: widget.fontColor),
+            bottom: BorderSide(color: widget.fontColor)),
       ),
       minX: 0,
       maxX: maxX.toDouble(),
