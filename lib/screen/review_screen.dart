@@ -6,7 +6,7 @@ import 'dart:math' as math;
 
 import '../constants.dart';
 import '../notes.dart';
-import 'input_screen.dart';
+import 'input/input_screen.dart';
 import 'noteslist_screen.dart';
 
 const _labelAngle = math.pi / 2 * 0.2;

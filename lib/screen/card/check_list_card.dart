@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/notes.dart';
-import 'package:icebergnote/screen/check_list_input.dart';
+import 'package:icebergnote/screen/input/check_list_input.dart';
 import 'package:icebergnote/screen/search_screen.dart';
 import 'dart:ui' as ui;
 import '../noteslist_screen.dart';

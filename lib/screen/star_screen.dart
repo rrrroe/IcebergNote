@@ -9,7 +9,7 @@ import 'package:realm/realm.dart';
 
 import '../main.dart';
 import '../notes.dart';
-import 'input_screen.dart';
+import 'input/input_screen.dart';
 import 'noteslist_screen.dart';
 
 class StarPage extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/notes.dart';
-import 'package:icebergnote/screen/input_screen.dart';
+import 'package:icebergnote/screen/input/input_screen.dart';
 import '../noteslist_screen.dart';
 
 class TodoCard extends StatefulWidget {

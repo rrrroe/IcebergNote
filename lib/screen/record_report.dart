@@ -13,7 +13,7 @@ import '../notes.dart';
 import '../card.dart';
 import 'record_graph_bar.dart';
 import 'record_graph_line.dart';
-import 'record_input.dart';
+import 'input/record_input.dart';
 import 'package:intl/intl.dart';
 
 bool isLeap(int year) {

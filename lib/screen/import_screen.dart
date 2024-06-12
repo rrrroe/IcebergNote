@@ -11,7 +11,7 @@ import 'package:realm/realm.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../notes.dart';
-import 'input_screen.dart';
+import 'input/input_screen.dart';
 
 class ImportPage extends StatefulWidget {
   const ImportPage({super.key});
