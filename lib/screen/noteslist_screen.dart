@@ -12,9 +12,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/postgresql/sync.dart';
+import 'package:icebergnote/screen/card/anniversary_card.dart';
 import 'package:icebergnote/screen/card/check_list_card.dart';
 import 'package:icebergnote/screen/card/todo_card.dart';
 import 'package:icebergnote/screen/card/normal_card.dart';
+import 'package:icebergnote/screen/input/anniversary_input.dart';
 import 'package:icebergnote/screen/input/input_screen.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:realm/realm.dart';
@@ -308,6 +310,30 @@ class BottomNoteTypeSheet extends StatelessWidget {
                             onPageClosed: () {
                               onDialogClosed();
                             },
+                          ));
+                    } else if (noteTypeList[index] == '.日子') {
+                      Navigator.pop(context);
+                      Notes note = Notes(
+                          Uuid.v4(),
+                          '',
+                          '',
+                          '',
+                          DateTime.now().toUtc(),
+                          DateTime.now().toUtc(),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          noteType: noteTypeList[index]);
+                      realm.write(() {
+                        realm.add<Notes>(note, update: true);
+                      });
+                      Get.to(() => AnniversaryInputPage(
+                            note: note,
+                            onPageClosed: () {
+                              onDialogClosed();
+                            },
+                            mod: 0,
                           ));
                     } else {
                       Navigator.pop(context);
@@ -890,6 +916,14 @@ class SearchPageState extends State<SearchPage> {
       }
     } else if (note.noteType == '.清单') {
       return CheckListCard(
+        note: note,
+        mod: mod,
+        context: context,
+        refreshList: refreshList,
+        searchText: searchText,
+      );
+    } else if (note.noteType == '.日子') {
+      return AnniversaryCard(
         note: note,
         mod: mod,
         context: context,

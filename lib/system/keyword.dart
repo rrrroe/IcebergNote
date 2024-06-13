@@ -6,4 +6,5 @@ Map<String, List<String>> recordKeyword = {
   '未完': ['未完', 'unfinished'],
   '已完': ['已完', 'done'],
   '模板': ['模板', 'template'],
+  '日子': ['日子', 'anniversary'],
 };
