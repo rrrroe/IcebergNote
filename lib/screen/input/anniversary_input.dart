@@ -367,31 +367,6 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextButton(
-                      onPressed: () {},
-                      child: const Text('高级'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        realm.write(() {
-                          widget.note.noteContext = contentController.text
-                              .replaceAll(RegExp(r'\n+'), '\n\n');
-                          widget.note.noteUpdateDate = DateTime.now().toUtc();
-                        });
-
-                        save();
-                        Navigator.pop(context);
-                        widget.onPageClosed();
-                      },
-                      child: const Text('格式'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        FlutterClipboard.copy(contentController.text);
-                        poplog(1, '复制', context);
-                      },
-                      child: const Text('复制'),
-                    ),
-                    TextButton(
                       onPressed: () async {
                         save();
                         syncNoteToRemote(widget.note);
@@ -411,34 +386,13 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
   }
 
   save() {
+    anniversary = Anniversary.fromJson(jsonDecode(contentController.text));
+    anniversary.date ??=
+        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     realm.write(() {
-      if (titleController.text == '' &&
-          widget.note.noteType == '.todo' &&
-          contentController.text != '') {
-        List<String> tmpList = contentController.text.split('\n');
-        List<Notes> tmpnoteList = [];
-        for (int i = 0; i < tmpList.length; i++) {
-          tmpnoteList.add(Notes(
-              Uuid.v4(),
-              widget.note.noteFolder,
-              tmpList[i],
-              '',
-              DateTime.now().toUtc(),
-              DateTime.now().toUtc(),
-              DateTime.utc(1970, 1, 1),
-              DateTime.utc(1970, 1, 1),
-              DateTime.utc(1970, 1, 1),
-              DateTime.utc(1970, 1, 1),
-              noteType: '.todo',
-              noteProject: widget.note.noteProject,
-              noteFinishState: '未完'));
-          realm.add(tmpnoteList[i]);
-        }
-        realm.delete(widget.note);
-      } else {
-        widget.note.noteTitle = titleController.text;
-        widget.note.noteUpdateDate = DateTime.now().toUtc();
-      }
+      widget.note.noteContext = jsonEncode(anniversary.toJson());
+      widget.note.noteTitle = anniversary.title;
+      widget.note.noteUpdateDate = DateTime.now().toUtc();
     });
   }
 }

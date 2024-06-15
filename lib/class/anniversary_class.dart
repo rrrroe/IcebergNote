@@ -26,11 +26,11 @@ class Anniversary {
     this.fontColor = Colors.white,
     this.isjune = false,
     this.alarmType = 0,
-    this.oldPrefix = '',
-    this.oldSuffix = '',
-    this.futurePrefix = '',
-    this.futureSuffix = '',
-    this.alarmDuration = '',
+    this.oldPrefix = '已过',
+    this.oldSuffix = '天',
+    this.futurePrefix = '还有',
+    this.futureSuffix = '日',
+    this.alarmDuration = '年',
     this.alarmSpecialDay = 0,
     this.needAlarm = false,
     this.fontFamilyNum = 'LXGWWenKai',
@@ -136,7 +136,6 @@ class Anniversary {
     DateTime now = DateTime.now();
     DateTime nowTmp = DateTime(now.year, now.month, now.day);
     if (date != null) {
-      print(date!.add(Duration(days: alarmSpecialDay)));
       return nowTmp
           .difference(date!.add(Duration(days: alarmSpecialDay)))
           .inDays; //以过去的日子为正，还剩的日子为负
