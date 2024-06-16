@@ -88,6 +88,8 @@ class AnniversaryCardState extends State<AnniversaryCard> {
                   days != null
                       ? anniversary.alarmType == 0
                           ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.ideographic,
                               children: [
                                 Text(
                                   days >= 0
@@ -102,7 +104,7 @@ class AnniversaryCardState extends State<AnniversaryCard> {
                                   days.abs().toString(),
                                   style: TextStyle(
                                       color: anniversary.fontColor,
-                                      fontSize: 22),
+                                      fontSize: 26),
                                 ),
                                 const SizedBox(width: 5),
                                 Text(

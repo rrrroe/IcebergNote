@@ -1,21 +1,23 @@
 import 'dart:convert';
-
 import 'package:clipboard/clipboard.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:icebergnote/class/anniversary_class.dart';
 import 'package:icebergnote/constants.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:icebergnote/postgresql/sync.dart';
+import 'package:icebergnote/screen/card/anniversary_card.dart';
 import 'package:icebergnote/screen/input/input_screen.dart';
-import 'package:realm/realm.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 // ignore: must_be_immutable
 class AnniversaryInputPage extends StatefulWidget {
   final VoidCallback onPageClosed;
   final Notes note;
   final int mod; //0正常，
-  List<String> typeList = ['新建', '清空'];
   List<String> folderList = ['新建', '清空'];
   List<String> projectList = ['新建', '清空'];
   AnniversaryInputPage({
@@ -35,6 +37,7 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
   TextEditingController otherController = TextEditingController();
+  final bgColorTextController = TextEditingController(text: '#FF7062DB');
   @override
   void initState() {
     super.initState();
@@ -51,14 +54,6 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
     titleController.text = widget.note.noteTitle;
     contentController.text = widget.note.noteContext;
 
-    List<Notes> typeDistinctList = realm
-        .query<Notes>(
-            "noteType !='' DISTINCT(noteType) SORT(noteCreateDate DESC)")
-        .toList();
-
-    for (int i = 0; i < typeDistinctList.length; i++) {
-      widget.typeList.add(typeDistinctList[i].noteType);
-    }
     List<Notes> folderDistinctList = realm
         .query<Notes>(
             "noteFolder !='' DISTINCT(noteFolder) SORT(noteCreateDate DESC)")
@@ -79,8 +74,10 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
 
   @override
   void dispose() {
-    titleController.clear();
-    contentController.clear();
+    titleController.dispose();
+    contentController.dispose();
+    otherController.dispose();
+    bgColorTextController.dispose();
     super.dispose();
   }
 
@@ -109,13 +106,18 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
             Column(
               mainAxisSize: MainAxisSize.max,
               children: [
+                const SizedBox(height: 20),
+                AnniversaryCard(
+                    note: widget.note,
+                    mod: 0,
+                    context: context,
+                    refreshList: () {},
+                    searchText: ''),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 25, // 左右间距
-                          vertical: 0 // 上下间距
-                          ),
+                          horizontal: 25, vertical: 0),
                       child: Column(
                         children: [
                           Row(
@@ -123,7 +125,7 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
                             children: [
                               Expanded(
                                 child: TextField(
-                                  textAlign: TextAlign.center,
+                                  textAlign: TextAlign.left,
                                   controller: titleController,
                                   style: const TextStyle(
                                     fontSize: 18,
@@ -132,30 +134,187 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
                                   minLines: 1,
                                   maxLines: 2,
                                   decoration: const InputDecoration(
-                                      labelText: "日子",
-                                      labelStyle: TextStyle(
-                                        color: Colors.grey,
-                                      )
-                                      // border: OutlineInputBorder(),
-                                      // focusedBorder:
-                                      //     OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
-                                      // enabledBorder: OutlineInputBorder(
-                                      //     borderSide: BorderSide(color: Colors.blue)),
-                                      ),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                    labelText: "日子",
+                                    labelStyle: TextStyle(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                   onChanged: (value) async {
-                                    // setState(() {
-                                    //   wordCount1 = value.length;
-                                    // });
-                                    await realm.writeAsync(() {
-                                      widget.note.noteTitle = value;
-                                      widget.note.noteUpdateDate =
-                                          DateTime.now().toUtc();
-                                    });
+                                    anniversary.title = value;
                                   },
                                 ),
                               )
                             ],
                           ),
+                          const Divider(),
+                          Container(
+                              alignment: Alignment.centerLeft,
+                              constraints: const BoxConstraints(
+                                minHeight: 30,
+                              ),
+                              color: Colors.white,
+                              height: 30,
+                              child: FilledButton.tonal(
+                                style: selectedContextButtonStyle,
+                                onPressed: () async {
+                                  DateTime? newDateTime =
+                                      await showRoundedDatePicker(
+                                    initialDate: anniversary.date,
+                                    height: 300,
+                                    context: context,
+                                    locale: const Locale("zh", "CN"),
+                                    theme: ThemeData(
+                                        primarySwatch: Colors.lightBlue),
+                                  );
+                                  if (newDateTime != null) {
+                                    setState(() {
+                                      anniversary.date = newDateTime;
+                                    });
+                                  }
+                                },
+                                child: Text(
+                                  anniversary.date == null
+                                      ? ''
+                                      : anniversary.date
+                                          .toString()
+                                          .substring(0, 10),
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              )),
+                          const Divider(),
+                          Row(
+                            children: [
+                              const Text(
+                                '背景',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              Expanded(child: Container()),
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        scrollable: true,
+                                        titlePadding: const EdgeInsets.all(0),
+                                        contentPadding: const EdgeInsets.all(0),
+                                        content: Column(
+                                          children: [
+                                            ColorPicker(
+                                              pickerColor: anniversary.bgColor,
+                                              onColorChanged:
+                                                  (Color color) async {
+                                                setState(() {
+                                                  anniversary.bgColor = color;
+                                                });
+                                              },
+                                              colorPickerWidth: 300,
+                                              pickerAreaHeightPercent: 0.7,
+                                              enableAlpha:
+                                                  true, // hexInputController will respect it too.
+                                              displayThumbColor: true,
+                                              paletteType: PaletteType.hsv,
+                                              labelTypes: const [],
+                                              pickerAreaBorderRadius:
+                                                  const BorderRadius.only(
+                                                topLeft: Radius.circular(2),
+                                                topRight: Radius.circular(2),
+                                              ),
+                                              hexInputController:
+                                                  bgColorTextController, // <- here
+                                              portraitOnly: true,
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      16, 0, 16, 16),
+                                              child: CupertinoTextField(
+                                                controller:
+                                                    bgColorTextController,
+                                                // Everything below is purely optional.
+                                                prefix: const Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 8),
+                                                    child: Icon(Icons.tag)),
+                                                suffix: IconButton(
+                                                  icon: const Icon(Icons
+                                                      .content_paste_rounded),
+                                                  onPressed: () =>
+                                                      FlutterClipboard.copy(
+                                                          bgColorTextController
+                                                              .text),
+                                                ),
+                                                autofocus: false,
+                                                maxLength: 9,
+                                                inputFormatters: [
+                                                  // Any custom input formatter can be passed
+                                                  // here or use any Form validator you want.
+                                                  UpperCaseTextFormatter(),
+                                                  FilteringTextInputFormatter
+                                                      .allow(RegExp(
+                                                          kValidHexPattern)),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  height: 20,
+                                  width: 10,
+                                  decoration: BoxDecoration(
+                                    color: anniversary.bgColor,
+                                    borderRadius:
+                                        BorderRadius.circular(2), // 设置圆角
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                            ],
+                          ),
+                          const Divider(),
+                          Row(
+                            children: [
+                              const Text(
+                                '背景',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              Expanded(
+                                child: TextField(
+                                  textAlign: TextAlign.left,
+                                  controller: titleController,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  minLines: 1,
+                                  maxLines: 2,
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  onChanged: (value) async {
+                                    anniversary.title = value;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(),
+                          const Divider(),
+                          const Divider(),
+                          const Divider(),
+                          const Divider(),
+                          const Divider(),
                           Wrap(
                             direction: Axis.horizontal,
                             alignment: WrapAlignment.start, // Left align
