@@ -140,13 +140,13 @@ void main() async {
   getUniqueId();
   recordTemplateInit();
 
-  try {
-    await exchangeSmart().timeout(const Duration(seconds: 3));
-  } catch (e) {
-    if (kDebugMode) {
-      print('超时:$e');
-    }
-  }
+  // try {
+  //   await exchangeSmart().timeout(const Duration(seconds: 3));
+  // } catch (e) {
+  //   if (kDebugMode) {
+  //     print('超时:$e');
+  //   }
+  // }
   runApp(
     const App(),
   );

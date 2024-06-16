@@ -549,25 +549,25 @@ class _NavigationTransitionState extends State<NavigationTransition> {
             ),
             GetBuilder<UserController>(
               init: UserController(), // 首次启动
-              builder: (_) => ListTile(
-                leading: _.name.value == '登录'
+              builder: (user) => ListTile(
+                leading: user.name.value == '登录'
                     ? const Icon(Icons.login_rounded)
                     : const Icon(Icons.person, color: Colors.blueGrey),
                 title: Text(
-                  _.name.value,
+                  user.name.value,
                 ),
-                trailing: _.name.value == '登录'
+                trailing: user.name.value == '登录'
                     ? const Text('')
-                    : _.vipDate.value.isBefore(DateTime.now())
+                    : user.vipDate.value.isBefore(DateTime.now())
                         ? const Text('会员已过期')
                         : const Text('尊享会员',
                             style: TextStyle(
                                 color: Color.fromARGB(255, 111, 102, 0))),
                 onTap: () {
-                  if (_.name.value == '登录') {
+                  if (user.name.value == '登录') {
                     Get.to(const LoginScreen());
                   } else {
-                    _.logout();
+                    user.logout();
                   }
                 },
               ),
@@ -601,14 +601,14 @@ class _NavigationTransitionState extends State<NavigationTransition> {
             ),
             GetBuilder<UserController>(
               init: UserController(), // 首次启动
-              builder: (_) => ListTile(
+              builder: (user) => ListTile(
                 leading:
                     const Icon(Icons.devices_rounded, color: Colors.blueGrey),
                 title: Text(
-                  '#${_.deviceNO.value}',
+                  '#${user.deviceNO.value}',
                 ),
                 onTap: () {
-                  _.refreshLocalUser();
+                  user.refreshLocalUser();
                 },
               ),
             ),

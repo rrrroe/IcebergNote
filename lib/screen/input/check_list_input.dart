@@ -288,7 +288,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                         : 26,
                                                     child: Checkbox.adaptive(
                                                       fillColor:
-                                                          MaterialStateProperty
+                                                          WidgetStateProperty
                                                               .all(const Color
                                                                   .fromARGB(
                                                                   0, 0, 0, 0)),

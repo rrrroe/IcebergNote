@@ -19,44 +19,47 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> {
   Duration get loginTime => const Duration(milliseconds: 0);
-  PostgreSQLConnection? connection;
+  Connection? connection;
 
   Future<String?> _authUser(LoginData data) async {
     try {
-      connection = PostgreSQLConnection("111.229.224.55", 5432, "users",
-          username: "admin", password: "456321rrRR");
+      connection = await Connection.open(Endpoint(
+          host: '111.229.224.55',
+          database: 'users',
+          username: "admin",
+          password: "456321rrRR"));
 
       if (connection == null) {
         return '远程数据库连接失败';
       } else {
-        await connection!.open();
         final results = await connection!
-            .query("SELECT * FROM userinfo WHERE email = '${data.name}'");
+            .execute("SELECT * FROM userinfo WHERE email = '${data.name}'");
         if (results.isNotEmpty) {
           var tmp = sha512.convert(utf8.encode('${data.password}IceBergNote'));
           if (tmp.toString() == results[0][5]) {
             final SharedPreferences userLocalInfo =
                 await SharedPreferences.getInstance();
-            userLocalInfo.setString('userName', results[0][0]);
-            userLocalInfo.setString('userID', results[0][1]);
-            userLocalInfo.setString('userEmail', results[0][2]);
-            userLocalInfo.setString('userPhone', results[0][3] ?? '');
-            userLocalInfo.setBool('userIsAdmin', results[0][4]);
+            userLocalInfo.setString('userName', results[0][0].toString());
+            userLocalInfo.setString('userID', results[0][1].toString());
+            userLocalInfo.setString('userEmail', results[0][2].toString());
+            userLocalInfo.setString('userPhone', results[0][3].toString());
+            userLocalInfo.setBool('userIsAdmin',
+                results[0][4].toString() == "true" ? true : false);
             userLocalInfo.setString('userOther', data.password);
             userLocalInfo.setString('userCreatDate', results[0][6].toString());
             userLocalInfo.setString('userVIPDate', results[0][7].toString());
 
             if (deviceUniqueId != '未知设备') {
               if (results[0][8] == null || results[0][8] == '') {
-                await connection!.query(
+                await connection!.execute(
                     "UPDATE userinfo SET devices='$deviceUniqueId' WHERE id='${results[0][1]}'");
                 userLocalInfo.setInt('deviceNO', 1);
               } else if (!results[0][8]
                   .toString()
                   .split('|||')
                   .contains(deviceUniqueId)) {
-                String devices = results[0][8] + '|||' + deviceUniqueId;
-                await connection!.query(
+                String devices = '${results[0][8]}|||$deviceUniqueId';
+                await connection!.execute(
                     "UPDATE userinfo SET devices='$devices' WHERE id='${results[0][1]}'");
                 userLocalInfo.setInt('deviceNO', devices.split('|||').length);
               } else {
@@ -87,16 +90,18 @@ class LoginScreenState extends State<LoginScreen> {
 
   Future<String?> _signupUser(SignupData data) async {
     try {
-      connection = PostgreSQLConnection("111.229.224.55", 5432, "users",
-          username: "admin", password: "456321rrRR");
+      connection = await Connection.open(Endpoint(
+          host: '111.229.224.55',
+          database: 'users',
+          username: "admin",
+          password: "456321rrRR"));
 
       if (connection == null) {
         return '远程数据库连接失败';
       } else {
-        await connection!.open();
         final results = await connection!
-            .query("SELECT * FROM userinfo WHERE email = '${data.name}'");
-        var no = await connection!.query("SELECT COUNT(*) FROM userinfo");
+            .execute("SELECT * FROM userinfo WHERE email = '${data.name}'");
+        var no = await connection!.execute("SELECT COUNT(*) FROM userinfo");
         String date1 = DateTime.now().toUtc().toString().substring(0, 10);
         String date2 = DateTime.now()
             .toUtc()
@@ -108,10 +113,10 @@ class LoginScreenState extends State<LoginScreen> {
           return '该用户已存在  请登录';
         } else if (results.isEmpty) {
           var tmp = sha512.convert(utf8.encode('${data.password}IceBergNote'));
-          int back = await connection!.execute(
+          final back = await connection!.execute(
               "INSERT INTO userinfo (id, name, email, password, isadmin, createtime, viptime, phone, devices) VALUES (${no[0][0]}, '${data.additionalSignupData!['昵称'] ?? ''}', '${data.name}', '$tmp', 'f', '$date1', '$date2','${data.additionalSignupData!['手机'] ?? ''}', '${deviceUniqueId == '未知设备' ? '' : deviceUniqueId}')");
           connection!.close();
-          if (back == 1) {
+          if (back.affectedRows == 1) {
             final SharedPreferences userLocalInfo =
                 await SharedPreferences.getInstance();
             userLocalInfo.setString(
@@ -134,21 +139,21 @@ class LoginScreenState extends State<LoginScreen> {
               data.additionalSignupData!['手机'] == results[0][3]) {
             var tmp =
                 sha512.convert(utf8.encode('${data.password}IceBergNote'));
-            String? devices = results[0][8];
+            String? devices = results[0][8].toString();
             if (deviceUniqueId != '未知设备') {
-              if (devices == null || devices == '') {
+              if (devices == 'null' || devices == '') {
                 devices = deviceUniqueId;
               } else if (!devices.split('|||').contains(deviceUniqueId)) {
                 devices = '$devices|||$deviceUniqueId';
               }
             }
-            int back = await connection!.execute(
+            final back = await connection!.execute(
                 "UPDATE userinfo SET password='$tmp', devices='$devices' WHERE id='${results[0][1]}'");
             connection!.close();
-            if (back == 1) {
+            if (back.affectedRows == 1) {
               final SharedPreferences userLocalInfo =
                   await SharedPreferences.getInstance();
-              userLocalInfo.setString('userName', results[0][0]);
+              userLocalInfo.setString('userName', results[0][0].toString());
               userLocalInfo.setString('userID', no[0][0].toString());
               userLocalInfo.setString('userEmail', data.name!);
               userLocalInfo.setString(
@@ -157,8 +162,8 @@ class LoginScreenState extends State<LoginScreen> {
               userLocalInfo.setBool('userIsAdmin', false);
               userLocalInfo.setString('userCreatDate', date1);
               userLocalInfo.setString('userVIPDate', date2);
-              userLocalInfo.setInt('deviceNO',
-                  devices!.split('|||').indexOf(deviceUniqueId) + 1);
+              userLocalInfo.setInt(
+                  'deviceNO', devices.split('|||').indexOf(deviceUniqueId) + 1);
               Get.find<UserController>().refreshLocalUser();
               Get.toNamed('/');
             } else {

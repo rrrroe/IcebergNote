@@ -165,7 +165,7 @@ class CheckListCardState extends State<CheckListCard> {
                                   height: 30,
                                   alignment: Alignment.center,
                                   child: Checkbox.adaptive(
-                                    fillColor: MaterialStateProperty.all(
+                                    fillColor: WidgetStateProperty.all(
                                         const Color.fromARGB(0, 0, 0, 0)),
                                     checkColor: todoList[index].finishState == 3
                                         ? Colors.grey

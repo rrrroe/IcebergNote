@@ -82,8 +82,8 @@ ButtonStyle menuChildrenButtonStyle = ElevatedButton.styleFrom(
   minimumSize: const Size(64, 36),
 );
 MenuStyle menuAnchorStyle = MenuStyle(
-  maximumSize: MaterialStateProperty.all(const Size(250, 250)),
-  padding: MaterialStateProperty.all(const EdgeInsets.all(0)),
+  maximumSize: WidgetStateProperty.all(const Size(250, 250)),
+  padding: WidgetStateProperty.all(const EdgeInsets.all(0)),
   visualDensity: VisualDensity.compact,
 );
 

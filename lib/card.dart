@@ -446,7 +446,7 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                                         width: 23,
                                         height: 23,
                                         child: Checkbox.adaptive(
-                                          fillColor: MaterialStateProperty.all(
+                                          fillColor: WidgetStateProperty.all(
                                               const Color.fromARGB(0, 0, 0, 0)),
                                           checkColor: fontColor,
                                           value: false,
@@ -461,7 +461,7 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                                         width: 23,
                                         height: 23,
                                         child: Checkbox.adaptive(
-                                          fillColor: MaterialStateProperty.all(
+                                          fillColor: WidgetStateProperty.all(
                                               fontColor),
                                           value: true,
                                           onChanged: (bool? value) {},

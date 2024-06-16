@@ -324,6 +324,7 @@ class _ReportScreenState extends State<ReportScreen>
               // ignore: use_build_context_synchronously
               showDialog(
                 builder: (_) => ImagePopup(pngBytes: pngBytes),
+                // ignore: use_build_context_synchronously
                 context: context,
               );
             },
@@ -469,8 +470,8 @@ class _ReportScreenState extends State<ReportScreen>
                     });
                   },
                   style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
-                      backgroundColor: MaterialStateProperty.all(
+                      foregroundColor: WidgetStateProperty.all(Colors.white),
+                      backgroundColor: WidgetStateProperty.all(
                           const Color.fromARGB(0, 255, 255, 255))),
                   icon: const Icon(
                     Icons.arrow_circle_left_outlined,
@@ -518,8 +519,8 @@ class _ReportScreenState extends State<ReportScreen>
                     });
                   },
                   style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
-                      backgroundColor: MaterialStateProperty.all(
+                      foregroundColor: WidgetStateProperty.all(Colors.white),
+                      backgroundColor: WidgetStateProperty.all(
                           const Color.fromARGB(0, 255, 255, 255))),
                   icon: const Icon(
                     Icons.arrow_circle_right_outlined,

@@ -51,11 +51,11 @@ String mapToyaml(Map map) {
 
 class RecordChangePage extends StatefulWidget {
   RecordChangePage({
-    Key? key,
+    super.key,
     required this.onPageClosed,
     required this.note,
     required this.mod,
-  }) : super(key: key);
+  });
   final VoidCallback onPageClosed;
   final Notes note;
   final int mod;
@@ -1715,7 +1715,7 @@ class _PropertyCardState extends State<PropertyCard> {
                                 width: 25,
                                 height: 25,
                                 child: Checkbox.adaptive(
-                                  fillColor: MaterialStateProperty.all(
+                                  fillColor: WidgetStateProperty.all(
                                       const Color.fromARGB(0, 0, 0, 0)),
                                   checkColor: fontColor,
                                   value: false,
@@ -1744,8 +1744,7 @@ class _PropertyCardState extends State<PropertyCard> {
                                 width: 25,
                                 height: 25,
                                 child: Checkbox.adaptive(
-                                  fillColor:
-                                      MaterialStateProperty.all(fontColor),
+                                  fillColor: WidgetStateProperty.all(fontColor),
                                   value: true,
                                   onChanged: (bool? value) async {
                                     todoList[index] = todoList[index]
@@ -2028,10 +2027,10 @@ Widget buildPropertyCard(
 
 class RecordTemplateChangePage extends StatefulWidget {
   RecordTemplateChangePage({
-    Key? key,
+    super.key,
     required this.onPageClosed,
     required this.note,
-  }) : super(key: key);
+  });
   final VoidCallback onPageClosed;
   final Notes note;
   final List<String> typeList = ['新建', '清空'];

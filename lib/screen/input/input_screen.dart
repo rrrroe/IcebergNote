@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,11 +27,11 @@ class KeyboardManager extends ChangeNotifier {
 // ignore: must_be_immutable
 class ChangePage extends StatefulWidget {
   ChangePage({
-    Key? key,
+    super.key,
     required this.onPageClosed,
     required this.note,
     required this.mod,
-  }) : super(key: key);
+  });
   final VoidCallback onPageClosed;
   final Notes note;
   final int mod;
@@ -55,7 +57,7 @@ class ChangePageState extends State<ChangePage> {
   // var wordCount1 = 0;
   // var wordCount2 = 0;
   FocusNode focusNode = FocusNode();
-
+  Timer? _debounce;
   @override
   void initState() {
     super.initState();
@@ -103,6 +105,29 @@ class ChangePageState extends State<ChangePage> {
       }
     }
     widget.finishStateList.add('新建');
+  }
+
+  CancellationToken cancellationToken = CancellationToken();
+  void _onContextChanged(String value) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 1000), () async {
+      realm.write(() {
+        widget.note.noteContext = value;
+        widget.note.noteUpdateDate = DateTime.now().toUtc();
+        return null;
+      });
+    });
+  }
+
+  void _onTitleChanged(String value) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 1000), () async {
+      realm.write(() {
+        widget.note.noteTitle = value;
+        widget.note.noteUpdateDate = DateTime.now().toUtc();
+        return null;
+      });
+    });
   }
 
   @override
@@ -167,16 +192,7 @@ class ChangePageState extends State<ChangePage> {
                                 // enabledBorder: OutlineInputBorder(
                                 //     borderSide: BorderSide(color: Colors.blue)),
                                 ),
-                            onChanged: (value) async {
-                              // setState(() {
-                              //   wordCount1 = value.length;
-                              // });
-                              await realm.writeAsync(() {
-                                widget.note.noteTitle = value;
-                                widget.note.noteUpdateDate =
-                                    DateTime.now().toUtc();
-                              });
-                            },
+                            onChanged: _onTitleChanged,
                           ),
                           // Row(
                           //   mainAxisAlignment: MainAxisAlignment.end,
@@ -507,16 +523,7 @@ class ChangePageState extends State<ChangePage> {
                               ),
                               maxLines: null,
                               minLines: 6,
-                              onChanged: (value) async {
-                                await realm.writeAsync(() {
-                                  widget.note.noteContext = value;
-                                  widget.note.noteUpdateDate =
-                                      DateTime.now().toUtc();
-                                });
-                                // setState(() {
-                                //   wordCount2 = value.length;
-                                // });
-                              },
+                              onChanged: _onContextChanged,
                             ),
                           ),
                         ],

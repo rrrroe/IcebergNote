@@ -141,9 +141,8 @@ class _ImagePopupState extends State<ImagePopup> {
                       );
                     },
                     style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStateProperty.all(Colors.white),
-                        backgroundColor: MaterialStateProperty.all(
+                        foregroundColor: WidgetStateProperty.all(Colors.white),
+                        backgroundColor: WidgetStateProperty.all(
                             const Color.fromARGB(0, 255, 255, 255))),
                     icon: const Icon(
                       Icons.download,
@@ -162,8 +161,7 @@ class _ImagePopupState extends State<ImagePopup> {
 
 class BottomPopSheet extends StatelessWidget {
   const BottomPopSheet(
-      {Key? key, required this.note, required this.onDialogClosed})
-      : super(key: key);
+      {super.key, required this.note, required this.onDialogClosed});
   final Notes note;
   final VoidCallback onDialogClosed;
 
@@ -246,8 +244,7 @@ class BottomPopSheet extends StatelessWidget {
 
 class BottomNoteTypeSheet extends StatelessWidget {
   const BottomNoteTypeSheet(
-      {Key? key, required this.noteTypeList, required this.onDialogClosed})
-      : super(key: key);
+      {super.key, required this.noteTypeList, required this.onDialogClosed});
   final List<String> noteTypeList;
   final VoidCallback onDialogClosed;
 
@@ -368,8 +365,9 @@ class BottomNoteTypeSheet extends StatelessWidget {
 
 class BottomRecordTypeSheet extends StatelessWidget {
   const BottomRecordTypeSheet(
-      {Key? key, required this.recordProjectList, required this.onDialogClosed})
-      : super(key: key);
+      {super.key,
+      required this.recordProjectList,
+      required this.onDialogClosed});
   final List<String> recordProjectList;
   final VoidCallback onDialogClosed;
 
@@ -1080,8 +1078,7 @@ class SearchPageState extends State<SearchPage> {
 
 class BottomPopSheetDeleted extends StatelessWidget {
   const BottomPopSheetDeleted(
-      {Key? key, required this.note, required this.onDialogClosed})
-      : super(key: key);
+      {super.key, required this.note, required this.onDialogClosed});
   final Notes note;
   final VoidCallback onDialogClosed;
 
@@ -1404,7 +1401,7 @@ class Cards extends StatelessWidget {
           SizedBox(
             width: cardWidth,
             child: Card(
-              color: Theme.of(context).colorScheme.surfaceVariant,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               elevation: 0,
               child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 5, 5, 10),
@@ -1752,9 +1749,9 @@ class _SwitchRowState extends State<SwitchRow> {
   bool value0 = false;
   bool value1 = true;
 
-  final MaterialStateProperty<Icon?> thumbIcon =
-      MaterialStateProperty.resolveWith<Icon?>((states) {
-    if (states.contains(MaterialState.selected)) {
+  final WidgetStateProperty<Icon?> thumbIcon =
+      WidgetStateProperty.resolveWith<Icon?>((states) {
+    if (states.contains(WidgetState.selected)) {
       return const Icon(Icons.check);
     }
     return const Icon(Icons.close);
@@ -2248,7 +2245,7 @@ class _IconToggleButtonState extends State<IconToggleButton> {
 ButtonStyle enabledFilledButtonStyle(bool selected, ColorScheme colors) {
   return IconButton.styleFrom(
     foregroundColor: selected ? colors.onPrimary : colors.primary,
-    backgroundColor: selected ? colors.primary : colors.surfaceVariant,
+    backgroundColor: selected ? colors.primary : colors.surfaceContainerHighest,
     disabledForegroundColor: colors.onSurface.withOpacity(0.38),
     disabledBackgroundColor: colors.onSurface.withOpacity(0.12),
     hoverColor: selected
@@ -2275,7 +2272,7 @@ ButtonStyle enabledFilledTonalButtonStyle(bool selected, ColorScheme colors) {
     foregroundColor:
         selected ? colors.onSecondaryContainer : colors.onSurfaceVariant,
     backgroundColor:
-        selected ? colors.secondaryContainer : colors.surfaceVariant,
+        selected ? colors.secondaryContainer : colors.surfaceContainerHighest,
     hoverColor: selected
         ? colors.onSecondaryContainer.withOpacity(0.08)
         : colors.onSurfaceVariant.withOpacity(0.08),
@@ -2309,11 +2306,11 @@ ButtonStyle enabledOutlinedButtonStyle(bool selected, ColorScheme colors) {
         : colors.onSurface.withOpacity(0.12),
     side: BorderSide(color: colors.outline),
   ).copyWith(
-    foregroundColor: MaterialStateProperty.resolveWith((states) {
-      if (states.contains(MaterialState.selected)) {
+    foregroundColor: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
         return colors.onInverseSurface;
       }
-      if (states.contains(MaterialState.pressed)) {
+      if (states.contains(WidgetState.pressed)) {
         return colors.onSurface;
       }
       return null;
@@ -2549,7 +2546,6 @@ class BottomSheetSection extends StatefulWidget {
 
 class _BottomSheetSectionState extends State<BottomSheetSection> {
   bool isNonModalBottomSheetOpen = false;
-  PersistentBottomSheetController<void>? _nonModalBottomSheetController;
 
   @override
   Widget build(BuildContext context) {
@@ -2596,46 +2592,6 @@ class _BottomSheetSectionState extends State<BottomSheetSection> {
             ),
             onPressed: () {
               showModalBottomSheet<void>(
-                context: context,
-                constraints: const BoxConstraints(maxWidth: 640),
-                builder: (context) {
-                  return SizedBox(
-                    height: 150,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                      child: ListView(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        children: buttonList,
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-          TextButton(
-            child: Text(
-              isNonModalBottomSheetOpen
-                  ? 'Hide bottom sheet'
-                  : 'Show bottom sheet',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            onPressed: () {
-              if (isNonModalBottomSheetOpen) {
-                _nonModalBottomSheetController?.close();
-                setState(() {
-                  isNonModalBottomSheetOpen = false;
-                });
-                return;
-              } else {
-                setState(() {
-                  isNonModalBottomSheetOpen = true;
-                });
-              }
-
-              _nonModalBottomSheetController = showBottomSheet<void>(
-                elevation: 8.0,
                 context: context,
                 constraints: const BoxConstraints(maxWidth: 640),
                 builder: (context) {
@@ -3328,7 +3284,10 @@ class ComponentGroupDecoration extends StatelessWidget {
       child: Card(
         margin: EdgeInsets.zero,
         elevation: 0,
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withOpacity(0.3),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20.0),
           child: Center(

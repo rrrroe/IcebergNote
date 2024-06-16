@@ -193,8 +193,7 @@ class _LineChartSampleState extends State<LineChartSample> {
     return LineChartData(
       lineTouchData: const LineTouchData(
         enabled: true,
-        touchTooltipData:
-            LineTouchTooltipData(tooltipBgColor: Color.fromARGB(0, 0, 0, 0)),
+        touchTooltipData: LineTouchTooltipData(),
       ),
       gridData: FlGridData(
         show: true,

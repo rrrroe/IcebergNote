@@ -395,12 +395,12 @@ class _BottomButton extends StatelessWidget {
       width: 100,
       child: ElevatedButton(
         style: ButtonStyle(
-          shape: MaterialStateProperty.resolveWith(
+          shape: WidgetStateProperty.resolveWith(
             (states) => RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(100),
             ),
           ),
-          backgroundColor: MaterialStateProperty.resolveWith(
+          backgroundColor: WidgetStateProperty.resolveWith(
             (states) => color,
           ),
         ),

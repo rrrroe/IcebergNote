@@ -145,20 +145,18 @@ class BenifutLineChartState extends State<BenifutLineChart> {
   LineTouchData get lineTouchData1 => LineTouchData(
         handleBuiltInTouches: true,
         touchTooltipData: LineTouchTooltipData(
-            tooltipBgColor: Colors.white,
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
-              return touchedSpots.map((LineBarSpot touchedSpot) {
-                final textStyle = TextStyle(
-                  color: touchedSpot.bar.gradient?.colors.first ??
-                      touchedSpot.bar.color ??
-                      Colors.blueGrey,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                );
-                return LineTooltipItem(
-                    touchedSpot.y.toInt().toString(), textStyle);
-              }).toList();
-            }),
+          return touchedSpots.map((LineBarSpot touchedSpot) {
+            final textStyle = TextStyle(
+              color: touchedSpot.bar.gradient?.colors.first ??
+                  touchedSpot.bar.color ??
+                  Colors.blueGrey,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            );
+            return LineTooltipItem(touchedSpot.y.toInt().toString(), textStyle);
+          }).toList();
+        }),
       );
 
   FlTitlesData get titlesData1 => FlTitlesData(
@@ -185,20 +183,19 @@ class BenifutLineChartState extends State<BenifutLineChart> {
   LineTouchData get lineTouchData2 => LineTouchData(
         handleBuiltInTouches: true,
         touchTooltipData: LineTouchTooltipData(
-            tooltipBgColor: const Color.fromARGB(0, 0, 0, 0),
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
-              return touchedSpots.map((LineBarSpot touchedSpot) {
-                final textStyle = TextStyle(
-                  color: touchedSpot.bar.gradient?.colors.first ??
-                      touchedSpot.bar.color ??
-                      Colors.blueGrey,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                );
-                return LineTooltipItem(
-                    '${(touchedSpot.y * 100).toStringAsFixed(2)}%', textStyle);
-              }).toList();
-            }),
+          return touchedSpots.map((LineBarSpot touchedSpot) {
+            final textStyle = TextStyle(
+              color: touchedSpot.bar.gradient?.colors.first ??
+                  touchedSpot.bar.color ??
+                  Colors.blueGrey,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            );
+            return LineTooltipItem(
+                '${(touchedSpot.y * 100).toStringAsFixed(2)}%', textStyle);
+          }).toList();
+        }),
       );
 
   FlTitlesData get titlesData2 => FlTitlesData(
