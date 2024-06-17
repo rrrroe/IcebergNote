@@ -223,30 +223,189 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                          child: TextField(
-                            textAlign: TextAlign.center,
-                            controller: titleController,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w600,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                child: TextField(
+                                  textAlign: TextAlign.center,
+                                  controller: titleController,
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  minLines: 1,
+                                  maxLines: 2,
+                                  decoration: InputDecoration(
+                                      suffixIcon: Container(
+                                        height: 30,
+                                        width: 30,
+                                        alignment: Alignment.center,
+                                        child: Checkbox.adaptive(
+                                          fillColor: WidgetStateProperty.all(
+                                              const Color.fromARGB(0, 0, 0, 0)),
+                                          checkColor:
+                                              widget.note.noteFinishState ==
+                                                      '已完'
+                                                  ? Colors.grey
+                                                  : fontColor,
+                                          value: widget.note.noteFinishState ==
+                                                  '已完'
+                                              ? true
+                                              : false,
+                                          tristate: false,
+                                          onChanged: (bool? value) {
+                                            // realm.write(() {
+                                            //   if (value != null) {
+                                            //     widget.note.noteFinishState = value ? '已完' : '未完';
+                                            //     widget.note.noteUpdateDate = DateTime.now().toUtc();
+                                            //   }
+                                            // });
+                                            // setState(() {});
+                                            if (value == true) {
+                                              if (todoCountResults[0] +
+                                                      todoCountResults[2] !=
+                                                  0) {
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text('确认操作'),
+                                                      content: const Text(
+                                                          '还有事项未完成，确定要强制清单完成吗？'),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          child:
+                                                              const Text('取消'),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(); // 关闭弹窗
+                                                          },
+                                                        ),
+                                                        TextButton(
+                                                          child:
+                                                              const Text('确定'),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(); // 关闭弹窗
+                                                            realm.write(() {
+                                                              widget.note
+                                                                      .noteFinishState =
+                                                                  value!
+                                                                      ? '已完'
+                                                                      : '未完';
+                                                              widget.note
+                                                                      .noteUpdateDate =
+                                                                  DateTime.now()
+                                                                      .toUtc();
+                                                              widget.note
+                                                                      .noteFinishDate =
+                                                                  DateTime.now()
+                                                                      .toUtc();
+                                                            });
+                                                            setState(() {});
+                                                          },
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              } else {
+                                                realm.write(() {
+                                                  widget.note.noteFinishState =
+                                                      value! ? '已完' : '未完';
+                                                  widget.note.noteUpdateDate =
+                                                      DateTime.now().toUtc();
+                                                  widget.note.noteFinishDate =
+                                                      DateTime.now().toUtc();
+                                                });
+                                                setState(() {});
+                                              }
+                                            } else if (value == false) {
+                                              if (todoCountResults[0] +
+                                                      todoCountResults[2] ==
+                                                  0) {
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text('确认操作'),
+                                                      content: const Text(
+                                                          '事项已全部，确定要强制清单未完成吗？'),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          child:
+                                                              const Text('取消'),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(); // 关闭弹窗
+                                                          },
+                                                        ),
+                                                        TextButton(
+                                                          child:
+                                                              const Text('确定'),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(); // 关闭弹窗
+                                                            realm.write(() {
+                                                              widget.note
+                                                                      .noteFinishState =
+                                                                  value!
+                                                                      ? '已完'
+                                                                      : '未完';
+                                                              widget.note
+                                                                      .noteUpdateDate =
+                                                                  DateTime.now()
+                                                                      .toUtc();
+                                                              widget.note
+                                                                      .noteFinishDate =
+                                                                  DateTime.now()
+                                                                      .toUtc();
+                                                            });
+                                                            setState(() {});
+                                                          },
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              } else {
+                                                realm.write(() {
+                                                  widget.note.noteFinishState =
+                                                      value! ? '已完' : '未完';
+                                                  widget.note.noteUpdateDate =
+                                                      DateTime.now().toUtc();
+                                                  widget.note.noteFinishDate =
+                                                      DateTime.now().toUtc();
+                                                });
+                                                setState(() {});
+                                              }
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                      labelText: "标题",
+                                      labelStyle: const TextStyle(
+                                        color: Colors.grey,
+                                      )),
+                                  onChanged: (value) {
+                                    realm.write(() {
+                                      widget.note.noteTitle = value;
+                                      widget.note.noteUpdateDate =
+                                          DateTime.now().toUtc();
+                                    });
+                                  },
+                                ),
+                              ),
                             ),
-                            minLines: 1,
-                            maxLines: 2,
-                            decoration: const InputDecoration(
-                                labelText: "标题",
-                                labelStyle: TextStyle(
-                                  color: Colors.grey,
-                                )),
-                            onChanged: (value) {
-                              realm.write(() {
-                                widget.note.noteTitle = value;
-                                widget.note.noteUpdateDate =
-                                    DateTime.now().toUtc();
-                              });
-                            },
-                          ),
+                          ],
                         ),
                         Container(
                           color: backgroundColor,
@@ -721,13 +880,54 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                     ),
                     TextButton(
                       onPressed: () async {
-                        realm.write(() {
-                          widget.note.noteContext = todoListToString(todoList);
-                          widget.note.noteUpdateDate = DateTime.now().toUtc();
-                        });
-                        widget.onPageClosed();
-                        syncNoteToRemote(widget.note);
-                        Get.back();
+                        if (todoCountResults[0] + todoCountResults[2] == 0) {
+                          print(todoCountResults[0]);
+                          print(todoCountResults[2]);
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('提示'),
+                                content: const Text('事项全部完成，是否要完成清单？'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('取消'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop(); // 关闭弹窗
+                                      realm.write(() {
+                                        widget.note.noteContext =
+                                            todoListToString(todoList);
+                                        widget.note.noteUpdateDate =
+                                            DateTime.now().toUtc();
+                                      });
+                                      widget.onPageClosed();
+                                      syncNoteToRemote(widget.note);
+                                      Get.back();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('确定'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop(); // 关闭弹窗
+                                      realm.write(() {
+                                        widget.note.noteFinishState = '已完';
+                                        widget.note.noteFinishDate =
+                                            DateTime.now().toUtc();
+                                        widget.note.noteContext =
+                                            todoListToString(todoList);
+                                        widget.note.noteUpdateDate =
+                                            DateTime.now().toUtc();
+                                      });
+                                      widget.onPageClosed();
+                                      syncNoteToRemote(widget.note);
+                                      Get.back();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
                       },
                       child: const Text('保存'),
                     ),

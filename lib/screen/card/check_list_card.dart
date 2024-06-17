@@ -77,38 +77,153 @@ class CheckListCardState extends State<CheckListCard> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Visibility(
-                visible: widget.note.noteTitle != "",
-                child: SizedBox(
-                  child: widget.note.noteTitle.contains(widget.searchText) &&
-                          widget.searchText != ''
-                      ? buildRichText(
-                          widget.note.noteTitle,
-                          widget.searchText,
-                          const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Color.fromARGB(255, 0, 140, 198),
-                              fontFamily: 'LXGWWenKai'),
-                          TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: const ui.Color.fromARGB(255, 0, 140, 198),
-                              backgroundColor: Colors.yellow[100],
-                              fontFamily: 'LXGWWenKai'),
-                        )
-                      : Text(
-                          widget.note.noteTitle,
-                          maxLines: 5,
-                          textAlign: TextAlign.start,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Color.fromARGB(255, 0, 140, 198),
-                              fontFamily: 'LXGWWenKai'),
-                        ),
-                ),
+              Row(
+                children: [
+                  Container(
+                    height: 30,
+                    alignment: Alignment.center,
+                    child: Checkbox.adaptive(
+                      fillColor: WidgetStateProperty.all(
+                          const Color.fromARGB(0, 0, 0, 0)),
+                      checkColor: widget.note.noteFinishState == '已完'
+                          ? Colors.grey
+                          : fontColor,
+                      value: widget.note.noteFinishState == '已完' ? true : false,
+                      tristate: false,
+                      onChanged: (bool? value) {
+                        // realm.write(() {
+                        //   if (value != null) {
+                        //     widget.note.noteFinishState = value ? '已完' : '未完';
+                        //     widget.note.noteUpdateDate = DateTime.now().toUtc();
+                        //   }
+                        // });
+                        // setState(() {});
+                        if (value == true) {
+                          if (todoCountResults[0] + todoCountResults[2] != 0) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('确认操作'),
+                                  content: const Text('还有事项未完成，确定要强制清单完成吗？'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('取消'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // 关闭弹窗
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('确定'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // 关闭弹窗
+                                        realm.write(() {
+                                          widget.note.noteFinishState =
+                                              value! ? '已完' : '未完';
+                                          widget.note.noteUpdateDate =
+                                              DateTime.now().toUtc();
+                                          widget.note.noteFinishDate =
+                                              DateTime.now().toUtc();
+                                        });
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            realm.write(() {
+                              widget.note.noteFinishState =
+                                  value! ? '已完' : '未完';
+                              widget.note.noteUpdateDate =
+                                  DateTime.now().toUtc();
+                              widget.note.noteFinishDate =
+                                  DateTime.now().toUtc();
+                            });
+                            setState(() {});
+                          }
+                        } else if (value == false) {
+                          if (todoCountResults[0] + todoCountResults[2] == 0) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('确认操作'),
+                                  content: const Text('事项已全部，确定要强制清单未完成吗？'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('取消'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // 关闭弹窗
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('确定'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // 关闭弹窗
+                                        realm.write(() {
+                                          widget.note.noteFinishState =
+                                              value! ? '已完' : '未完';
+                                          widget.note.noteUpdateDate =
+                                              DateTime.now().toUtc();
+                                          widget.note.noteFinishDate =
+                                              DateTime.now().toUtc();
+                                        });
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            realm.write(() {
+                              widget.note.noteFinishState =
+                                  value! ? '已完' : '未完';
+                              widget.note.noteUpdateDate =
+                                  DateTime.now().toUtc();
+                              widget.note.noteFinishDate =
+                                  DateTime.now().toUtc();
+                            });
+                            setState(() {});
+                          }
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    child: widget.note.noteTitle.contains(widget.searchText) &&
+                            widget.searchText != ''
+                        ? buildRichText(
+                            widget.note.noteTitle,
+                            widget.searchText,
+                            const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Color.fromARGB(255, 0, 140, 198),
+                                fontFamily: 'LXGWWenKai'),
+                            TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    const ui.Color.fromARGB(255, 0, 140, 198),
+                                backgroundColor: Colors.yellow[100],
+                                fontFamily: 'LXGWWenKai'),
+                          )
+                        : Text(
+                            widget.note.noteTitle,
+                            maxLines: 5,
+                            textAlign: TextAlign.start,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Color.fromARGB(255, 0, 140, 198),
+                                fontFamily: 'LXGWWenKai'),
+                          ),
+                  ),
+                ],
               ),
               Row(
                 children: [
@@ -198,6 +313,8 @@ class CheckListCardState extends State<CheckListCard> {
                                       realm.write(() {
                                         widget.note.noteContext =
                                             todoListToString(todoList);
+                                        widget.note.noteUpdateDate =
+                                            DateTime.now().toUtc();
                                       });
                                       setState(() {});
                                     },

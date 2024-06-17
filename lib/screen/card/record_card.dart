@@ -342,7 +342,6 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                     ],
                   );
                 case '日期':
-                  print(noteMapOther.values.elementAt(index));
                   return Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
