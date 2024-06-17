@@ -130,7 +130,9 @@ class NormalCardState extends State<NormalCard> {
                       : Text(
                           isExpanded
                               ? widget.note.noteContext
-                              : widget.note.noteContext.substring(0, endOffset),
+                              : widget.note.noteContext
+                                  .substring(0, endOffset)
+                                  .replaceAll(RegExp(r'(\s*\n)+$'), ''),
                           overflow: TextOverflow.clip,
                           softWrap: true,
                           style: const TextStyle(
