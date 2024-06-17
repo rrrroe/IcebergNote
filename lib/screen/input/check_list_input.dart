@@ -881,8 +881,6 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                     TextButton(
                       onPressed: () async {
                         if (todoCountResults[0] + todoCountResults[2] == 0) {
-                          print(todoCountResults[0]);
-                          print(todoCountResults[2]);
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -927,6 +925,15 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                               );
                             },
                           );
+                        } else {
+                          realm.write(() {
+                            widget.note.noteContext =
+                                todoListToString(todoList);
+                            widget.note.noteUpdateDate = DateTime.now().toUtc();
+                          });
+                          widget.onPageClosed();
+                          syncNoteToRemote(widget.note);
+                          Get.back();
                         }
                       },
                       child: const Text('保存'),
