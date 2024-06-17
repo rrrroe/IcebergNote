@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:icebergnote/extensions/date_extensions.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:icebergnote/screen/input/record_input.dart';
 import 'package:yaml/yaml.dart';
@@ -351,6 +352,13 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                     ],
                   );
                 case '日期':
+                  DateTime? tmpDate;
+                  if (DateTime.tryParse(noteMapOther.values.elementAt(index)) !=
+                      null) {
+                    tmpDate =
+                        DateTime.tryParse(noteMapOther.values.elementAt(index));
+                  }
+
                   return Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -381,7 +389,7 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                         ),
                       ),
                       Text(
-                        '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString()}${propertySettings[3] ?? ''}',
+                        '${propertySettings[2] ?? ''}${noteMapOther.values.elementAt(index).toString()}${propertySettings[3] ?? ''}  ${tmpDate == null ? '' : printWeekday(tmpDate)}',
                         style: TextStyle(
                           fontFamily: 'LXGWWenKai',
                           fontSize: 16,

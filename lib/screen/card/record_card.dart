@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:icebergnote/screen/input/record_input.dart';
 import 'package:yaml/yaml.dart';
-import 'noteslist_screen.dart';
+import '../noteslist_screen.dart';
 
 Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
     VoidCallback refreshList, Map template, Map templateProperty) {
@@ -342,6 +342,7 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
                     ],
                   );
                 case '日期':
+                  print(noteMapOther.values.elementAt(index));
                   return Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
