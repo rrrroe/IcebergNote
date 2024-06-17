@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -11,6 +12,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:icebergnote/class/anniversary_class.dart';
 import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/card/anniversary_card.dart';
 import 'package:icebergnote/screen/card/check_list_card.dart';
@@ -310,11 +312,16 @@ class BottomNoteTypeSheet extends StatelessWidget {
                           ));
                     } else if (noteTypeList[index] == '.日子') {
                       Navigator.pop(context);
+                      DateTime now = DateTime.now();
+                      Anniversary anniversary = Anniversary(
+                          date: DateTime(now.year, now.month, now.day),
+                          alarmSpecialDate:
+                              DateTime(now.year, now.month, now.day));
                       Notes note = Notes(
                           Uuid.v4(),
                           '',
                           '',
-                          '',
+                          jsonEncode(anniversary.toJson()),
                           DateTime.now().toUtc(),
                           DateTime.now().toUtc(),
                           DateTime.utc(1970, 1, 1),
@@ -331,6 +338,7 @@ class BottomNoteTypeSheet extends StatelessWidget {
                               onDialogClosed();
                             },
                             mod: 0,
+                            anniversary: anniversary,
                           ));
                     } else {
                       Navigator.pop(context);
@@ -887,7 +895,7 @@ class SearchPageState extends State<SearchPage> {
         note.noteType == '.Todo') {
       return TodoCard(
         note: note,
-        mod: mod, //mod: 0-正常 1-搜索 2-回收站 3-待办 4-星标
+        mod: mod, //mod: 0-正常 1-搜索 2-回收站 3-待办 4-星标 5-锁定
         context: context,
         refreshList: refreshList,
         searchText: searchText,
@@ -921,12 +929,26 @@ class SearchPageState extends State<SearchPage> {
         searchText: searchText,
       );
     } else if (note.noteType == '.日子') {
+      DateTime now = DateTime.now();
+      Anniversary anniversary = Anniversary(
+          date: DateTime(now.year, now.month, now.day),
+          alarmSpecialDate: DateTime(now.year, now.month, now.day));
+      if (note.noteContext != '') {
+        anniversary = Anniversary.fromJson(jsonDecode(note.noteContext));
+      } else {
+        realm.write(() {
+          note.noteTitle = anniversary.title;
+          note.noteContext = jsonEncode(anniversary.toJson());
+          note.noteUpdateDate = DateTime.now().toUtc();
+        });
+      }
       return AnniversaryCard(
         note: note,
         mod: mod,
         context: context,
         refreshList: refreshList,
         searchText: searchText,
+        anniversary: anniversary,
       );
     } else {
       return NormalCard(

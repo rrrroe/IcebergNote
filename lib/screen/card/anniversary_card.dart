@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:icebergnote/class/anniversary_class.dart';
-import 'package:icebergnote/main.dart';
 import 'package:icebergnote/notes.dart';
 import 'package:icebergnote/screen/input/anniversary_input.dart';
 import '../noteslist_screen.dart';
@@ -11,12 +8,14 @@ class AnniversaryCard extends StatefulWidget {
   const AnniversaryCard(
       {super.key,
       required this.note,
+      required this.anniversary,
       required this.mod,
       required this.context,
       required this.refreshList,
       required this.searchText});
 
   final Notes note;
+  final Anniversary anniversary;
   final int mod;
   final BuildContext context;
   final VoidCallback refreshList;
@@ -26,33 +25,23 @@ class AnniversaryCard extends StatefulWidget {
 }
 
 class AnniversaryCardState extends State<AnniversaryCard> {
-  Anniversary anniversary = Anniversary();
   @override
   void initState() {
     super.initState();
-    if (widget.note.noteContext != '') {
-      anniversary = Anniversary.fromJson(jsonDecode(widget.note.noteContext));
-    } else {
-      realm.write(() {
-        widget.note.noteTitle = anniversary.title;
-        widget.note.noteContext = jsonEncode(anniversary.toJson());
-        widget.note.noteUpdateDate = DateTime.now().toUtc();
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     int? days;
-    switch (anniversary.alarmType) {
+    switch (widget.anniversary.alarmType) {
       case 0:
-        days = anniversary.getDays();
+        days = widget.anniversary.getDays();
         break;
       case 1:
-        days = anniversary.getDurationDays();
+        days = widget.anniversary.getDurationDays();
         break;
       case 2:
-        days = anniversary.getSpecialDays();
+        days = widget.anniversary.getSpecialDaysNum();
         break;
     }
 
@@ -61,7 +50,7 @@ class AnniversaryCardState extends State<AnniversaryCard> {
         margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
         elevation: 0,
         shadowColor: Colors.grey,
-        color: anniversary.bgColor,
+        color: widget.anniversary.bgColor,
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -75,113 +64,144 @@ class AnniversaryCardState extends State<AnniversaryCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        anniversary.title,
+                        widget.anniversary.title,
                         style: TextStyle(
-                            color: anniversary.fontColor, fontSize: 22),
+                            color: widget.anniversary.fontColor, fontSize: 22),
                       ),
-                      Text(anniversary.date.toString().substring(0, 10),
+                      Text(widget.anniversary.date.toString().substring(0, 10),
                           style: TextStyle(
-                              color: anniversary.fontColor, fontSize: 12))
+                              color: widget.anniversary.fontColor,
+                              fontSize: 12))
                     ],
                   ),
-                  Expanded(child: Container()),
-                  days != null
-                      ? anniversary.alarmType == 0
-                          ? Row(
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.ideographic,
-                              children: [
-                                Text(
-                                  days >= 0
-                                      ? anniversary.oldPrefix
-                                      : anniversary.futurePrefix,
-                                  style: TextStyle(
-                                      color: anniversary.fontColor,
-                                      fontSize: 16),
-                                ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  days.abs().toString(),
-                                  style: TextStyle(
-                                      color: anniversary.fontColor,
-                                      fontSize: 26),
-                                ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  days >= 0
-                                      ? anniversary.oldSuffix
-                                      : anniversary.futureSuffix,
-                                  style: TextStyle(
-                                      color: anniversary.fontColor,
-                                      fontSize: 16),
-                                ),
-                              ],
-                            )
-                          : anniversary.alarmType == 1
+                  Expanded(child: Container(height: 54)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      days != null
+                          ? widget.anniversary.alarmType == 0
                               ? Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.baseline,
+                                  textBaseline: TextBaseline.ideographic,
                                   children: [
                                     Text(
-                                      anniversary.futurePrefix,
+                                      days >= 0
+                                          ? widget.anniversary.oldPrefix
+                                          : widget.anniversary.futurePrefix,
                                       style: TextStyle(
-                                          color: anniversary.fontColor,
+                                          color: widget.anniversary.fontColor,
                                           fontSize: 16),
                                     ),
                                     const SizedBox(width: 5),
                                     Text(
-                                      days.toString(),
+                                      days.abs().toString(),
                                       style: TextStyle(
-                                          color: anniversary.fontColor,
-                                          fontSize: 22),
+                                          color: widget.anniversary.fontColor,
+                                          fontSize: 26),
                                     ),
                                     const SizedBox(width: 5),
                                     Text(
-                                      anniversary.futureSuffix,
+                                      days >= 0
+                                          ? widget.anniversary.oldSuffix
+                                          : widget.anniversary.futureSuffix,
                                       style: TextStyle(
-                                          color: anniversary.fontColor,
+                                          color: widget.anniversary.fontColor,
                                           fontSize: 16),
                                     ),
                                   ],
                                 )
-                              : anniversary.alarmType == 2
+                              : widget.anniversary.alarmType == 1
                                   ? Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.baseline,
+                                      textBaseline: TextBaseline.ideographic,
                                       children: [
                                         Text(
-                                          days > 0
-                                              ? anniversary.oldPrefix
-                                              : anniversary.futurePrefix,
+                                          widget.anniversary.futurePrefix,
                                           style: TextStyle(
-                                              color: anniversary.fontColor,
+                                              color:
+                                                  widget.anniversary.fontColor,
                                               fontSize: 16),
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
-                                          days.abs().toString(),
+                                          days.toString(),
                                           style: TextStyle(
-                                              color: anniversary.fontColor,
-                                              fontSize: 22),
+                                              color:
+                                                  widget.anniversary.fontColor,
+                                              fontSize: 26),
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
-                                          days > 0
-                                              ? anniversary.oldSuffix
-                                              : anniversary.futureSuffix,
+                                          widget.anniversary.futureSuffix,
                                           style: TextStyle(
-                                              color: anniversary.fontColor,
+                                              color:
+                                                  widget.anniversary.fontColor,
                                               fontSize: 16),
                                         ),
                                       ],
                                     )
-                                  : Text(
-                                      'ERROR',
-                                      style: TextStyle(
-                                          color: anniversary.fontColor,
-                                          fontSize: 16),
-                                    )
-                      : Text(
-                          'ERROR',
-                          style: TextStyle(
-                              color: anniversary.fontColor, fontSize: 16),
-                        ),
+                                  : widget.anniversary.alarmType == 2
+                                      ? Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.baseline,
+                                          textBaseline:
+                                              TextBaseline.ideographic,
+                                          children: [
+                                            Text(
+                                              days > 0
+                                                  ? widget.anniversary.oldPrefix
+                                                  : widget
+                                                      .anniversary.futurePrefix,
+                                              style: TextStyle(
+                                                  color: widget
+                                                      .anniversary.fontColor,
+                                                  fontSize: 16),
+                                            ),
+                                            const SizedBox(width: 5),
+                                            Text(
+                                              days.abs().toString(),
+                                              style: TextStyle(
+                                                  color: widget
+                                                      .anniversary.fontColor,
+                                                  fontSize: 26),
+                                            ),
+                                            const SizedBox(width: 5),
+                                            Text(
+                                              days > 0
+                                                  ? widget.anniversary.oldSuffix
+                                                  : widget
+                                                      .anniversary.futureSuffix,
+                                              style: TextStyle(
+                                                  color: widget
+                                                      .anniversary.fontColor,
+                                                  fontSize: 16),
+                                            ),
+                                          ],
+                                        )
+                                      : Text(
+                                          'ERROR',
+                                          style: TextStyle(
+                                              color:
+                                                  widget.anniversary.fontColor,
+                                              fontSize: 16),
+                                        )
+                          : Text(
+                              'ERROR',
+                              style: TextStyle(
+                                  color: widget.anniversary.fontColor,
+                                  fontSize: 16),
+                            ),
+                      widget.anniversary.alarmType == 2
+                          ? Text(
+                              '距 ${widget.anniversary.alarmSpecialDate.toString().substring(0, 10)}   ${widget.anniversary.alarmSpecialDay}天',
+                              style: TextStyle(
+                                  color: widget.anniversary.fontColor,
+                                  fontSize: 12))
+                          : Container()
+                    ],
+                  ),
                   const SizedBox(width: 5),
                 ],
               ),
@@ -238,18 +258,22 @@ class AnniversaryCardState extends State<AnniversaryCard> {
         ),
       ),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AnniversaryInputPage(
-              onPageClosed: () {
-                widget.refreshList();
-              },
-              note: widget.note,
-              mod: 1,
+        if (widget.mod == 5) {
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AnniversaryInputPage(
+                onPageClosed: () {
+                  widget.refreshList();
+                },
+                note: widget.note,
+                mod: 0,
+                anniversary: widget.anniversary,
+              ),
             ),
-          ),
-        );
+          );
+        }
       },
       onLongPress: () {
         showModalBottomSheet(

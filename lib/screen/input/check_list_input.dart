@@ -239,8 +239,8 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                 labelStyle: TextStyle(
                                   color: Colors.grey,
                                 )),
-                            onChanged: (value) async {
-                              await realm.writeAsync(() {
+                            onChanged: (value) {
+                              realm.write(() {
                                 widget.note.noteTitle = value;
                                 widget.note.noteUpdateDate =
                                     DateTime.now().toUtc();

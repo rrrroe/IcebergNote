@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Anniversary {
   String title;
   String content;
-  DateTime? date; // "2024-06-12"
+  DateTime date; // "2024-06-12"
   Color bgColor;
   Color fontColor;
   bool isjune;
@@ -12,8 +12,9 @@ class Anniversary {
   String oldSuffix;
   String futurePrefix;
   String futureSuffix;
-  String alarmDuration; // 年、季、月、无
+  int alarmDuration; // 0年、1季、2月
   int alarmSpecialDay;
+  DateTime alarmSpecialDate;
   bool needAlarm;
   String fontFamilyNum;
   String fontFamilyCha;
@@ -21,7 +22,7 @@ class Anniversary {
   Anniversary({
     this.title = '',
     this.content = '',
-    this.date,
+    required this.date,
     this.bgColor = const Color.fromARGB(255, 0, 140, 198),
     this.fontColor = Colors.white,
     this.isjune = false,
@@ -30,8 +31,9 @@ class Anniversary {
     this.oldSuffix = '天',
     this.futurePrefix = '还有',
     this.futureSuffix = '日',
-    this.alarmDuration = '年',
+    this.alarmDuration = 0,
     this.alarmSpecialDay = 0,
+    required this.alarmSpecialDate,
     this.needAlarm = false,
     this.fontFamilyNum = 'LXGWWenKai',
     this.fontFamilyCha = 'LXGWWenKai',
@@ -42,7 +44,7 @@ class Anniversary {
     return {
       'title': title,
       'content': content,
-      'date': date?.toIso8601String(),
+      'date': date.toIso8601String(),
       'bgColor': bgColor.value.toRadixString(16),
       'fontColor': fontColor.value.toRadixString(16),
       'isjune': isjune,
@@ -65,7 +67,8 @@ class Anniversary {
     return Anniversary(
       title: json['title'] as String,
       content: json['content'] as String,
-      date: json['date'] != null ? DateTime.parse(json['date']) : null,
+      date:
+          json['date'] != null ? DateTime.parse(json['date']) : DateTime(2024),
       bgColor: Color(int.parse(json['bgColor'], radix: 16)),
       fontColor: Color(int.parse(json['fontColor'], radix: 16)),
       isjune: json['isjune'] as bool,
@@ -74,8 +77,10 @@ class Anniversary {
       oldSuffix: json['oldSuffix'] as String,
       futurePrefix: json['futurePrefix'] as String,
       futureSuffix: json['futureSuffix'] as String,
-      alarmDuration: json['alarmDuration'] as String,
+      alarmDuration: json['alarmDuration'] as int,
       alarmSpecialDay: json['alarmSpecialDay'] as int,
+      alarmSpecialDate:
+          json['date'] != null ? DateTime.parse(json['date']) : DateTime(2024),
       needAlarm: json['needAlarm'] as bool,
       fontFamilyNum: json['fontFamilyNum'] as String,
       fontFamilyCha: json['fontFamilyCha'] as String,
@@ -84,84 +89,72 @@ class Anniversary {
   }
 
   int? getDays() {
-    if (date != null) {
-      return DateTime.now().difference(date!).inDays; //以过去的日子为正，还剩的日子为负
-    } else {
-      return null;
-    }
+    return DateTime.now().difference(date).inDays; //以过去的日子为正，还剩的日子为负
   }
 
   int? getDurationDays() {
-    if (date != null) {
-      DateTime? nextDate = date!;
-      DateTime now = DateTime.now().add(const Duration(days: -1));
-      switch (alarmDuration) {
-        case '年':
-          nextDate = DateTime(now.year, date!.month, date!.day);
-          if (nextDate.isBefore(now)) {
-            nextDate = DateTime(now.year + 1, date!.month, date!.day);
-          }
-          break;
+    DateTime? nextDate = date;
+    DateTime now = DateTime.now().add(const Duration(days: -1));
+    switch (alarmDuration) {
+      case 0:
+        nextDate = DateTime(now.year, date.month, date.day);
+        if (nextDate.isBefore(now)) {
+          nextDate = DateTime(now.year + 1, date.month, date.day);
+        }
+        break;
 
-        case '季':
-          int monthsToAdd = 3 * ((now.month - date!.month + 3) ~/ 3);
-          nextDate = DateTime(now.year, date!.month + monthsToAdd, date!.day);
-          if (nextDate.isBefore(now)) {
-            nextDate =
-                DateTime(now.year, date!.month + monthsToAdd + 3, date!.day);
-          }
-          break;
+      case 1:
+        int monthsToAdd = 3 * ((now.month - date.month + 3) ~/ 3);
+        nextDate = DateTime(now.year, date.month + monthsToAdd, date.day);
+        if (nextDate.isBefore(now)) {
+          nextDate = DateTime(now.year, date.month + monthsToAdd + 3, date.day);
+        }
+        break;
 
-        case '月':
-          nextDate = DateTime(now.year, now.month, date!.day);
-          if (nextDate.isBefore(now)) {
-            nextDate = DateTime(now.year, now.month + 1, date!.day);
-          }
-          break;
+      case 2:
+        nextDate = DateTime(now.year, now.month, date.day);
+        if (nextDate.isBefore(now)) {
+          nextDate = DateTime(now.year, now.month + 1, date.day);
+        }
+        break;
 
-        default:
-          nextDate = null;
-      }
-      if (nextDate != null) {
-        return nextDate.difference(now).inDays;
-      } else {
-        return null;
-      }
+      default:
+        nextDate = null;
+    }
+    if (nextDate != null) {
+      return nextDate.difference(now).inDays;
     } else {
       return null;
     }
   }
 
-  int? getSpecialDays() {
+  int getSpecialDaysNum() {
     DateTime now = DateTime.now();
     DateTime nowTmp = DateTime(now.year, now.month, now.day);
-    if (date != null) {
-      return nowTmp
-          .difference(date!.add(Duration(days: alarmSpecialDay)))
-          .inDays; //以过去的日子为正，还剩的日子为负
-    } else {
-      return null;
-    }
+    return nowTmp
+        .difference(date.add(Duration(days: alarmSpecialDay)))
+        .inDays; //以过去的日子为正，还剩的日子为负
+  }
+
+  int getSpecialDays() {
+    return alarmSpecialDate.difference(date).inDays; //以过去的日子为正，还剩的日子为负
+  }
+
+  DateTime getSpecialDate() {
+    return date.add(Duration(days: alarmSpecialDay)); //以过去的日子为正，还剩的日子为负
   }
 
   List<int> getYearsMonthsDays() {
-    int isOld = 1;
-
-    if (date != null) {
-      DateTime now = DateTime.now();
-      // 如果startDate在endDate之后，交换它们并标记结果为负
-      if (date!.isAfter(now)) {
-        DateTime temp = date!;
-        date = now;
-        now = temp;
-        isOld = 0;
-      }
-      int years = now.year - date!.year;
-      int months = now.month - date!.month;
-      int days = now.day - date!.day;
-      return [years, months, days]; //以过去的日子为正，还剩的日子为负
-    } else {
-      return [0, 0, 0, isOld];
+    DateTime now = DateTime.now();
+    // 如果startDate在endDate之后，交换它们并标记结果为负
+    if (date.isAfter(now)) {
+      DateTime temp = date;
+      date = now;
+      now = temp;
     }
+    int years = now.year - date.year;
+    int months = now.month - date.month;
+    int days = now.day - date.day;
+    return [years, months, days]; //以过去的日子为正，还剩的日子为负
   }
 }
