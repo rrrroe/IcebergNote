@@ -8,7 +8,7 @@ import 'package:icebergnote/screen/card/normal_card.dart';
 import 'package:realm/realm.dart';
 
 import '../main.dart';
-import '../notes.dart';
+import '../class/notes.dart';
 import 'input/input_screen.dart';
 import 'noteslist_screen.dart';
 

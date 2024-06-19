@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:icebergnote/postgresql/sync.dart';
 import 'package:realm/realm.dart';
 import '../../constants.dart';
-import '../../notes.dart';
+import '../../class/notes.dart';
 import '../../main.dart';
 import 'check_list_input.dart';
 import 'record_input.dart';

@@ -20,7 +20,7 @@ import 'package:icebergnote/screen/card/todo_card.dart';
 import 'package:icebergnote/screen/card/normal_card.dart';
 import 'package:icebergnote/screen/input/anniversary_input.dart';
 import 'package:icebergnote/screen/input/input_screen.dart';
-import 'package:icebergnote/notes.dart';
+import 'package:icebergnote/class/notes.dart';
 import 'package:realm/realm.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:image/image.dart' as img;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:icebergnote/class/anniversary_class.dart';
-import 'package:icebergnote/notes.dart';
+import 'package:icebergnote/class/notes.dart';
 import 'package:icebergnote/screen/input/anniversary_input.dart';
 import '../noteslist_screen.dart';
 

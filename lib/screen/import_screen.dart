@@ -10,7 +10,7 @@ import 'package:csv/csv.dart';
 import 'package:realm/realm.dart';
 import '../constants.dart';
 import '../main.dart';
-import '../notes.dart';
+import '../class/notes.dart';
 import 'input/input_screen.dart';
 
 class ImportPage extends StatefulWidget {

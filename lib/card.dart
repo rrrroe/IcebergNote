@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:icebergnote/extensions/date_extensions.dart';
-import 'package:icebergnote/notes.dart';
+import 'package:icebergnote/class/notes.dart';
 import 'package:icebergnote/screen/input/record_input.dart';
 import 'package:yaml/yaml.dart';
 import 'main.dart';

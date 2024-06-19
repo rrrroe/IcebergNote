@@ -12,7 +12,7 @@ import 'package:icebergnote/screen/noteslist_screen.dart';
 import 'package:yaml/yaml.dart';
 import '../../constants.dart';
 import '../../main.dart';
-import '../../notes.dart';
+import '../../class/notes.dart';
 import 'input_screen.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:flutter_pickers/pickers.dart';

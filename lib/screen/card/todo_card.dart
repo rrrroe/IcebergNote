@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:icebergnote/main.dart';
-import 'package:icebergnote/notes.dart';
+import 'package:icebergnote/class/notes.dart';
 import 'package:icebergnote/screen/input/input_screen.dart';
 import '../noteslist_screen.dart';
 

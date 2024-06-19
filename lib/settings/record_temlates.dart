@@ -1,7 +1,7 @@
 import 'package:yaml/yaml.dart';
 
 import '../main.dart';
-import '../notes.dart';
+import '../class/notes.dart';
 
 void recordTemplateInit() {
   var templateNoteList = realm.query<Notes>(

@@ -7,7 +7,7 @@ import 'package:realm/realm.dart';
 
 import '../constants.dart';
 import '../main.dart';
-import '../notes.dart';
+import '../class/notes.dart';
 import 'input/input_screen.dart';
 import 'noteslist_screen.dart';
 

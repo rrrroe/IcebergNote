@@ -5,7 +5,7 @@ import 'package:swipable_stack/swipable_stack.dart';
 import 'dart:math' as math;
 
 import '../constants.dart';
-import '../notes.dart';
+import '../class/notes.dart';
 import 'input/input_screen.dart';
 import 'noteslist_screen.dart';
 

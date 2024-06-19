@@ -11,7 +11,7 @@ import 'package:icebergnote/screen/login_screen.dart';
 import 'package:realm/realm.dart';
 import 'constants.dart';
 import 'home.dart';
-import 'notes.dart';
+import 'class/notes.dart';
 import 'settings/record_temlates.dart';
 import 'system/device_id.dart';
 

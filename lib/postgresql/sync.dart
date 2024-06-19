@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/main.dart';
-import 'package:icebergnote/notes.dart';
+import 'package:icebergnote/class/notes.dart';
 import 'package:postgres/postgres.dart';
 import 'package:realm/realm.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -7,7 +7,7 @@ import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:icebergnote/class/anniversary_class.dart';
 import 'package:icebergnote/constants.dart';
 import 'package:icebergnote/main.dart';
-import 'package:icebergnote/notes.dart';
+import 'package:icebergnote/class/notes.dart';
 import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/card/anniversary_card.dart';
 import 'package:icebergnote/screen/input/input_screen.dart';

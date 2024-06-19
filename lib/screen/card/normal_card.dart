@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:icebergnote/notes.dart';
+import 'package:icebergnote/class/notes.dart';
 import 'package:icebergnote/screen/input/input_screen.dart';
 import 'package:icebergnote/screen/search_screen.dart';
 import 'dart:ui' as ui;

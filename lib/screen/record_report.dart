@@ -9,7 +9,7 @@ import 'package:realm/realm.dart';
 import 'package:yaml/yaml.dart';
 import '../constants.dart';
 import '../main.dart';
-import '../notes.dart';
+import '../class/notes.dart';
 import '../card.dart';
 import 'record_graph_bar.dart';
 import 'record_graph_line.dart';

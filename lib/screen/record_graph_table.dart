@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:realm/realm.dart';
 
-import '../notes.dart';
+import '../class/notes.dart';
 
 class RecordTable extends StatefulWidget {
   const RecordTable({
