@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:icebergnote/card.dart';
+import 'package:icebergnote/class/anniversary_class.dart';
 import 'package:icebergnote/constants.dart';
+import 'package:icebergnote/screen/card/anniversary_card.dart';
 import 'package:icebergnote/screen/card/check_list_card.dart';
 import 'package:icebergnote/screen/card/todo_card.dart';
 import 'package:icebergnote/screen/card/normal_card.dart';
@@ -106,6 +110,28 @@ class StarPageState extends State<StarPage> {
         context: context,
         refreshList: refreshList,
         searchText: searchText,
+      );
+    } else if (note.noteType == '.日子') {
+      DateTime now = DateTime.now();
+      Anniversary anniversary = Anniversary(
+          date: DateTime(now.year, now.month, now.day),
+          alarmSpecialDate: DateTime(now.year, now.month, now.day));
+      if (note.noteContext != '') {
+        anniversary = Anniversary.fromJson(jsonDecode(note.noteContext));
+      } else {
+        realm.write(() {
+          note.noteTitle = anniversary.title;
+          note.noteContext = jsonEncode(anniversary.toJson());
+          note.noteUpdateDate = DateTime.now().toUtc();
+        });
+      }
+      return AnniversaryCard(
+        note: note,
+        mod: widget.mod,
+        context: context,
+        refreshList: refreshList,
+        searchText: searchText,
+        anniversary: anniversary,
       );
     } else {
       return NormalCard(
