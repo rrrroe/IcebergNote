@@ -2003,6 +2003,12 @@ const List<NavigationDestination> appBarDestinations = [
     label: 'Dashboard',
     selectedIcon: Icon(Icons.dashboard),
   ),
+  NavigationDestination(
+    tooltip: '',
+    icon: Icon(Icons.radio_button_checked_outlined),
+    label: 'Habit',
+    selectedIcon: Icon(Icons.radio_button_checked),
+  ),
   // NavigationDestination(
   //   tooltip: '',
   //   icon: Icon(Icons.explore_outlined),

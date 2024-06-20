@@ -11,10 +11,6 @@ class _Notes {
   late String noteContext;
   late String noteType = "";
   late String noteProject = "";
-  // late String noteCreatTime = "";
-  // late String noteUpdateTime = "";
-  // late String noteAchiveTime = "";
-  // late String noteDeleteTime = "";
   late String noteTags = "";
   late String noteAttachments = "";
   late String noteReferences = "";

@@ -165,6 +165,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             ),
           ),
         );
+      case ScreenSelected.habit:
+        return Expanded(
+          child: OneTwoTransition(
+            animation: railAnimation,
+            one: const TodoPage(
+              mod: 3,
+              txt: '',
+            ),
+            two: SecondComponentList(
+              scaffoldKey: scaffoldKey,
+            ),
+          ),
+        );
       default:
         return starPage;
     }

@@ -46,7 +46,8 @@ enum ScreenSelected {
   component(1),
   todo(2),
   color(3),
-  elevation(4);
+  elevation(4),
+  habit(5);
 
   const ScreenSelected(this.value);
   final int value;
