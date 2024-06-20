@@ -641,6 +641,7 @@ class ChangePageState extends State<ChangePage> {
         realm.delete(widget.note);
       } else {
         widget.note.noteTitle = titleController.text;
+        widget.note.noteContext = contentController.text;
         widget.note.noteUpdateDate = DateTime.now().toUtc();
       }
     });

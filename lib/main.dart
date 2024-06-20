@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:icebergnote/class/habit.dart';
 import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/login_screen.dart';
 import 'package:realm/realm.dart';
@@ -121,13 +122,19 @@ class NotesList {
 
 var mainnotesList = NotesList();
 late Realm realm;
+late Realm realmHabit;
+late Realm realmHabitRecord;
 Map<String, Map<int, List>> recordTemplates = {};
 Map<String, Map<String, List>> recordTemplatesSettings = {};
 
 void main() async {
   final config = Configuration.local([Notes.schema], schemaVersion: 1);
   realm = Realm(config);
-
+  final configHabit = Configuration.local([Habit.schema], schemaVersion: 1);
+  realmHabit = Realm(configHabit);
+  final configHabitRecord =
+      Configuration.local([HabitRecord.schema], schemaVersion: 1);
+  realmHabitRecord = Realm(configHabitRecord);
   var deleteOvertime = realm.query<Notes>(
       "noteIsDeleted == true AND noteUpdateDate < \$0 AND noteCreateDate < \$0 SORT(noteCreateDate DESC)",
       [DateTime.now().toUtc()]);

@@ -1,4 +1,5 @@
 import 'package:realm/realm.dart';
+
 part 'notes.g.dart';
 
 @RealmModel()
