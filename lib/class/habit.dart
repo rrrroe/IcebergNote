@@ -6,19 +6,21 @@ part 'habit.g.dart';
 class _Habit {
   @PrimaryKey()
   late Uuid id;
-  late String name;
-  late String color = "";
+  late String name = '';
+  late String color = 'FFB4CCAB';
+  late String fontColor = 'FFFFFFFF';
   late String description = "";
-  late int freqDen = 1; //衡量周期，每x天y次的x
-  late int freqNum = 1; //衡量周期，每x天y次的y
+  late int freqDen = 1; //每x天y次的x
+  late int freqNum = 1; //每x天y次的y
   late int highlight = 1;
-  late int position; //排序
-  late int reminderHour = 0; //提醒时刻的小时
-  late int reminderMin = 0; //提醒时刻的分钟
+  late int position = 0; //排序
+  late int reminderHour = 0; //提醒的小时
+  late int reminderMin = 0; //提醒的分钟
   late int reminderDay = 0; //提醒日
-  late int type; //0打卡式，1量化式
-  late int targetType; //目标类型：0至少，1至多
-  late double targetValue; //目标值
+  late int type = 0; //0打卡式，1量化式
+  late int targetType = 0; //目标类型：0至少1至多
+  late double targetValue = 1; //目标值
+  late int targetFreq = 1; //目标值周期
   late double weight = 0; //打分的权重
   late bool archived = false; //是否归档
   late bool delete = false; //是否删除
@@ -29,6 +31,18 @@ class _Habit {
   late DateTime updateDate;
   late DateTime startDate;
   late DateTime stopDate;
+  late String icon = '';
+  late bool isButtonAdd = false; //是否按键输入
+  late double buttonAddNum = 1; //按键默认输入数量
+  late bool needlog = false; //是否弹出日志
+  late bool canExpire = true; //是否允许补签
+  late int expireDays = 1; //允许补签天数
+  late int reward = 1; //奖励
+  late int todayAfterHour = 0; //当日签到上限的小时
+  late int todayAfterMin = 0; //当日签到上限的分钟
+  late int todayBeforeHour = 0; //当日签到下限的小时
+  late int todayBeforeMin = 0; //当日签到下限的分钟
+  late String group = "";
 }
 
 @RealmModel()
@@ -36,7 +50,7 @@ class _HabitRecord {
   @PrimaryKey()
   late Uuid id;
   late Uuid habit;
-  late int value;
+  late int value; //0未完成，1完成，2跳过
   late String notes = "";
   late DateTime currentDate;
   late DateTime createDate;

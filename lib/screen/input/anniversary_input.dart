@@ -18,7 +18,7 @@ import 'package:slide_switcher/slide_switcher.dart';
 class AnniversaryInputPage extends StatefulWidget {
   final VoidCallback onPageClosed;
   final Notes note;
-  final int mod; //0正常，1不可点击
+  final int mod; //0新建，1修改，2查看
   final Anniversary anniversary;
   List<String> folderList = ['新建', '清空'];
   List<String> projectList = ['新建', '清空'];
@@ -105,18 +105,6 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              save();
-              Navigator.pop(context);
-              widget.onPageClosed();
-            },
-          ),
-          title: const Text(""),
-          actions: const [],
-        ),
         body: Stack(
           children: [
             Column(
@@ -426,6 +414,7 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
                               ),
                               Expanded(child: Container(height: 28)),
                               SlideSwitcher(
+                                initialIndex: widget.anniversary.alarmType,
                                 direction: Axis.horizontal,
                                 containerColor: widget.anniversary.bgColor,
                                 slidersColors: const [Colors.transparent],
@@ -496,6 +485,7 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
                               ),
                               Expanded(child: Container(height: 28)),
                               SlideSwitcher(
+                                initialIndex: widget.anniversary.alarmDuration,
                                 direction: Axis.horizontal,
                                 containerColor: widget.anniversary.bgColor,
                                 slidersColors: const [Colors.transparent],
@@ -507,10 +497,7 @@ class _AnniversaryInputPageState extends State<AnniversaryInputPage> {
                                 containerWight: 100,
                                 indents: 2,
                                 onSelect: (int index) => setState(() {
-                                  switch (index) {
-                                    case 0:
-                                      widget.anniversary.alarmDuration = index;
-                                  }
+                                  widget.anniversary.alarmDuration = index;
                                 }),
                                 children: [
                                   Text(

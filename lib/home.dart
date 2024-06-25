@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/postgresql/sync.dart';
+import 'package:icebergnote/screen/habit_list_screen.dart';
 import 'package:icebergnote/screen/login_screen.dart';
 import 'package:icebergnote/screen/review_screen.dart';
 import 'package:icebergnote/screen/star_screen.dart';
@@ -169,10 +170,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         return Expanded(
           child: OneTwoTransition(
             animation: railAnimation,
-            one: const TodoPage(
-              mod: 3,
-              txt: '',
-            ),
+            one: const HabitListScreen(),
             two: SecondComponentList(
               scaffoldKey: scaffoldKey,
             ),
