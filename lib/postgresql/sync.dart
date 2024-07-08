@@ -12,9 +12,12 @@ import 'package:postgres/postgres.dart';
 import 'package:realm/realm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String? email;
-String? other;
-String? id;
+String? userEmail;
+String? userOther;
+String? userID;
+String? userName;
+String? userCreatDate;
+late final SharedPreferences userLocalInfo;
 // String syncProcess = '';
 
 class SyncProcessController extends GetxController {
@@ -88,20 +91,21 @@ class SyncPageState extends State<SyncPage> {
                     database: 'users',
                     username: "admin",
                     password: "456321rrRR"));
-                final SharedPreferences userLocalInfo =
-                    await SharedPreferences.getInstance();
-                email = userLocalInfo.getString('userEmail');
-                other = userLocalInfo.getString('userOther');
-                id = userLocalInfo.getString('userID');
+                userLocalInfo = await SharedPreferences.getInstance();
+                if (userLocalInfo != null) {
+                  userEmail = userLocalInfo.getString('userEmail');
+                  userOther = userLocalInfo.getString('userOther');
+                  userID = userLocalInfo.getString('userID');
+                }
                 int p1 = await checkRemoteDatabase();
-                if (email == null || other == null || id == null) {
+                if (userEmail == null || userOther == null || userID == null) {
                   syncProcess = '$syncProcess\n本地用户数据异常';
                   setState(() {});
                 } else {
-                  final user = await postgreSQLConnection
-                      .execute("SELECT * FROM userinfo WHERE email = '$email'");
+                  final user = await postgreSQLConnection.execute(
+                      "SELECT * FROM userinfo WHERE email = '$userEmail'");
                   final other0 = sha512
-                      .convert(utf8.encode('${other}IceBergNote'))
+                      .convert(utf8.encode('${userOther}IceBergNote'))
                       .toString();
                   if (user[0][5] != other0) {
                     syncProcess = '$syncProcess\n用户权限验证失败';
@@ -111,19 +115,20 @@ class SyncPageState extends State<SyncPage> {
                     setState(() {});
 
                     final checkSchema = await postgreSQLConnection.execute(
-                        "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
+                        "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$userID' AND schemaname = 'u$userID')");
                     if (checkSchema[0][0] == false) {
                       syncProcess = '$syncProcess\n未检测到云端数据库';
                       setState(() {});
                       syncProcess = '$syncProcess\n准备新建云端数据库';
                       setState(() {});
-                      await postgreSQLConnection.execute("CREATE SCHEMA u$id");
+                      await postgreSQLConnection
+                          .execute("CREATE SCHEMA u$userID");
                       await postgreSQLConnection.execute(
-                          "CREATE TABLE u$id.n$id AS TABLE public.notetemplate");
+                          "CREATE TABLE u$userID.n$userID AS TABLE public.notetemplate");
                       await postgreSQLConnection.execute(
-                          "ALTER TABLE u$id.n$id ALTER COLUMN id SET NOT NULL, ADD PRIMARY KEY (id)");
+                          "ALTER TABLE u$userID.n$userID ALTER COLUMN id SET NOT NULL, ADD PRIMARY KEY (id)");
                       final checkSchema1 = await postgreSQLConnection.execute(
-                          "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
+                          "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$userID' AND schemaname = 'u$userID')");
                       if (checkSchema1[0][0] == false) {
                         syncProcess =
                             '$syncProcess\n--------------------云端创建失败--------------------';
@@ -146,7 +151,7 @@ class SyncPageState extends State<SyncPage> {
                               '上传进度: $i', '上传进度: ${i + 1}');
                           setState(() {});
                           await postgreSQLConnection
-                              .execute(insertRemote(localResults[i], id!));
+                              .execute(insertRemote(localResults[i], userID!));
                         }
                         //100条大概半分钟
                         await postgreSQLConnection.close();
@@ -161,12 +166,12 @@ class SyncPageState extends State<SyncPage> {
                           '$syncProcess\n--------------------云端连接成功--------------------';
                       setState(() {});
                       var num = await postgreSQLConnection
-                          .execute("DELETE FROM u$id.n$id");
+                          .execute("DELETE FROM u$userID.n$userID");
                       if (num.affectedRows != 0) {
                         '开始清空$num条云端数据';
 
                         num = await postgreSQLConnection
-                            .execute("DELETE FROM u$id.n$id");
+                            .execute("DELETE FROM u$userID.n$userID");
                         if (num.affectedRows != 0) {
                           syncProcess = '$syncProcess\n清空失败 剩余$num条云端数据';
                         } else {
@@ -191,7 +196,7 @@ class SyncPageState extends State<SyncPage> {
                             '上传进度: $i', '上传进度: ${i + 1}');
                         setState(() {});
                         await postgreSQLConnection
-                            .execute(insertRemote(localResults[i], id!));
+                            .execute(insertRemote(localResults[i], userID!));
                       }
                       //100条大概半分钟
                       await postgreSQLConnection.close();
@@ -217,20 +222,21 @@ class SyncPageState extends State<SyncPage> {
                     database: 'users',
                     username: "admin",
                     password: "456321rrRR"));
-                final SharedPreferences userLocalInfo =
-                    await SharedPreferences.getInstance();
-                email = userLocalInfo.getString('userEmail');
-                other = userLocalInfo.getString('userOther');
-                id = userLocalInfo.getString('userID');
+                userLocalInfo = await SharedPreferences.getInstance();
+                if (userLocalInfo != null) {
+                  userEmail = userLocalInfo.getString('userEmail');
+                  userOther = userLocalInfo.getString('userOther');
+                  userID = userLocalInfo.getString('userID');
+                }
                 int p1 = await checkRemoteDatabase();
-                if (email == null || other == null || id == null) {
+                if (userEmail == null || userOther == null || userID == null) {
                   syncProcess = '$syncProcess\n本地用户数据异常';
                   setState(() {});
                 } else {
-                  final user = await postgreSQLConnection
-                      .execute("SELECT * FROM userinfo WHERE email = '$email'");
+                  final user = await postgreSQLConnection.execute(
+                      "SELECT * FROM userinfo WHERE email = '$userEmail'");
                   final other0 = sha512
-                      .convert(utf8.encode('${other}IceBergNote'))
+                      .convert(utf8.encode('${userOther}IceBergNote'))
                       .toString();
                   if (user[0][5] != other0) {
                     syncProcess = '$syncProcess\n用户权限验证失败';
@@ -240,7 +246,7 @@ class SyncPageState extends State<SyncPage> {
                     setState(() {});
 
                     final checkSchema = await postgreSQLConnection.execute(
-                        "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
+                        "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$userID' AND schemaname = 'u$userID')");
                     if (checkSchema[0][0] == false) {
                       syncProcess = '$syncProcess\n未检测到云端数据库';
                       setState(() {});
@@ -263,7 +269,7 @@ class SyncPageState extends State<SyncPage> {
                           '$syncProcess\n--------------------本地清空完成--------------------';
                       setState(() {});
                       var remoteResults = await postgreSQLConnection
-                          .execute("SELECT * FROM u$id.n$id");
+                          .execute("SELECT * FROM u$userID.n$userID");
                       syncProcess =
                           '$syncProcess\n下载进度: 0 / ${remoteResults.length}条云端数据';
                       setState(() {});
@@ -324,11 +330,12 @@ Future<int> checkRemoteDatabase() async {
 
     return 0;
   } else {
-    final SharedPreferences userLocalInfo =
-        await SharedPreferences.getInstance();
-    email = userLocalInfo.getString('userEmail');
-    other = userLocalInfo.getString('userOther');
-    id = userLocalInfo.getString('userID');
+    userLocalInfo = await SharedPreferences.getInstance();
+    if (userLocalInfo != null) {
+      userEmail = userLocalInfo.getString('userEmail');
+      userOther = userLocalInfo.getString('userOther');
+      userID = userLocalInfo.getString('userID');
+    }
     return 1;
   }
 }
@@ -341,13 +348,13 @@ Future<bool> createRemoteDatabase() async {
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
-  await postgreSQLConnection.execute("CREATE SCHEMA u$id");
+  await postgreSQLConnection.execute("CREATE SCHEMA u$userID");
   await postgreSQLConnection
-      .execute("CREATE TABLE u$id.n$id AS TABLE public.notetemplate");
+      .execute("CREATE TABLE u$userID.n$userID AS TABLE public.notetemplate");
   await postgreSQLConnection.execute(
-      "ALTER TABLE u$id.n$id ALTER COLUMN id SET NOT NULL, ADD PRIMARY KEY (id)");
+      "ALTER TABLE u$userID.n$userID ALTER COLUMN id SET NOT NULL, ADD PRIMARY KEY (id)");
   final checkSchema1 = await postgreSQLConnection.execute(
-      "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$id' AND schemaname = 'u$id')");
+      "SELECT EXISTS( SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = 'n$userID' AND schemaname = 'u$userID')");
   if (checkSchema1[0][0] == false) {
     syncProcessController
         .syncProcessAddLine('--------------------云端创建失败--------------------');
@@ -368,11 +375,11 @@ Future<bool> clearRemoteDatabase() async {
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
-  var num = await postgreSQLConnection.execute("DELETE FROM u$id.n$id");
+  var num = await postgreSQLConnection.execute("DELETE FROM u$userID.n$userID");
   if (num.affectedRows != 0) {
     syncProcessController.syncProcessAddLine('开始清空$num条云端数据');
 
-    num = await postgreSQLConnection.execute("DELETE FROM u$id.n$id");
+    num = await postgreSQLConnection.execute("DELETE FROM u$userID.n$userID");
     if (num.affectedRows != 0) {
       syncProcessController.syncProcessAddLine('清空失败 剩余$num条云端数据');
       await postgreSQLConnection.close();
@@ -405,7 +412,7 @@ Future<void> allLocalToRemote() async {
 
   for (int i = 0; i < localResults.length; i++) {
     syncProcessController.syncProcessReplace('上传进度: $i', '上传进度: ${i + 1}');
-    await postgreSQLConnection.execute(insertRemote(localResults[i], id!));
+    await postgreSQLConnection.execute(insertRemote(localResults[i], userID!));
   }
   //100条大概半分钟
   await postgreSQLConnection.close();
@@ -451,7 +458,7 @@ Future<void> allRemoteToLocal() async {
       password: "456321rrRR"));
 
   var remoteResults =
-      await postgreSQLConnection.execute("SELECT * FROM u$id.n$id");
+      await postgreSQLConnection.execute("SELECT * FROM u$userID.n$userID");
   syncProcessController
       .syncProcessAddLine('下载进度: 0 / ${remoteResults.length}条云端数据');
   for (int i = 0; i < remoteResults.length; i++) {
@@ -470,14 +477,13 @@ Future<void> exchangeSmart() async {
       username: "admin",
       password: "456321rrRR"));
   try {
-    final SharedPreferences userLocalInfo =
-        await SharedPreferences.getInstance();
+    userLocalInfo = await SharedPreferences.getInstance();
     DateTime lastRefresh = DateTime.parse(
             userLocalInfo.getString('refreshdate') ??
                 '1969-01-01 00:00:00.000000')
         .add(const Duration(days: -10));
     userLocalInfo.setString('refreshdate', DateTime.now().toUtc().toString());
-    id = userLocalInfo.getString('userID');
+    userID = userLocalInfo.getString('userID');
     RealmResults<Notes> localNewNotes = realm.query<Notes>(
         "noteUpdateDate > \$0 SORT(noteUpdateDate ASC)", [lastRefresh]);
     final postgreSQLConnection = await Connection.open(Endpoint(
@@ -485,13 +491,13 @@ Future<void> exchangeSmart() async {
         database: 'users',
         username: "admin",
         password: "456321rrRR"));
-    var remoteNewNotes = await postgreSQLConnection
-        .execute("SELECT * FROM u$id.n$id WHERE updatedate > '$lastRefresh'");
+    var remoteNewNotes = await postgreSQLConnection.execute(
+        "SELECT * FROM u$userID.n$userID WHERE updatedate > '$lastRefresh'");
     List<int> synced = [];
     for (int i = 0; i < localNewNotes.length; i++) {
       if (remoteNewNotes.isEmpty) {
         await postgreSQLConnection
-            .execute(insertOrUpdateRemote(localNewNotes[i], id!));
+            .execute(insertOrUpdateRemote(localNewNotes[i], userID!));
       }
       for (int j = 0; j < remoteNewNotes.length; j++) {
         DateTime remoteUpdateDate = DateTime(1969, 1, 1);
@@ -504,7 +510,7 @@ Future<void> exchangeSmart() async {
           synced.add(j);
           if (localNewNotes[i].noteUpdateDate.isAfter(remoteUpdateDate)) {
             await postgreSQLConnection
-                .execute(updateRemote(localNewNotes[i], id!));
+                .execute(updateRemote(localNewNotes[i], userID!));
           } else {
             await updateLocal(localNewNotes[i], remoteNewNotes[j]);
           }
@@ -512,7 +518,7 @@ Future<void> exchangeSmart() async {
         } else {
           if (j == remoteNewNotes.length - 1) {
             await postgreSQLConnection
-                .execute(insertOrUpdateRemote(localNewNotes[i], id!));
+                .execute(insertOrUpdateRemote(localNewNotes[i], userID!));
           }
         }
       }
@@ -642,7 +648,7 @@ void syncNoteToRemote(Notes note) async {
       username: "admin",
       password: "456321rrRR"));
   final SharedPreferences userLocalInfo = await SharedPreferences.getInstance();
-  id = userLocalInfo.getString('userID');
-  await postgreSQLConnection.execute(insertOrUpdateRemote(note, id!));
+  userID = userLocalInfo.getString('userID');
+  await postgreSQLConnection.execute(insertOrUpdateRemote(note, userID!));
   await postgreSQLConnection.close();
 }

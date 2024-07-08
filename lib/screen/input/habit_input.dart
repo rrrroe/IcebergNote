@@ -175,7 +175,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
       showSearchBar: true,
       iconPickerShape:
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      iconPackModes: [IconPack.fontAwesomeIcons],
+      iconPackModes: [IconPack.roundedMaterial],
       searchComparator: (String search, IconPickerIcon icon) =>
           search
               .toLowerCase()

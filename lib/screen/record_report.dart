@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:icebergnote/chart/heatmap.dart';
+import 'package:icebergnote/extensions/screenshot_extensions.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/noteslist_screen.dart';
 import 'package:icebergnote/screen/record_graph_benifit.dart';
 import 'package:realm/realm.dart';
@@ -75,6 +77,7 @@ class _ReportScreenState extends State<ReportScreen>
   List<String> recordProjectList = [];
   List<num?> graphDataList = [];
   List<String> reportTypeList = [];
+  GlobalKey repaintWidgetKey = GlobalKey();
   @override
   void initState() {
     super.initState();
@@ -320,10 +323,25 @@ class _ReportScreenState extends State<ReportScreen>
             child: const Icon(Icons.fit_screen_outlined),
             onTap: () async {
               // PermissionUtil.requestAll();
-              Uint8List pngBytes = await onScreenshot(20);
+
+              Uint8List pngBytes = await onScreenshot(repaintWidgetKey);
+              userName = userLocalInfo.getString('userName');
+              userID = userLocalInfo.getString('userID');
+              userCreatDate = userLocalInfo.getString('userCreatDate');
               // ignore: use_build_context_synchronously
+              // String tmp = DateTime.now().toString().replaceAll(':', '');
+              // await (img.Command()
+              //       // Decode the PNG image file
+              //       ..decodePng(pngBytes)
+              //       // Save the resized image to a PNG image file
+              //       ..writeToFile('export/export_$tmp.png'))
+              //     // executeThread will run the commands in an Isolate thread
+              //     .executeThread();
               showDialog(
-                builder: (_) => ImagePopup(pngBytes: pngBytes),
+                builder: (_) => ImagePopup(
+                  pngBytes: pngBytes,
+                  mainColor: backgroundColor,
+                ),
                 // ignore: use_build_context_synchronously
                 context: context,
               );

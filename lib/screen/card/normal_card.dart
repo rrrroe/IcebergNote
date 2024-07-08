@@ -62,7 +62,7 @@ class NormalCardState extends State<NormalCard> {
           margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
           elevation: 0,
           shadowColor: Colors.grey,
-          color: const Color.fromARGB(20, 0, 140, 198),
+          color: const Color.fromARGB(255, 229, 240, 251),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(

@@ -5,11 +5,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:clipboard/clipboard.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/class/anniversary_class.dart';
@@ -23,7 +21,6 @@ import 'package:icebergnote/screen/input/input_screen.dart';
 import 'package:icebergnote/class/notes.dart';
 import 'package:realm/realm.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:image/image.dart' as img;
 
 import '../main.dart';
 import '../constants.dart';
@@ -37,7 +34,7 @@ const tinySpacing = 3.0;
 const smallSpacing = 10.0;
 const double cardWidth = 115;
 const double widthConstraint = 450;
-GlobalKey repaintWidgetKey = GlobalKey();
+
 var searchnotesList = NotesList();
 bool checkNoteFormat(Notes note) {
   switch (note.noteType) {
@@ -83,80 +80,6 @@ class Utils {
       textColor: Colors.white,
       fontSize: 16.0,
       backgroundColor: Colors.black,
-    );
-  }
-}
-
-Future<Uint8List> onScreenshot(int index) async {
-  RenderRepaintBoundary boundary = repaintWidgetKey.currentContext!
-      .findRenderObject() as RenderRepaintBoundary;
-  ui.Image image = await boundary.toImage(pixelRatio: 2);
-  ByteData? byteData = await (image.toByteData(format: ui.ImageByteFormat.png));
-  Uint8List pngBytes = byteData!.buffer.asUint8List();
-  return pngBytes;
-}
-
-class ImagePopup extends StatefulWidget {
-  final Uint8List pngBytes;
-
-  const ImagePopup({super.key, required this.pngBytes});
-
-  @override
-  State<ImagePopup> createState() => _ImagePopupState();
-}
-
-class _ImagePopupState extends State<ImagePopup> {
-  @override
-  Widget build(BuildContext context) {
-    return _buildPopup();
-  }
-
-  Widget _buildPopup() {
-    return Center(
-      child: Material(
-        child: Stack(
-          children: [
-            Image.memory(widget.pngBytes),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Row(
-                children: [
-                  IconButton.filledTonal(
-                    onPressed: () async {
-                      // final dir = Directory('export');
-                      // dir.create();
-                      String tmp =
-                          DateTime.now().toString().replaceAll(':', '');
-                      await (img.Command()
-                            // Decode the PNG image file
-                            ..decodePng(widget.pngBytes)
-                            // Save the resized image to a PNG image file
-                            ..writeToFile('export/export_$tmp.png'))
-                          // executeThread will run the commands in an Isolate thread
-                          .executeThread();
-                      Get.snackbar(
-                        '恭喜',
-                        '导出已完成',
-                        duration: const Duration(seconds: 1),
-                        backgroundColor: const Color.fromARGB(60, 0, 140, 198),
-                      );
-                    },
-                    style: ButtonStyle(
-                        foregroundColor: WidgetStateProperty.all(Colors.white),
-                        backgroundColor: WidgetStateProperty.all(
-                            const Color.fromARGB(0, 255, 255, 255))),
-                    icon: const Icon(
-                      Icons.download,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
