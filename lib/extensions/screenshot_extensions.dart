@@ -51,13 +51,9 @@ class _ImagePopupState extends State<ImagePopup> {
   void initState() {
     now = DateTime.now();
     old = DateTime.tryParse(userCreatDate ?? '');
-    print(now);
-    print(old);
     if (old != null) days = now!.difference(old!).inDays + 1;
-    print(DateTime.now());
     var tmp = realm.all<Notes>();
     noteSum = tmp.length;
-    print(DateTime.now());
     super.initState();
   }
 
