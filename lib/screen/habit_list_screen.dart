@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:icebergnote/class/habit.dart';
+import 'package:icebergnote/extensions/screenshot_extensions.dart';
 import 'package:icebergnote/main.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/card/habit_card.dart';
 import 'package:icebergnote/screen/input/habit_input.dart';
 import 'package:realm/realm.dart';
@@ -22,6 +25,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
   List<num> scoresWeek = [0, 0];
   List<num> scoresToday = [0, 0];
   List<String> tips = ['未来可期', '初露锋芒', '渐入佳境', '势如破竹', '一骑绝尘', '登峰造极'];
+  GlobalKey repaintWidgetKey = GlobalKey();
   @override
   void initState() {
     habits =
@@ -165,6 +169,29 @@ class _HabitListScreenState extends State<HabitListScreen> {
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
+        actions: [
+          GestureDetector(
+            child: const Icon(Icons.fit_screen_outlined),
+            onTap: () async {
+              // PermissionUtil.requestAll();
+
+              Uint8List pngBytes = await onScreenshot(repaintWidgetKey);
+              userName = userLocalInfo.getString('userName');
+              userID = userLocalInfo.getString('userID');
+              userCreatDate = userLocalInfo.getString('userCreatDate');
+              // ignore: use_build_context_synchronously
+              //     .executeThread();
+              showDialog(
+                builder: (_) => ImagePopup(
+                  pngBytes: pngBytes,
+                  mainColor: Colors.black,
+                ),
+                // ignore: use_build_context_synchronously
+                context: context,
+              );
+            },
+          ),
+        ],
       ),
       floatingActionButton: GestureDetector(
         onLongPress: () {},
@@ -191,13 +218,14 @@ class _HabitListScreenState extends State<HabitListScreen> {
           child: const Icon(Icons.add),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: scrollController,
-              itemCount: habits.length + 1,
-              itemBuilder: (context, index) {
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: RepaintBoundary(
+          key: repaintWidgetKey,
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              children: List.generate(habits.length + 1, (index) {
                 if (index == 0) {
                   return Row(
                     mainAxisSize: MainAxisSize.max,
@@ -354,10 +382,10 @@ class _HabitListScreenState extends State<HabitListScreen> {
                         today: today,
                       ));
                 }
-              },
+              }),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

@@ -340,7 +340,7 @@ class _ReportScreenState extends State<ReportScreen>
               showDialog(
                 builder: (_) => ImagePopup(
                   pngBytes: pngBytes,
-                  mainColor: backgroundColor,
+                  mainColor: AppColors.borderColor,
                 ),
                 // ignore: use_build_context_synchronously
                 context: context,

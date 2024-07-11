@@ -68,6 +68,7 @@ class _ImagePopupState extends State<ImagePopup> {
                 key: aLLRepaintWidgetKey,
                 child: Column(
                   children: [
+                    Container(color: Colors.white, height: 10),
                     Image.memory(widget.pngBytes),
                     Container(height: 6, color: Colors.white),
                     Container(
@@ -76,7 +77,7 @@ class _ImagePopupState extends State<ImagePopup> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const SizedBox(width: 11),
+                          const SizedBox(width: 20),
                           svg,
                           const SizedBox(width: 8),
                           Column(
@@ -106,7 +107,7 @@ class _ImagePopupState extends State<ImagePopup> {
                               ),
                             ],
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 25),
                         ],
                       ),
                     ),
