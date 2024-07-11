@@ -1208,7 +1208,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
         widget.habit.question = habit.question;
         widget.habit.unit = habit.unit;
         widget.habit.createDate = habit.createDate;
-        widget.habit.updateDate = habit.updateDate;
+        widget.habit.updateDate = DateTime.now().toUtc();
         widget.habit.startDate = habit.startDate;
         widget.habit.stopDate = habit.stopDate;
         widget.habit.icon = habit.icon;
