@@ -68,7 +68,6 @@ class _ImagePopupState extends State<ImagePopup> {
                 key: aLLRepaintWidgetKey,
                 child: Column(
                   children: [
-                    Container(color: Colors.white, height: 10),
                     Image.memory(widget.pngBytes),
                     Container(height: 6, color: Colors.white),
                     Container(

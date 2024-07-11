@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:icebergnote/class/habit.dart';
+import 'package:icebergnote/extensions/date_extensions.dart';
 import 'package:icebergnote/extensions/screenshot_extensions.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/postgresql/sync.dart';
@@ -56,22 +57,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
   }
 
   void updateScore() {
-    habitsRecords = [];
-    if (durationLenth == 7) {
-      firstDay = today.add(Duration(days: -today.weekday + 1));
-      lastDay = firstDay.add(const Duration(days: 7));
-    }
-    for (int i = 0; i < habits.length; i++) {
-      List<HabitRecord> tmp = realmHabitRecord.query<HabitRecord>(
-          'currentDate >= \$0 && currentDate <= \$1 && habit == \$2 SORT(currentDate ASC)',
-          [firstDay, lastDay, habits[i].id]).toList();
-      habitsRecords.add(List.generate(durationLenth, (index) => null));
-      for (int j = 0; j < tmp.length; j++) {
-        habitsRecords[i][tmp[j].currentDate.weekday - 1] = tmp[j];
-      }
-    }
-    scoresWeek = countWeekScore();
-    scoresToday = countTodayScore();
+    dataInit();
     setState(() {});
   }
 
@@ -145,54 +131,6 @@ class _HabitListScreenState extends State<HabitListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: GestureDetector(
-          onTap: () async {
-            DateTime? newDateTime = await showRoundedDatePicker(
-              initialDate: today,
-              firstDate: DateTime(1900, 1, 1),
-              lastDate: DateTime(2100, 1, 1),
-              height: 300,
-              context: context,
-              locale: const Locale("zh", "CN"),
-              theme: ThemeData(),
-            );
-            if (newDateTime != null) {
-              setState(() {
-                today = newDateTime;
-                dataInit();
-              });
-            }
-          },
-          child: Text(
-            today.toString().substring(0, 10),
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-        actions: [
-          GestureDetector(
-            child: const Icon(Icons.fit_screen_outlined),
-            onTap: () async {
-              // PermissionUtil.requestAll();
-
-              Uint8List pngBytes = await onScreenshot(repaintWidgetKey);
-              userName = userLocalInfo.getString('userName');
-              userID = userLocalInfo.getString('userID');
-              userCreatDate = userLocalInfo.getString('userCreatDate');
-              // ignore: use_build_context_synchronously
-              //     .executeThread();
-              showDialog(
-                builder: (_) => ImagePopup(
-                  pngBytes: pngBytes,
-                  mainColor: Colors.black,
-                ),
-                // ignore: use_build_context_synchronously
-                context: context,
-              );
-            },
-          ),
-        ],
-      ),
       floatingActionButton: GestureDetector(
         onLongPress: () {},
         child: FloatingActionButton(
@@ -225,164 +163,223 @@ class _HabitListScreenState extends State<HabitListScreen> {
           child: Container(
             color: Colors.white,
             child: Column(
-              children: List.generate(habits.length + 1, (index) {
-                if (index == 0) {
-                  return Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.fromLTRB(15, 0, 8, 10),
-                          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 249, 172, 146),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(20.0),
-                              topRight: Radius.circular(2.0),
-                              bottomRight: Radius.circular(20.0),
-                              bottomLeft: Radius.circular(2.0),
-                            ),
-                            border: Border.all(
-                              color: Colors.white24,
-                              width: 5.0,
+              children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(20, 10, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              DateTime? newDateTime =
+                                  await showRoundedDatePicker(
+                                initialDate: today,
+                                firstDate: DateTime(1900, 1, 1),
+                                lastDate: DateTime(2100, 1, 1),
+                                height: 300,
+                                context: context,
+                                locale: const Locale("zh", "CN"),
+                                theme: ThemeData(),
+                              );
+                              if (newDateTime != null) {
+                                setState(() {
+                                  today = newDateTime;
+                                  dataInit();
+                                });
+                              }
+                            },
+                            child: Text(
+                              '${today.year}年${today.month}月${today.day}日  第${weekNumber(today)}周',
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                           ),
-                          child: Column(
-                            // alignment: WrapAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  const Text(
-                                    '今日',
-                                    overflow: TextOverflow.visible,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Expanded(child: Container()),
-                                  Text(
-                                    scoresToday[0].toInt().toString(),
-                                    textAlign: TextAlign.right,
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  const Text(
-                                    '目标',
-                                    overflow: TextOverflow.visible,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Expanded(child: Container()),
-                                  Text(
-                                    scoresToday[1].toInt().toString(),
-                                    textAlign: TextAlign.right,
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              congratulationWidget(congratulationLevel(
-                                  scoresToday[0], scoresToday[1])),
-                            ],
+                          Expanded(child: Container()),
+                          GestureDetector(
+                            child: const Icon(Icons.fit_screen_outlined),
+                            onTap: () async {
+                              // PermissionUtil.requestAll();
+
+                              Uint8List pngBytes =
+                                  await onScreenshot(repaintWidgetKey);
+                              userName = userLocalInfo.getString('userName');
+                              userID = userLocalInfo.getString('userID');
+                              userCreatDate =
+                                  userLocalInfo.getString('userCreatDate');
+                              // ignore: use_build_context_synchronously
+                              //     .executeThread();
+                              showDialog(
+                                builder: (_) => ImagePopup(
+                                  pngBytes: pngBytes,
+                                  mainColor: Colors.black,
+                                ),
+                                // ignore: use_build_context_synchronously
+                                context: context,
+                              );
+                            },
                           ),
-                        ),
+                        ],
                       ),
-                      Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.fromLTRB(8, 0, 15, 10),
-                          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 137, 190, 244),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(20.0),
-                              topRight: Radius.circular(2.0),
-                              bottomRight: Radius.circular(20.0),
-                              bottomLeft: Radius.circular(2.0),
-                            ),
-                            border: Border.all(
-                              color: Colors.white24,
-                              width: 5.0,
-                            ),
-                          ),
-                          child: Column(
-                            // alignment: WrapAlignment.spaceBetween,
-                            children: [
-                              Row(
+                    )
+                  ] +
+                  List.generate(habits.length + 1, (index) {
+                    if (index == 0) {
+                      return Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.fromLTRB(15, 10, 8, 10),
+                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 249, 172, 146),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(20.0),
+                                  topRight: Radius.circular(2.0),
+                                  bottomRight: Radius.circular(20.0),
+                                  bottomLeft: Radius.circular(2.0),
+                                ),
+                                border: Border.all(
+                                  color: Colors.white24,
+                                  width: 5.0,
+                                ),
+                              ),
+                              child: Column(
+                                // alignment: WrapAlignment.spaceBetween,
                                 children: [
-                                  const Text(
-                                    '本周',
-                                    overflow: TextOverflow.visible,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        '今日',
+                                        overflow: TextOverflow.visible,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Expanded(child: Container()),
+                                      Text(
+                                        scoresToday[0].toInt().toString(),
+                                        textAlign: TextAlign.right,
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
                                   ),
-                                  Expanded(child: Container()),
-                                  Text(
-                                    scoresWeek[0].toInt().toString(),
-                                    textAlign: TextAlign.right,
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        '目标',
+                                        overflow: TextOverflow.visible,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Expanded(child: Container()),
+                                      Text(
+                                        scoresToday[1].toInt().toString(),
+                                        textAlign: TextAlign.right,
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
                                   ),
+                                  congratulationWidget(congratulationLevel(
+                                      scoresToday[0], scoresToday[1])),
                                 ],
                               ),
-                              Row(
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.fromLTRB(8, 10, 15, 10),
+                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 137, 190, 244),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(20.0),
+                                  topRight: Radius.circular(2.0),
+                                  bottomRight: Radius.circular(20.0),
+                                  bottomLeft: Radius.circular(2.0),
+                                ),
+                                border: Border.all(
+                                  color: Colors.white24,
+                                  width: 5.0,
+                                ),
+                              ),
+                              child: Column(
+                                // alignment: WrapAlignment.spaceBetween,
                                 children: [
-                                  const Text(
-                                    '目标',
-                                    overflow: TextOverflow.visible,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        '本周',
+                                        overflow: TextOverflow.visible,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Expanded(child: Container()),
+                                      Text(
+                                        scoresWeek[0].toInt().toString(),
+                                        textAlign: TextAlign.right,
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
                                   ),
-                                  Expanded(child: Container()),
-                                  Text(
-                                    scoresWeek[1].toInt().toString(),
-                                    textAlign: TextAlign.right,
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        '目标',
+                                        overflow: TextOverflow.visible,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Expanded(child: Container()),
+                                      Text(
+                                        scoresWeek[1].toInt().toString(),
+                                        textAlign: TextAlign.right,
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
                                   ),
+                                  congratulationWidget(congratulationLevel(
+                                      scoresWeek[0], scoresWeek[1])),
                                 ],
                               ),
-                              congratulationWidget(congratulationLevel(
-                                  scoresWeek[0], scoresWeek[1])),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    ],
-                  );
-                } else {
-                  return GestureDetector(
-                      onTap: () {},
-                      child: HabitCardWeek(
-                        onChanged: () {
-                          updateScore();
-                        },
-                        mod: 0,
-                        habit: habits[index - 1],
-                        habitRecords: habitsRecords[index - 1],
-                        today: today,
-                      ));
-                }
-              }),
+                        ],
+                      );
+                    } else {
+                      return GestureDetector(
+                          onTap: () {},
+                          child: HabitCardWeek(
+                            onChanged: () {
+                              updateScore();
+                            },
+                            mod: 0,
+                            habit: habits[index - 1],
+                            habitRecords: habitsRecords[index - 1],
+                            today: today,
+                          ));
+                    }
+                  }),
             ),
           ),
         ),
