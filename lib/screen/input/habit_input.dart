@@ -212,10 +212,9 @@ class _HabitInputPageState extends State<HabitInputPage> {
                         children: [
                           Container(
                             height: 30,
-                            color: Colors.black,
                           ),
                           HabitCardWeek(
-                              onPageClosed: () {},
+                              onChanged: () {},
                               mod: 1,
                               habit: habit,
                               habitRecords: [

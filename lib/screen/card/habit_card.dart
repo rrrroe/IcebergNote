@@ -10,7 +10,7 @@ import 'package:icebergnote/screen/input/habit_input.dart';
 import 'package:realm/realm.dart';
 
 class HabitCardWeek extends StatefulWidget {
-  final VoidCallback onPageClosed;
+  final VoidCallback onChanged;
   final int mod;
   final Habit habit;
   final List<HabitRecord?> habitRecords;
@@ -18,7 +18,7 @@ class HabitCardWeek extends StatefulWidget {
 
   const HabitCardWeek(
       {super.key,
-      required this.onPageClosed,
+      required this.onChanged,
       required this.mod, //0正常，1不可编辑
       required this.habit,
       required this.habitRecords,
@@ -144,6 +144,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                           (index) => GestureDetector(
                                 onTap: () {
                                   saveRecord(index);
+                                  widget.onChanged();
                                 },
                                 child: Container(
                                   height: istoday(index) ? 22 : 18,
@@ -168,6 +169,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                 GestureDetector(
                   onTap: () {
                     saveRecord(widget.today.weekday - 1);
+                    widget.onChanged();
                   },
                   child: Container(
                     height: 50,
