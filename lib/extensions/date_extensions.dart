@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 String printWeekday(DateTime t) {
   int w = t.weekday;
   switch (w) {
@@ -26,15 +24,23 @@ String printWeekday(DateTime t) {
 int weekNumber(DateTime date) {
   // 获取年份的第一天
   DateTime firstDayOfYear = DateTime(date.year, 1, 1);
-
   // 获取第一天是星期几
   int firstWeekday = firstDayOfYear.weekday;
-
   // 计算当前日期是本年度的第几天
-  int dayOfYear = int.parse(DateFormat("D").format(date));
-
+  int dayOfYear = date.difference(firstDayOfYear).inDays + 1;
   // 计算第几周
-  int weekNumber = ((dayOfYear - firstWeekday + 10) / 7).floor();
-
+  int weekNumber = ((dayOfYear + firstWeekday - 1) / 7).ceil() +
+      offsetWeekYear(firstDayOfYear);
   return weekNumber;
+}
+
+//获取一年中的第几周
+int week7Number(DateTime date) {
+  int n = weekNumber(date);
+  return ((n - 1) ~/ 7) + 1;
+}
+
+int offsetWeekYear(DateTime today) {
+  DateTime thu = today.add(Duration(days: -today.weekday + 4));
+  return thu.year - today.year;
 }

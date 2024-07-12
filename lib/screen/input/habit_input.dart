@@ -859,7 +859,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                '权重',
+                                '每次得分',
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),

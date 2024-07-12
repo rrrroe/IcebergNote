@@ -70,6 +70,7 @@ dependencies:
   slide_switcher: ^1.1.2
   flutter_iconpicker: ^3.4.5
   flutter_svg: ^2.0.10+1
+  primer_progress_bar: ^0.4.2
 
 dev_dependencies:
   flutter_test:
