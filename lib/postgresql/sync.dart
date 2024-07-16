@@ -91,7 +91,7 @@ class SyncPageState extends State<SyncPage> {
                     database: 'users',
                     username: "admin",
                     password: "456321rrRR"));
-                userLocalInfo = await SharedPreferences.getInstance();
+                // userLocalInfo = await SharedPreferences.getInstance();
                 if (userLocalInfo != null) {
                   userEmail = userLocalInfo.getString('userEmail');
                   userOther = userLocalInfo.getString('userOther');
@@ -222,7 +222,7 @@ class SyncPageState extends State<SyncPage> {
                     database: 'users',
                     username: "admin",
                     password: "456321rrRR"));
-                userLocalInfo = await SharedPreferences.getInstance();
+                // userLocalInfo = await SharedPreferences.getInstance();
                 if (userLocalInfo != null) {
                   userEmail = userLocalInfo.getString('userEmail');
                   userOther = userLocalInfo.getString('userOther');
@@ -330,7 +330,7 @@ Future<int> checkRemoteDatabase() async {
 
     return 0;
   } else {
-    userLocalInfo = await SharedPreferences.getInstance();
+    // userLocalInfo = await SharedPreferences.getInstance();
     if (userLocalInfo != null) {
       userEmail = userLocalInfo.getString('userEmail');
       userOther = userLocalInfo.getString('userOther');
@@ -477,7 +477,7 @@ Future<void> exchangeSmart() async {
       username: "admin",
       password: "456321rrRR"));
   try {
-    userLocalInfo = await SharedPreferences.getInstance();
+    // userLocalInfo = await SharedPreferences.getInstance();
     DateTime lastRefresh = DateTime.parse(
             userLocalInfo.getString('refreshdate') ??
                 '1969-01-01 00:00:00.000000')
@@ -647,7 +647,7 @@ void syncNoteToRemote(Notes note) async {
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
-  final SharedPreferences userLocalInfo = await SharedPreferences.getInstance();
+  // final SharedPreferences userLocalInfo = await SharedPreferences.getInstance();
   userID = userLocalInfo.getString('userID');
   await postgreSQLConnection.execute(insertOrUpdateRemote(note, userID!));
   await postgreSQLConnection.close();

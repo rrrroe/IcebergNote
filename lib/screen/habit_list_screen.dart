@@ -186,10 +186,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
       segments.add(Segment(
           value: (score * habits[i].weight).toInt(),
           color: hexToColor(habits[i].color)));
-      print('${habits[i].name} : ${segments.last.value}');
     }
-    print([scores, weights]);
-    print('-----------------------------');
     List tmp = [scores, weights, segments];
     return tmp;
   }
