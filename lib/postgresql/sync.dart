@@ -373,6 +373,15 @@ Future<int> checkRemoteDatabase() async {
       userEmail = userLocalInfo!.getString('userEmail');
       userOther = userLocalInfo!.getString('userOther');
       userID = userLocalInfo!.getString('userID');
+    } else {
+      userLocalInfo = await SharedPreferences.getInstance();
+      if (userLocalInfo != null) {
+        userEmail = userLocalInfo!.getString('userEmail');
+        userOther = userLocalInfo!.getString('userOther');
+        userID = userLocalInfo!.getString('userID');
+      } else {
+        return 0;
+      }
     }
     return 1;
   }
