@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/constants.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/system/device_id.dart';
 import 'package:icebergnote/users.dart';
 import 'package:postgres/postgres.dart';
@@ -37,23 +38,22 @@ class LoginScreenState extends State<LoginScreen> {
         if (results.isNotEmpty) {
           var tmp = sha512.convert(utf8.encode('${data.password}IceBergNote'));
           if (tmp.toString() == results[0][5]) {
-            final SharedPreferences userLocalInfo =
-                await SharedPreferences.getInstance();
-            userLocalInfo.setString('userName', results[0][0].toString());
-            userLocalInfo.setString('userID', results[0][1].toString());
-            userLocalInfo.setString('userEmail', results[0][2].toString());
-            userLocalInfo.setString('userPhone', results[0][3].toString());
-            userLocalInfo.setBool('userIsAdmin',
+            userLocalInfo ??= await SharedPreferences.getInstance();
+            userLocalInfo!.setString('userName', results[0][0].toString());
+            userLocalInfo!.setString('userID', results[0][1].toString());
+            userLocalInfo!.setString('userEmail', results[0][2].toString());
+            userLocalInfo!.setString('userPhone', results[0][3].toString());
+            userLocalInfo!.setBool('userIsAdmin',
                 results[0][4].toString() == "true" ? true : false);
-            userLocalInfo.setString('userOther', data.password);
-            userLocalInfo.setString('userCreatDate', results[0][6].toString());
-            userLocalInfo.setString('userVIPDate', results[0][7].toString());
+            userLocalInfo!.setString('userOther', data.password);
+            userLocalInfo!.setString('userCreatDate', results[0][6].toString());
+            userLocalInfo!.setString('userVIPDate', results[0][7].toString());
 
             if (deviceUniqueId != '未知设备') {
               if (results[0][8] == null || results[0][8] == '') {
                 await connection!.execute(
                     "UPDATE userinfo SET devices='$deviceUniqueId' WHERE id='${results[0][1]}'");
-                userLocalInfo.setInt('deviceNO', 1);
+                userLocalInfo!.setInt('deviceNO', 1);
               } else if (!results[0][8]
                   .toString()
                   .split('|||')
@@ -61,9 +61,9 @@ class LoginScreenState extends State<LoginScreen> {
                 String devices = '${results[0][8]}|||$deviceUniqueId';
                 await connection!.execute(
                     "UPDATE userinfo SET devices='$devices' WHERE id='${results[0][1]}'");
-                userLocalInfo.setInt('deviceNO', devices.split('|||').length);
+                userLocalInfo!.setInt('deviceNO', devices.split('|||').length);
               } else {
-                userLocalInfo.setInt(
+                userLocalInfo!.setInt(
                     'deviceNO',
                     results[0][8]
                             .toString()
@@ -117,19 +117,18 @@ class LoginScreenState extends State<LoginScreen> {
               "INSERT INTO userinfo (id, name, email, password, isadmin, createtime, viptime, phone, devices) VALUES (${no[0][0]}, '${data.additionalSignupData!['昵称'] ?? ''}', '${data.name}', '$tmp', 'f', '$date1', '$date2','${data.additionalSignupData!['手机'] ?? ''}', '${deviceUniqueId == '未知设备' ? '' : deviceUniqueId}')");
           connection!.close();
           if (back.affectedRows == 1) {
-            final SharedPreferences userLocalInfo =
-                await SharedPreferences.getInstance();
-            userLocalInfo.setString(
-                'userName', data.additionalSignupData!['昵称'] ?? '');
-            userLocalInfo.setString('userID', no[0][0].toString());
-            userLocalInfo.setString('userEmail', data.name!);
-            userLocalInfo.setString(
-                'userPhone', data.additionalSignupData!['手机'] ?? '');
-            userLocalInfo.setString('userOther', tmp.toString());
-            userLocalInfo.setBool('userIsAdmin', false);
-            userLocalInfo.setString('userCreatDate', date1);
-            userLocalInfo.setString('userVIPDate', date2);
-            userLocalInfo.setInt('deviceNO', 1);
+            userLocalInfo ??= await SharedPreferences.getInstance();
+            userLocalInfo!
+                .setString('userName', data.additionalSignupData!['昵称'] ?? '');
+            userLocalInfo!.setString('userID', no[0][0].toString());
+            userLocalInfo!.setString('userEmail', data.name!);
+            userLocalInfo!
+                .setString('userPhone', data.additionalSignupData!['手机'] ?? '');
+            userLocalInfo!.setString('userOther', tmp.toString());
+            userLocalInfo!.setBool('userIsAdmin', false);
+            userLocalInfo!.setString('userCreatDate', date1);
+            userLocalInfo!.setString('userVIPDate', date2);
+            userLocalInfo!.setInt('deviceNO', 1);
             Get.find<UserController>().refreshLocalUser();
           } else {
             return '注册失败';
@@ -151,18 +150,17 @@ class LoginScreenState extends State<LoginScreen> {
                 "UPDATE userinfo SET password='$tmp', devices='$devices' WHERE id='${results[0][1]}'");
             connection!.close();
             if (back.affectedRows == 1) {
-              final SharedPreferences userLocalInfo =
-                  await SharedPreferences.getInstance();
-              userLocalInfo.setString('userName', results[0][0].toString());
-              userLocalInfo.setString('userID', no[0][0].toString());
-              userLocalInfo.setString('userEmail', data.name!);
-              userLocalInfo.setString(
+              userLocalInfo ??= await SharedPreferences.getInstance();
+              userLocalInfo!.setString('userName', results[0][0].toString());
+              userLocalInfo!.setString('userID', no[0][0].toString());
+              userLocalInfo!.setString('userEmail', data.name!);
+              userLocalInfo!.setString(
                   'userPhone', data.additionalSignupData!['手机'] ?? '');
-              userLocalInfo.setString('userOther', tmp.toString());
-              userLocalInfo.setBool('userIsAdmin', false);
-              userLocalInfo.setString('userCreatDate', date1);
-              userLocalInfo.setString('userVIPDate', date2);
-              userLocalInfo.setInt(
+              userLocalInfo!.setString('userOther', tmp.toString());
+              userLocalInfo!.setBool('userIsAdmin', false);
+              userLocalInfo!.setString('userCreatDate', date1);
+              userLocalInfo!.setString('userVIPDate', date2);
+              userLocalInfo!.setInt(
                   'deviceNO', devices.split('|||').indexOf(deviceUniqueId) + 1);
               Get.find<UserController>().refreshLocalUser();
               Get.toNamed('/');

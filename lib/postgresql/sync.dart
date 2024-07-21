@@ -17,7 +17,7 @@ String? userOther;
 String? userID;
 String? userName;
 String? userCreatDate;
-late final SharedPreferences userLocalInfo;
+SharedPreferences? userLocalInfo;
 // String syncProcess = '';
 
 class SyncProcessController extends GetxController {
@@ -84,19 +84,38 @@ class SyncPageState extends State<SyncPage> {
           children: [
             ElevatedButton(
               onPressed: () async {
-                syncProcess = '--------------------开始上传本地--------------------';
+                syncProcess =
+                    '$syncProcess\n--------------------验证用户信息--------------------';
+                setState(() {});
+                if (userLocalInfo != null) {
+                  userEmail = userLocalInfo!.getString('userEmail');
+                  userOther = userLocalInfo!.getString('userOther');
+                  userID = userLocalInfo!.getString('userID');
+                  syncProcess = '$syncProcess\n用户信息已存在';
+                } else {
+                  syncProcess = '$syncProcess\n用户信息不存在  初始化';
+                  userLocalInfo = await SharedPreferences.getInstance();
+                  if (userLocalInfo != null) {
+                    syncProcess = '$syncProcess\n用户信息初始化成功';
+                    userEmail = userLocalInfo!.getString('userEmail');
+                    userOther = userLocalInfo!.getString('userOther');
+                    userID = userLocalInfo!.getString('userID');
+                  } else {
+                    syncProcess = '$syncProcess\n用户信息初始化失败';
+                  }
+                }
+                syncProcess = '$syncProcess\n邮箱    $userEmail';
+                syncProcess = '$syncProcess\nID    No.$userID';
+                syncProcess = '$syncProcess\n用户名    $userEmail';
+                setState(() {});
+                syncProcess =
+                    '$syncProcess\n--------------------开始上传本地--------------------';
                 setState(() {});
                 final postgreSQLConnection = await Connection.open(Endpoint(
                     host: '111.229.224.55',
                     database: 'users',
                     username: "admin",
                     password: "456321rrRR"));
-                // userLocalInfo = await SharedPreferences.getInstance();
-                if (userLocalInfo != null) {
-                  userEmail = userLocalInfo.getString('userEmail');
-                  userOther = userLocalInfo.getString('userOther');
-                  userID = userLocalInfo.getString('userID');
-                }
                 int p1 = await checkRemoteDatabase();
                 if (userEmail == null || userOther == null || userID == null) {
                   syncProcess = '$syncProcess\n本地用户数据异常';
@@ -215,19 +234,38 @@ class SyncPageState extends State<SyncPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                syncProcess = '--------------------开始下载云端--------------------';
+                syncProcess =
+                    '$syncProcess\n--------------------验证用户信息--------------------';
+                setState(() {});
+                if (userLocalInfo != null) {
+                  userEmail = userLocalInfo!.getString('userEmail');
+                  userOther = userLocalInfo!.getString('userOther');
+                  userID = userLocalInfo!.getString('userID');
+                  syncProcess = '$syncProcess\n用户信息已存在';
+                } else {
+                  syncProcess = '$syncProcess\n用户信息不存在  初始化';
+                  userLocalInfo = await SharedPreferences.getInstance();
+                  if (userLocalInfo != null) {
+                    syncProcess = '$syncProcess\n用户信息初始化成功';
+                    userEmail = userLocalInfo!.getString('userEmail');
+                    userOther = userLocalInfo!.getString('userOther');
+                    userID = userLocalInfo!.getString('userID');
+                  } else {
+                    syncProcess = '$syncProcess\n用户信息初始化失败';
+                  }
+                }
+                syncProcess = '$syncProcess\n邮箱    $userEmail';
+                syncProcess = '$syncProcess\nID    No.$userID';
+                syncProcess = '$syncProcess\n用户名    $userEmail';
+                setState(() {});
+                syncProcess =
+                    '$syncProcess\n--------------------开始下载云端--------------------';
                 setState(() {});
                 final postgreSQLConnection = await Connection.open(Endpoint(
                     host: '111.229.224.55',
                     database: 'users',
                     username: "admin",
                     password: "456321rrRR"));
-                // userLocalInfo = await SharedPreferences.getInstance();
-                if (userLocalInfo != null) {
-                  userEmail = userLocalInfo.getString('userEmail');
-                  userOther = userLocalInfo.getString('userOther');
-                  userID = userLocalInfo.getString('userID');
-                }
                 int p1 = await checkRemoteDatabase();
                 if (userEmail == null || userOther == null || userID == null) {
                   syncProcess = '$syncProcess\n本地用户数据异常';
@@ -332,9 +370,9 @@ Future<int> checkRemoteDatabase() async {
   } else {
     // userLocalInfo = await SharedPreferences.getInstance();
     if (userLocalInfo != null) {
-      userEmail = userLocalInfo.getString('userEmail');
-      userOther = userLocalInfo.getString('userOther');
-      userID = userLocalInfo.getString('userID');
+      userEmail = userLocalInfo!.getString('userEmail');
+      userOther = userLocalInfo!.getString('userOther');
+      userID = userLocalInfo!.getString('userID');
     }
     return 1;
   }
@@ -477,73 +515,80 @@ Future<void> exchangeSmart() async {
       username: "admin",
       password: "456321rrRR"));
   try {
-    // userLocalInfo = await SharedPreferences.getInstance();
-    DateTime lastRefresh = DateTime.parse(
-            userLocalInfo.getString('refreshdate') ??
-                '1969-01-01 00:00:00.000000')
-        .add(const Duration(days: -10));
-    userLocalInfo.setString('refreshdate', DateTime.now().toUtc().toString());
-    userID = userLocalInfo.getString('userID');
-    RealmResults<Notes> localNewNotes = realm.query<Notes>(
-        "noteUpdateDate > \$0 SORT(noteUpdateDate ASC)", [lastRefresh]);
-    final postgreSQLConnection = await Connection.open(Endpoint(
-        host: '111.229.224.55',
-        database: 'users',
-        username: "admin",
-        password: "456321rrRR"));
-    var remoteNewNotes = await postgreSQLConnection.execute(
-        "SELECT * FROM u$userID.n$userID WHERE updatedate > '$lastRefresh'");
-    List<int> synced = [];
-    for (int i = 0; i < localNewNotes.length; i++) {
-      if (remoteNewNotes.isEmpty) {
-        await postgreSQLConnection
-            .execute(insertOrUpdateRemote(localNewNotes[i], userID!));
-      }
-      for (int j = 0; j < remoteNewNotes.length; j++) {
-        DateTime remoteUpdateDate = DateTime(1969, 1, 1);
-        try {
-          remoteUpdateDate = DateTime.parse(remoteNewNotes[j][23].toString());
-        } catch (e) {
-          continue;
+    userLocalInfo ??= await SharedPreferences.getInstance();
+    if (userLocalInfo != null) {
+      DateTime lastRefresh = DateTime.parse(
+              userLocalInfo!.getString('refreshdate') ??
+                  '1969-01-01 00:00:00.000000')
+          .add(const Duration(days: -10));
+      userLocalInfo!
+          .setString('refreshdate', DateTime.now().toUtc().toString());
+      userID = userLocalInfo!.getString('userID');
+      RealmResults<Notes> localNewNotes = realm.query<Notes>(
+          "noteUpdateDate > \$0 SORT(noteUpdateDate ASC)", [lastRefresh]);
+      final postgreSQLConnection = await Connection.open(Endpoint(
+          host: '111.229.224.55',
+          database: 'users',
+          username: "admin",
+          password: "456321rrRR"));
+      var remoteNewNotes = await postgreSQLConnection.execute(
+          "SELECT * FROM u$userID.n$userID WHERE updatedate > '$lastRefresh'");
+      List<int> synced = [];
+      for (int i = 0; i < localNewNotes.length; i++) {
+        if (remoteNewNotes.isEmpty) {
+          await postgreSQLConnection
+              .execute(insertOrUpdateRemote(localNewNotes[i], userID!));
         }
-        if (localNewNotes[i].id.toString() == remoteNewNotes[j][0]) {
-          synced.add(j);
-          if (localNewNotes[i].noteUpdateDate.isAfter(remoteUpdateDate)) {
-            await postgreSQLConnection
-                .execute(updateRemote(localNewNotes[i], userID!));
+        for (int j = 0; j < remoteNewNotes.length; j++) {
+          DateTime remoteUpdateDate = DateTime(1969, 1, 1);
+          try {
+            remoteUpdateDate = DateTime.parse(remoteNewNotes[j][23].toString());
+          } catch (e) {
+            continue;
+          }
+          if (localNewNotes[i].id.toString() == remoteNewNotes[j][0]) {
+            synced.add(j);
+            if (localNewNotes[i].noteUpdateDate.isAfter(remoteUpdateDate)) {
+              await postgreSQLConnection
+                  .execute(updateRemote(localNewNotes[i], userID!));
+            } else {
+              await updateLocal(localNewNotes[i], remoteNewNotes[j]);
+            }
+            break;
           } else {
-            await updateLocal(localNewNotes[i], remoteNewNotes[j]);
-          }
-          break;
-        } else {
-          if (j == remoteNewNotes.length - 1) {
-            await postgreSQLConnection
-                .execute(insertOrUpdateRemote(localNewNotes[i], userID!));
+            if (j == remoteNewNotes.length - 1) {
+              await postgreSQLConnection
+                  .execute(insertOrUpdateRemote(localNewNotes[i], userID!));
+            }
           }
         }
       }
-    }
 
-    for (int j = 0; j < remoteNewNotes.length; j++) {
-      if (synced.contains(j)) {
-      } else {
-        RealmResults<Notes> existedNote = realm.query<Notes>(
-            "id == \$0", [Uuid.fromString(remoteNewNotes[j][0].toString())]);
-        if (existedNote.isEmpty) {
-          insertLocal(remoteNewNotes[j]);
-        } else if (existedNote.length == 1) {
-          updateLocal(existedNote.first, remoteNewNotes[j]);
-        } else {}
+      for (int j = 0; j < remoteNewNotes.length; j++) {
+        if (synced.contains(j)) {
+        } else {
+          RealmResults<Notes> existedNote = realm.query<Notes>(
+              "id == \$0", [Uuid.fromString(remoteNewNotes[j][0].toString())]);
+          if (existedNote.isEmpty) {
+            insertLocal(remoteNewNotes[j]);
+          } else if (existedNote.length == 1) {
+            updateLocal(existedNote.first, remoteNewNotes[j]);
+          } else {}
+        }
       }
-    }
-    // Get.snackbar(
-    //   '同步成功',
-    //   '',
-    //   duration: const Duration(seconds: 1),
-    //   backgroundColor: const Color.fromARGB(60, 0, 140, 198),
-    // );
-    if (kDebugMode) {
-      print('同步成功');
+      // Get.snackbar(
+      //   '同步成功',
+      //   '',
+      //   duration: const Duration(seconds: 1),
+      //   backgroundColor: const Color.fromARGB(60, 0, 140, 198),
+      // );
+      if (kDebugMode) {
+        print('同步成功');
+      }
+    } else {
+      if (kDebugMode) {
+        print('本地用户信息错误');
+      }
     }
   } catch (e) {
     // Get.snackbar(
@@ -647,8 +692,23 @@ void syncNoteToRemote(Notes note) async {
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
-  // final SharedPreferences userLocalInfo = await SharedPreferences.getInstance();
-  userID = userLocalInfo.getString('userID');
-  await postgreSQLConnection.execute(insertOrUpdateRemote(note, userID!));
-  await postgreSQLConnection.close();
+  if (userLocalInfo != null) {
+    userID = userLocalInfo!.getString('userID');
+    await postgreSQLConnection.execute(insertOrUpdateRemote(note, userID!));
+    await postgreSQLConnection.close();
+  } else {
+    userLocalInfo = await SharedPreferences.getInstance();
+    if (userLocalInfo != null) {
+      userID = userLocalInfo!.getString('userID');
+      await postgreSQLConnection.execute(insertOrUpdateRemote(note, userID!));
+      await postgreSQLConnection.close();
+    } else {
+      Get.snackbar(
+        '错误',
+        '本地用户数据为空',
+        duration: const Duration(seconds: 3),
+        backgroundColor: const Color.fromARGB(60, 0, 140, 198),
+      );
+    }
+  }
 }

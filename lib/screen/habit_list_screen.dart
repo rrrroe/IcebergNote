@@ -344,7 +344,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
       List<Segment> segments) {
     return Expanded(
       child: Container(
-        margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+        margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
         padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
         decoration: BoxDecoration(
           color: bgColor,
@@ -516,10 +516,12 @@ class _HabitListScreenState extends State<HabitListScreen> {
 
                               Uint8List pngBytes =
                                   await onScreenshot(repaintWidgetKey);
-                              userName = userLocalInfo.getString('userName');
-                              userID = userLocalInfo.getString('userID');
-                              userCreatDate =
-                                  userLocalInfo.getString('userCreatDate');
+                              if (userLocalInfo != null) {
+                                userName = userLocalInfo!.getString('userName');
+                                userID = userLocalInfo!.getString('userID');
+                                userCreatDate =
+                                    userLocalInfo!.getString('userCreatDate');
+                              }
                               // ignore: use_build_context_synchronously
                               //     .executeThread();
                               showDialog(

@@ -325,9 +325,11 @@ class _ReportScreenState extends State<ReportScreen>
               // PermissionUtil.requestAll();
 
               Uint8List pngBytes = await onScreenshot(repaintWidgetKey);
-              userName = userLocalInfo.getString('userName');
-              userID = userLocalInfo.getString('userID');
-              userCreatDate = userLocalInfo.getString('userCreatDate');
+              if (userLocalInfo != null) {
+                userName = userLocalInfo!.getString('userName');
+                userID = userLocalInfo!.getString('userID');
+                userCreatDate = userLocalInfo!.getString('userCreatDate');
+              }
               // ignore: use_build_context_synchronously
               // String tmp = DateTime.now().toString().replaceAll(':', '');
               // await (img.Command()
