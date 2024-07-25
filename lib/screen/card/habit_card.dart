@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/class/habit.dart';
 import 'package:icebergnote/extensions/icondata_serialization.dart';
@@ -15,27 +14,29 @@ class HabitCardWeek extends StatefulWidget {
   final Habit habit;
   final List<HabitRecord?> habitRecords;
   final DateTime today;
+  final int index;
+  final Color bgColor;
+  final Color ftColor;
 
   const HabitCardWeek(
       {super.key,
       required this.onChanged,
-      required this.mod, //0正常，1不可编辑
+      required this.mod, //0正常，1实例无法进一步跳转，2拖动模式
       required this.habit,
       required this.habitRecords,
-      required this.today});
+      required this.today,
+      required this.index,
+      required this.bgColor,
+      required this.ftColor});
 
   @override
   State<HabitCardWeek> createState() => _HabitCardWeekState();
 }
 
 class _HabitCardWeekState extends State<HabitCardWeek> {
-  Color bgColor = Colors.blue;
-  Color ftColor = Colors.white;
   IconData? icon;
   @override
   void initState() {
-    bgColor = hexToColor(widget.habit.color);
-    ftColor = hexToColor(widget.habit.fontColor);
     if (widget.habit.icon != '') {
       icon = deserializeIcon(jsonDecode(widget.habit.icon));
     }
@@ -92,16 +93,23 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.habit.icon != '') {
+      icon = deserializeIcon(jsonDecode(widget.habit.icon));
+    }
     return Card(
-      margin: const EdgeInsets.fromLTRB(15, 0, 15, 10),
+      margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       elevation: 0,
       shadowColor: Colors.grey,
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: bgColor, // 边框颜色
-          width: isFinished(widget.today.weekday - 1) ? 5 : 1, // 边框宽度
+          color: widget.bgColor,
+          width: widget.mod == 2
+              ? 5
+              : isFinished(widget.today.weekday - 1)
+                  ? 5
+                  : 1,
         ),
       ),
       child: Padding(
@@ -114,7 +122,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    if (widget.mod == 0) {
+                    if (widget.mod == 0 || widget.mod == 2) {
                       Get.to(() => HabitInputPage(
                           onPageClosed: () {}, mod: 1, habit: widget.habit));
                     }
@@ -126,7 +134,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                           border: Border.all(color: Colors.black12, width: 0),
                           borderRadius: BorderRadius.circular(8.0),
                           color: Colors.white),
-                      child: Icon(icon, color: bgColor, size: 40)),
+                      child: Icon(icon, color: widget.bgColor, size: 40)),
                 ),
                 const SizedBox(width: 10),
                 Column(
@@ -135,7 +143,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                   children: [
                     Text(
                       widget.habit.name,
-                      style: TextStyle(color: bgColor, fontSize: 22),
+                      style: TextStyle(color: widget.bgColor, fontSize: 22),
                     ),
                     const SizedBox(width: 15),
                     Row(
@@ -158,7 +166,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                                           width: istoday(index) ? 3 : 1),
                                       borderRadius: BorderRadius.circular(3),
                                       color: isFinished(index)
-                                          ? bgColor
+                                          ? widget.bgColor
                                           : Colors.black12),
                                 ),
                               )),
@@ -177,13 +185,23 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8.0),
                         color: Colors.white),
-                    child: Icon(
-                      Icons.verified_outlined,
-                      size: isFinished(widget.today.weekday - 1) ? 50 : 35,
-                      color: isFinished(widget.today.weekday - 1)
-                          ? bgColor
-                          : Colors.black12,
-                    ),
+                    child: widget.mod == 2
+                        ? ReorderableDragStartListener(
+                            index: widget.index,
+                            child: const Icon(
+                              Icons.drag_handle_rounded,
+                              size: 30,
+                              color: Colors.grey,
+                            ),
+                          )
+                        : Icon(
+                            Icons.verified_outlined,
+                            size:
+                                isFinished(widget.today.weekday - 1) ? 50 : 35,
+                            color: isFinished(widget.today.weekday - 1)
+                                ? widget.bgColor
+                                : Colors.black12,
+                          ),
                   ),
                 ),
               ],

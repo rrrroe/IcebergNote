@@ -24,6 +24,8 @@ class HabitListScreen extends StatefulWidget {
 class _HabitListScreenState extends State<HabitListScreen> {
   final ScrollController scrollController = ScrollController();
   List<Habit> habits = [];
+  List<Color> habitsbgColors = [];
+  List<Color> habitsftColors = [];
   List<List<HabitRecord?>> habitsRecords = [];
   int durationLenth = 371;
   late DateTime today, now, firstDay, lastDay;
@@ -43,6 +45,8 @@ class _HabitListScreenState extends State<HabitListScreen> {
   List scoresYear = [0, 0, []];
   List<String> tips = ['未来可期', '初露锋芒', '渐入佳境', '势如破竹', '一骑绝尘', '登峰造极'];
   GlobalKey repaintWidgetKey = GlobalKey();
+  List<GlobalKey> cardsKeys = [];
+  bool reordering = false;
 
   @override
   void initState() {
@@ -52,8 +56,13 @@ class _HabitListScreenState extends State<HabitListScreen> {
     lastDay = DateTime(today.year, 12, 31).add(const Duration(days: 3));
     habits =
         realmHabit.query<Habit>('delete != true SORT(position ASC)').toList();
+    for (int i = 0; i < habits.length; i++) {
+      habitsbgColors.add(hexToColor(habits[i].color));
+      habitsftColors.add(hexToColor(habits[i].fontColor));
+    }
     dateInit();
     dataInit();
+    cardsKeys = List.generate(habits.length, (int index) => GlobalKey());
     super.initState();
   }
 
@@ -245,7 +254,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
       double leftPadding, double rightPadding, List<Segment> segments) {
     return Expanded(
       child: Container(
-        margin: EdgeInsets.fromLTRB(leftPadding, 10, rightPadding, 10),
+        margin: EdgeInsets.fromLTRB(leftPadding, 5, rightPadding, 5),
         padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
         decoration: BoxDecoration(
           color: bgColor,
@@ -345,7 +354,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
       List<Segment> segments) {
     return Expanded(
       child: Container(
-        margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+        margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
         padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
         decoration: BoxDecoration(
           color: bgColor,
@@ -443,6 +452,194 @@ class _HabitListScreenState extends State<HabitListScreen> {
     );
   }
 
+  Widget buildBody() {
+    if (reordering) {
+      return RepaintBoundary(
+        key: repaintWidgetKey,
+        child: Container(
+          color: Colors.white,
+          child: Column(children: buildTitle() + buildList()),
+        ),
+      );
+    } else {
+      return SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: RepaintBoundary(
+          key: repaintWidgetKey,
+          child: Container(
+            color: Colors.white,
+            child: Column(children: buildTitle() + buildList()),
+          ),
+        ),
+      );
+    }
+  }
+
+  List<Widget> buildTitle() {
+    return [
+      Container(
+        margin: const EdgeInsets.fromLTRB(20, 10, 16, 5),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () async {
+                DateTime? newDateTime = await showRoundedDatePicker(
+                  initialDate: today,
+                  firstDate: DateTime(1900, 1, 1),
+                  lastDate: DateTime(2100, 1, 1),
+                  height: 300,
+                  context: context,
+                  locale: const Locale("zh", "CN"),
+                  theme: ThemeData(),
+                );
+                if (newDateTime != null) {
+                  setState(() {
+                    today = newDateTime;
+                    dateInit();
+                    dataInit();
+                  });
+                }
+              },
+              child: Text(
+                '${today.year}年${today.month}月${today.day}日  第${weekNumber(today)}周  第${week7Number(today)}季',
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Expanded(child: Container()),
+            GestureDetector(
+              child: Icon(reordering
+                  ? Icons.check_outlined
+                  : Icons.fit_screen_outlined),
+              onTap: () async {
+                if (reordering) {
+                  reordering = false;
+                  setState(() {});
+                } else {
+                  Uint8List pngBytes = await onScreenshot(repaintWidgetKey);
+                  if (userLocalInfo != null) {
+                    userName = userLocalInfo!.getString('userName');
+                    userID = userLocalInfo!.getString('userID');
+                    userCreatDate = userLocalInfo!.getString('userCreatDate');
+                  }
+                  // ignore: use_build_context_synchronously
+                  //     .executeThread();
+                  showDialog(
+                    builder: (_) => ImagePopup(
+                      pngBytes: pngBytes,
+                      mainColor: Colors.black,
+                    ),
+                    // ignore: use_build_context_synchronously
+                    context: context,
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+      Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          buildScoreCard('今日', scoresToday[0].toInt(), scoresToday[1].toInt(),
+              const Color.fromARGB(255, 249, 172, 146), 15, 4, scoresToday[2]),
+          buildScoreCard('本周', scoresWeek[0].toInt(), scoresWeek[1].toInt(),
+              const Color.fromARGB(255, 137, 190, 244), 9, 9, scoresWeek[2]),
+          buildScoreCard('七周', scores7Week[0].toInt(), scores7Week[1].toInt(),
+              const Color.fromARGB(255, 137, 198, 131), 4, 15, scores7Week[2]),
+        ],
+      ),
+      Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          buildLongScoreCard('年度', scoresYear[0].toInt(), scoresYear[1].toInt(),
+              const Color.fromARGB(255, 147, 117, 205), scoresYear[2]),
+        ],
+      ),
+    ];
+  }
+
+  List<Widget> buildList() {
+    if (reordering) {
+      return [
+        Expanded(
+          child: ReorderableListView(
+            onReorder: onReorder,
+            buildDefaultDragHandles: false,
+            children: List.generate(habits.length, (index) {
+              return GestureDetector(
+                  key: cardsKeys[index],
+                  onTap: () {},
+                  onLongPress: () {
+                    reordering = false;
+                    setState(() {});
+                  },
+                  child: HabitCardWeek(
+                    onChanged: () {
+                      updateScore();
+                    },
+                    mod: 2,
+                    habit: habits[index],
+                    habitRecords:
+                        habitsRecords[index].sublist(firstDayWeek, lastDayWeek),
+                    today: today,
+                    index: index,
+                    bgColor: habitsbgColors[index],
+                    ftColor: habitsftColors[index],
+                  ));
+            }),
+          ),
+        ),
+      ];
+    } else {
+      return List.generate(habits.length, (index) {
+        return GestureDetector(
+            onTap: () {},
+            onLongPress: () {
+              reordering = true;
+              setState(() {});
+            },
+            child: HabitCardWeek(
+              onChanged: () {
+                updateScore();
+              },
+              mod: 0,
+              habit: habits[index],
+              habitRecords:
+                  habitsRecords[index].sublist(firstDayWeek, lastDayWeek),
+              today: today,
+              index: index,
+              bgColor: habitsbgColors[index],
+              ftColor: habitsftColors[index],
+            ));
+      });
+    }
+  }
+
+  void onReorder(int oldIndex, int newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+
+    var temp1 = habits.removeAt(oldIndex);
+    var temp2 = habitsRecords.removeAt(oldIndex);
+    var temp3 = habitsbgColors.removeAt(oldIndex);
+    var temp4 = habitsftColors.removeAt(oldIndex);
+    habits.insert(newIndex, temp1);
+    habitsRecords.insert(newIndex, temp2);
+    habitsbgColors.insert(newIndex, temp3);
+    habitsftColors.insert(newIndex, temp4);
+    setState(() {});
+    realmHabit.write(() {
+      for (int i = 0; i < habits.length; i++) {
+        habits[i].position = i;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -471,142 +668,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
           child: const Icon(Icons.add),
         ),
       ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: RepaintBoundary(
-          key: repaintWidgetKey,
-          child: Container(
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                    Container(
-                      margin: const EdgeInsets.fromLTRB(20, 10, 16, 0),
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              DateTime? newDateTime =
-                                  await showRoundedDatePicker(
-                                initialDate: today,
-                                firstDate: DateTime(1900, 1, 1),
-                                lastDate: DateTime(2100, 1, 1),
-                                height: 300,
-                                context: context,
-                                locale: const Locale("zh", "CN"),
-                                theme: ThemeData(),
-                              );
-                              if (newDateTime != null) {
-                                setState(() {
-                                  today = newDateTime;
-                                  dateInit();
-                                  dataInit();
-                                });
-                              }
-                            },
-                            child: Text(
-                              '${today.year}年${today.month}月${today.day}日  第${weekNumber(today)}周  第${week7Number(today)}季',
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Expanded(child: Container()),
-                          GestureDetector(
-                            child: const Icon(Icons.fit_screen_outlined),
-                            onTap: () async {
-                              // PermissionUtil.requestAll();
-
-                              Uint8List pngBytes =
-                                  await onScreenshot(repaintWidgetKey);
-                              if (userLocalInfo != null) {
-                                userName = userLocalInfo!.getString('userName');
-                                userID = userLocalInfo!.getString('userID');
-                                userCreatDate =
-                                    userLocalInfo!.getString('userCreatDate');
-                              }
-                              // ignore: use_build_context_synchronously
-                              //     .executeThread();
-                              showDialog(
-                                builder: (_) => ImagePopup(
-                                  pngBytes: pngBytes,
-                                  mainColor: Colors.black,
-                                ),
-                                // ignore: use_build_context_synchronously
-                                context: context,
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    )
-                  ] +
-                  List.generate(habits.length + 1, (index) {
-                    if (index == 0) {
-                      return Column(
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              buildScoreCard(
-                                  '今日',
-                                  scoresToday[0].toInt(),
-                                  scoresToday[1].toInt(),
-                                  const Color.fromARGB(255, 249, 172, 146),
-                                  15,
-                                  4,
-                                  scoresToday[2]),
-                              buildScoreCard(
-                                  '本周',
-                                  scoresWeek[0].toInt(),
-                                  scoresWeek[1].toInt(),
-                                  const Color.fromARGB(255, 137, 190, 244),
-                                  9,
-                                  9,
-                                  scoresWeek[2]),
-                              buildScoreCard(
-                                  '七周',
-                                  scores7Week[0].toInt(),
-                                  scores7Week[1].toInt(),
-                                  const Color.fromARGB(255, 137, 198, 131),
-                                  4,
-                                  15,
-                                  scores7Week[2]),
-                            ],
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              buildLongScoreCard(
-                                  '年度',
-                                  scoresYear[0].toInt(),
-                                  scoresYear[1].toInt(),
-                                  const Color.fromARGB(255, 147, 117, 205),
-                                  scoresYear[2]),
-                            ],
-                          ),
-                        ],
-                      );
-                    } else {
-                      return GestureDetector(
-                          onTap: () {},
-                          child: HabitCardWeek(
-                            onChanged: () {
-                              updateScore();
-                            },
-                            mod: 0,
-                            habit: habits[index - 1],
-                            habitRecords: habitsRecords[index - 1]
-                                .sublist(firstDayWeek, lastDayWeek),
-                            today: today,
-                          ));
-                    }
-                  }),
-            ),
-          ),
-        ),
-      ),
+      body: buildBody(),
     );
   }
 }

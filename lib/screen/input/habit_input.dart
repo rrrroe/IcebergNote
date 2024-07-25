@@ -214,19 +214,23 @@ class _HabitInputPageState extends State<HabitInputPage> {
                             height: 30,
                           ),
                           HabitCardWeek(
-                              onChanged: () {},
-                              mod: 1,
-                              habit: habit,
-                              habitRecords: [
-                                tmpHabitRecord,
-                                null,
-                                tmpHabitRecord,
-                                tmpHabitRecord,
-                                null,
-                                null,
-                                tmpHabitRecord
-                              ],
-                              today: DateTime.now()),
+                            onChanged: () {},
+                            mod: 1,
+                            habit: habit,
+                            habitRecords: [
+                              tmpHabitRecord,
+                              null,
+                              tmpHabitRecord,
+                              tmpHabitRecord,
+                              null,
+                              null,
+                              tmpHabitRecord,
+                            ],
+                            today: DateTime.now(),
+                            index: 0,
+                            bgColor: Colors.blue,
+                            ftColor: Colors.white,
+                          ),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -402,46 +406,46 @@ class _HabitInputPageState extends State<HabitInputPage> {
                             ],
                           ),
                           const Divider(),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Text(
-                                '排序',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(width: 10, height: 28),
-                              Expanded(
-                                child: TextField(
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.right,
-                                  controller: positionController,
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: freqDenErr == null
-                                          ? Colors.red
-                                          : Colors.black),
-                                  minLines: 1,
-                                  maxLines: 1,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding:
-                                        EdgeInsets.symmetric(vertical: 0),
-                                    isDense: true,
-                                  ),
-                                  onChanged: (value) async {
-                                    positionErr = int.tryParse(value);
-                                    setState(() {});
-                                    if (positionErr != null) {
-                                      habit.position = positionErr!;
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Divider(),
+                          // Row(
+                          //   crossAxisAlignment: CrossAxisAlignment.center,
+                          //   children: [
+                          //     const Text(
+                          //       '排序',
+                          //       style: TextStyle(
+                          //           fontSize: 18, fontWeight: FontWeight.bold),
+                          //     ),
+                          //     const SizedBox(width: 10, height: 28),
+                          //     Expanded(
+                          //       child: TextField(
+                          //         keyboardType: TextInputType.number,
+                          //         textAlign: TextAlign.right,
+                          //         controller: positionController,
+                          //         style: TextStyle(
+                          //             fontSize: 18,
+                          //             fontWeight: FontWeight.bold,
+                          //             color: freqDenErr == null
+                          //                 ? Colors.red
+                          //                 : Colors.black),
+                          //         minLines: 1,
+                          //         maxLines: 1,
+                          //         decoration: const InputDecoration(
+                          //           border: InputBorder.none,
+                          //           contentPadding:
+                          //               EdgeInsets.symmetric(vertical: 0),
+                          //           isDense: true,
+                          //         ),
+                          //         onChanged: (value) async {
+                          //           positionErr = int.tryParse(value);
+                          //           setState(() {});
+                          //           if (positionErr != null) {
+                          //             habit.position = positionErr!;
+                          //           }
+                          //         },
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          // const Divider(),
                           Row(
                             children: [
                               const Text(
