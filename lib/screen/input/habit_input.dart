@@ -471,6 +471,10 @@ class _HabitInputPageState extends State<HabitInputPage> {
                                             newDateTime.year,
                                             newDateTime.month,
                                             newDateTime.day);
+                                        if (!habit.stopDate
+                                            .isAfter(habit.startDate)) {
+                                          habit.stopDate = habit.startDate;
+                                        }
                                       });
                                     }
                                   },
