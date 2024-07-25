@@ -246,7 +246,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
     return Expanded(
       child: Container(
         margin: EdgeInsets.fromLTRB(leftPadding, 10, rightPadding, 10),
-        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+        padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: const BorderRadius.only(
@@ -261,7 +261,8 @@ class _HabitListScreenState extends State<HabitListScreen> {
           ),
         ),
         child: Column(
-          // alignment: WrapAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Row(
               children: [
@@ -312,7 +313,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
                   (index) {
                 return const Icon(
                   Icons.star,
-                  size: 14,
+                  size: 13,
                   color: Colors.white,
                 );
               }),
@@ -345,7 +346,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
     return Expanded(
       child: Container(
         margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-        padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+        padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: const BorderRadius.only(
@@ -360,7 +361,8 @@ class _HabitListScreenState extends State<HabitListScreen> {
           ),
         ),
         child: Column(
-          // alignment: WrapAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Row(
               children: [
@@ -391,7 +393,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
                           congratulationLevel(scores, target) + 1, (index) {
                         return const Icon(
                           Icons.star,
-                          size: 14,
+                          size: 13,
                           color: Colors.white,
                         );
                       }),
@@ -559,8 +561,8 @@ class _HabitListScreenState extends State<HabitListScreen> {
                                   scoresWeek[0].toInt(),
                                   scoresWeek[1].toInt(),
                                   const Color.fromARGB(255, 137, 190, 244),
-                                  8,
-                                  8,
+                                  9,
+                                  9,
                                   scoresWeek[2]),
                               buildScoreCard(
                                   '七周',
