@@ -7,11 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
+import 'package:icebergnote/screen/widget/input_alert_dialog.dart';
 import 'package:realm/realm.dart';
 import '../constants.dart';
 import '../main.dart';
 import '../class/notes.dart';
-import 'input/input_screen.dart';
 
 class ImportPage extends StatefulWidget {
   const ImportPage({super.key});

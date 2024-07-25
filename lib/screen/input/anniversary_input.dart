@@ -10,8 +10,8 @@ import 'package:icebergnote/main.dart';
 import 'package:icebergnote/class/notes.dart';
 import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/card/anniversary_card.dart';
-import 'package:icebergnote/screen/input/input_screen.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:icebergnote/screen/widget/input_alert_dialog.dart';
 import 'package:slide_switcher/slide_switcher.dart';
 
 // ignore: must_be_immutable

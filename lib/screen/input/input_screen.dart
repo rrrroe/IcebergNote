@@ -4,6 +4,8 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/postgresql/sync.dart';
+import 'package:icebergnote/screen/widget/input_alert_dialog.dart';
+import 'package:icebergnote/screen/widget/poplog.dart';
 import 'package:realm/realm.dart';
 import '../../constants.dart';
 import '../../class/notes.dart';
@@ -591,7 +593,7 @@ class ChangePageState extends State<ChangePage> {
                     TextButton(
                       onPressed: () {
                         FlutterClipboard.copy(contentController.text);
-                        poplog(1, '复制', context);
+                        poplog(true, '复制', context);
                       },
                       child: const Text('复制'),
                     ),
@@ -648,103 +650,20 @@ class ChangePageState extends State<ChangePage> {
   }
 }
 
-class InputAlertDialog extends StatefulWidget {
-  final Function(String) onSubmitted;
 
-  const InputAlertDialog({super.key, required this.onSubmitted});
 
-  @override
-  // ignore: library_private_types_in_public_api
-  _InputAlertDialogState createState() => _InputAlertDialogState();
-}
+// class MenuWidget extends StatelessWidget {
+//   const MenuWidget({super.key});
 
-class _InputAlertDialogState extends State<InputAlertDialog> {
-  late String inputText;
-  final TextEditingController _controller = TextEditingController();
-
-  void _submit() {
-    final text = _controller.text;
-    widget.onSubmitted(text);
-    Navigator.of(context).pop();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('新建'),
-      content: TextField(controller: _controller),
-      actions: <Widget>[
-        TextButton(
-          child: const Text('取消'),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        TextButton(
-          onPressed: _submit,
-          child: const Text('确定'),
-        ),
-      ],
-    );
-  }
-}
-
-void poplog(int n, String m, BuildContext context) {
-  if (n == 1) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        width: 90,
-        content: Text(
-          '$m成功',
-          textAlign: TextAlign.start,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSecondary,
-          ),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        shape: RoundedRectangleBorder(
-          // 设置形状
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 1),
-        elevation: 8.0,
-      ),
-    );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        width: 90,
-        content: Text(
-          '$m失败',
-          textAlign: TextAlign.start,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onError,
-          ),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.error,
-        shape: RoundedRectangleBorder(
-          // 设置形状
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
-        elevation: 8.0,
-      ),
-    );
-  }
-}
-
-class MenuWidget extends StatelessWidget {
-  const MenuWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        TextButton(child: const Text('菜单'), onPressed: () {/* 点击按钮的操作 */}),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       children: [
+//         TextButton(child: const Text('菜单'), onPressed: () {/* 点击按钮的操作 */}),
+//       ],
+//     );
+//   }
+// }
 
 // class NewNoteDialog extends StatefulWidget {
 //   const NewNoteDialog({super.key, required this.onDialogClosed});

@@ -126,6 +126,7 @@ late Realm realmHabit;
 late Realm realmHabitRecord;
 Map<String, Map<int, List>> recordTemplates = {};
 Map<String, Map<String, List>> recordTemplatesSettings = {};
+bool isFinishSync = false;
 
 void main() async {
   final config = Configuration.local([Notes.schema], schemaVersion: 1);

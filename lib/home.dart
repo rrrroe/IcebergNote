@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:cherry_toast/cherry_toast.dart';
+import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/postgresql/sync.dart';
@@ -221,9 +225,34 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           IconButton(
             icon: const Icon(Icons.cloud_queue_rounded),
             onPressed: () async {
-              await searchPage.state.syncDate();
+              bool result = await searchPage.state.syncDate();
               // searchPage.state.refreshListTotop();
               // Get.to(() => const SyncPage());
+              if (!result) {
+                CherryToast(
+                        icon: Icons.cloud_done_outlined,
+                        iconColor: Colors.green,
+                        themeColor: Colors.grey,
+                        description: const Text('远程同步完成',
+                            style: TextStyle(color: Colors.black)),
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromBottom,
+                        animationDuration: const Duration(milliseconds: 1000),
+                        autoDismiss: true)
+                    .show(context);
+              } else {
+                CherryToast(
+                        icon: Icons.error_outline_outlined,
+                        iconColor: Colors.red,
+                        themeColor: Colors.grey,
+                        description: const Text('远程同步失败',
+                            style: TextStyle(color: Colors.black)),
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromBottom,
+                        animationDuration: const Duration(milliseconds: 1000),
+                        autoDismiss: true)
+                    .show(context);
+              }
             },
           ),
           PopupMenuButton(

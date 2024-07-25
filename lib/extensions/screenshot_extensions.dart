@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/class/notes.dart';
@@ -9,6 +12,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cherry_toast/cherry_toast.dart';
 
 Future<Uint8List> onScreenshot(GlobalKey key) async {
   RenderRepaintBoundary boundary =
@@ -138,12 +142,26 @@ class _ImagePopupState extends State<ImagePopup> {
                             ..writeToFile('export/export_$tmp.png'))
                           // executeThread will run the commands in an Isolate thread
                           .executeThread();
-                      Get.snackbar(
-                        '恭喜',
-                        '导出已完成',
-                        duration: const Duration(seconds: 1),
-                        backgroundColor: const Color.fromARGB(60, 0, 140, 198),
-                      );
+                      CherryToast(
+                              icon: Icons.check_circle,
+                              iconColor: Colors.green,
+                              themeColor: Colors.grey,
+                              description: const Text('导出已完成',
+                                  style: TextStyle(color: Colors.black)),
+                              toastPosition: Position.bottom,
+                              animationType: AnimationType.fromBottom,
+                              action: const Text('请检查本地文件',
+                                  style: TextStyle(color: Colors.green)),
+                              animationDuration:
+                                  const Duration(milliseconds: 1000),
+                              autoDismiss: true)
+                          .show(context);
+                      // Get.snackbar(
+                      //   '恭喜',
+                      //   '导出已完成',
+                      //   duration: const Duration(seconds: 1),
+                      //   backgroundColor: const Color.fromARGB(60, 0, 140, 198),
+                      // );
                     },
                     style: ButtonStyle(
                         foregroundColor: WidgetStateProperty.all(Colors.white),

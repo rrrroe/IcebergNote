@@ -3,7 +3,6 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/main.dart';
@@ -517,7 +516,7 @@ Future<void> allRemoteToLocal() async {
       .syncProcessAddLine('--------------------云端下载完成--------------------');
 }
 
-Future<void> exchangeSmart() async {
+Future<bool> exchangeSmart() async {
   final postgreSQLConnection = await Connection.open(Endpoint(
       host: '111.229.224.55',
       database: 'users',
@@ -585,30 +584,12 @@ Future<void> exchangeSmart() async {
           } else {}
         }
       }
-      // Get.snackbar(
-      //   '同步成功',
-      //   '',
-      //   duration: const Duration(seconds: 1),
-      //   backgroundColor: const Color.fromARGB(60, 0, 140, 198),
-      // );
-      if (kDebugMode) {
-        print('同步成功');
-      }
+      return true;
     } else {
-      if (kDebugMode) {
-        print('本地用户信息错误');
-      }
+      return false;
     }
   } catch (e) {
-    // Get.snackbar(
-    //   '同步失败',
-    //   e.toString(),
-    //   duration: const Duration(seconds: 3),
-    //   backgroundColor: const Color.fromARGB(60, 0, 140, 198),
-    // );
-    if (kDebugMode) {
-      print('同步失败:$e');
-    }
+    return false;
   } finally {
     postgreSQLConnection.close();
   }

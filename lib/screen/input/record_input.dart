@@ -9,11 +9,12 @@ import 'package:flutter_pickers/time_picker/model/date_mode.dart';
 import 'package:flutter_pickers/time_picker/model/suffix.dart';
 import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/noteslist_screen.dart';
+import 'package:icebergnote/screen/widget/input_alert_dialog.dart';
+import 'package:icebergnote/screen/widget/poplog.dart';
 import 'package:yaml/yaml.dart';
 import '../../constants.dart';
 import '../../main.dart';
 import '../../class/notes.dart';
-import 'input_screen.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:flutter_pickers/pickers.dart';
 import 'package:flutter_pickers/time_picker/model/pduration.dart';
@@ -2485,7 +2486,7 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                     TextButton(
                       onPressed: () {
                         FlutterClipboard.copy(contentController.text);
-                        poplog(1, '复制', context);
+                        poplog(true, '复制', context);
                       },
                       child: const Text('复制'),
                     ),

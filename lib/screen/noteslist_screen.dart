@@ -6,6 +6,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cherry_toast/cherry_toast.dart';
+import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +21,7 @@ import 'package:icebergnote/screen/card/normal_card.dart';
 import 'package:icebergnote/screen/input/anniversary_input.dart';
 import 'package:icebergnote/screen/input/input_screen.dart';
 import 'package:icebergnote/class/notes.dart';
+import 'package:icebergnote/screen/widget/poplog.dart';
 import 'package:realm/realm.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -110,7 +113,7 @@ class BottomPopSheet extends StatelessWidget {
             title: const Text('复制'),
             onTap: () {
               FlutterClipboard.copy('${note.noteTitle}\n${note.noteContext}');
-              poplog(1, '复制', context);
+              poplog(true, '复制', context);
               onDialogClosed();
               Navigator.pop(context);
             },
@@ -797,12 +800,23 @@ class SearchPageState extends State<SearchPage> {
                     realm.delete(result[i]);
                   });
                 }
-                Get.snackbar(
-                  '恭喜',
-                  '清空回收站成功',
-                  duration: const Duration(seconds: 1),
-                  backgroundColor: const Color.fromARGB(60, 0, 140, 198),
-                );
+                CherryToast(
+                        icon: Icons.check_circle,
+                        iconColor: Colors.green,
+                        themeColor: Colors.grey,
+                        description: const Text('清空回收站成功',
+                            style: TextStyle(color: Colors.black)),
+                        toastPosition: Position.bottom,
+                        animationType: AnimationType.fromBottom,
+                        animationDuration: const Duration(milliseconds: 1000),
+                        autoDismiss: true)
+                    .show(context);
+                // Get.snackbar(
+                //   '恭喜',
+                //   '清空回收站成功',
+                //   duration: const Duration(seconds: 1),
+                //   backgroundColor: const Color.fromARGB(60, 0, 140, 198),
+                // );
                 setState(() {});
               },
               child: const Text("清空回收站"))
@@ -884,7 +898,7 @@ class SearchPageState extends State<SearchPage> {
     }
   }
 
-  Future<void> syncDate() async {
+  Future<bool> syncDate() async {
     if (isSyncing == 0) {
       isSyncing++;
       int p1 = await checkRemoteDatabase();
@@ -892,13 +906,10 @@ class SearchPageState extends State<SearchPage> {
         await exchangeSmart();
       }
       isSyncing--;
-      Get.snackbar(
-        '恭喜',
-        '远程同步已完成',
-        duration: const Duration(seconds: 1),
-        backgroundColor: const Color.fromARGB(60, 0, 140, 198),
-      );
+
+      return true;
     }
+    return false;
   }
 
   void _onRefresh() async {
