@@ -228,7 +228,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               bool result = await searchPage.state.syncDate();
               // searchPage.state.refreshListTotop();
               // Get.to(() => const SyncPage());
-              if (!result) {
+              if (result) {
                 CherryToast(
                         icon: Icons.cloud_done_outlined,
                         iconColor: Colors.green,
