@@ -523,8 +523,14 @@ Future<bool> exchangeSmart() async {
       username: "admin",
       password: "456321rrRR"));
   try {
-    userLocalInfo ??= await SharedPreferences.getInstance();
-    if (userLocalInfo != null) {
+    // ignore: prefer_conditional_assignment
+    if (userLocalInfo == null) {
+      userLocalInfo = await SharedPreferences.getInstance();
+    }
+
+    if (userLocalInfo == null) {
+      return false;
+    } else {
       DateTime lastRefresh = DateTime.parse(
               userLocalInfo!.getString('refreshdate') ??
                   '1969-01-01 00:00:00.000000')
@@ -585,8 +591,6 @@ Future<bool> exchangeSmart() async {
         }
       }
       return true;
-    } else {
-      return false;
     }
   } catch (e) {
     return false;
