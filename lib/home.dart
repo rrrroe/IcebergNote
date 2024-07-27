@@ -217,10 +217,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           //   handleColorSelect: widget.handleColorSelect,
           //   colorSelected: widget.colorSelected,
           // ),
-          _BrightnessButton(
-            handleBrightnessChange: widget.handleBrightnessChange,
-            showTooltipBelow: false,
-          ),
+          // _BrightnessButton(
+          //   handleBrightnessChange: widget.handleBrightnessChange,
+          //   showTooltipBelow: false,
+          // ),
 
           IconButton(
             icon: const Icon(Icons.cloud_queue_rounded),
@@ -300,10 +300,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   value: 2,
                   child: Text("导入"),
                 ),
-                const PopupMenuItem(
-                  value: 3,
-                  child: Text("搜索"),
-                ),
+                // const PopupMenuItem(
+                //   value: 3,
+                //   child: Text("搜索"),
+                // ),
                 const PopupMenuItem(
                   value: 4,
                   child: Text("同步"),

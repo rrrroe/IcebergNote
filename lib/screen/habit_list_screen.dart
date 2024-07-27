@@ -502,7 +502,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
                 }
               },
               child: Text(
-                '${today.year}年${today.month}月${today.day}日  第${weekNumber(today)}周  第${week7Number(today)}季',
+                '${today.year}年${today.month}月${today.day}日 第${weekNumber(today)}周 第${week7Number(today)}季',
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -534,6 +534,29 @@ class _HabitListScreenState extends State<HabitListScreen> {
                     context: context,
                   );
                 }
+              },
+            ),
+            const SizedBox(width: 5),
+            GestureDetector(
+              child: const Icon(Icons.add),
+              onTap: () async {
+                DateTime now = DateTime.now();
+                Habit habit = Habit(
+                    Uuid.v4(),
+                    now.toUtc(),
+                    DateTime(now.year, now.month, now.day),
+                    now.toUtc(),
+                    DateTime(now.year, now.month, now.day));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HabitInputPage(
+                      onPageClosed: () {},
+                      mod: 0,
+                      habit: habit,
+                    ),
+                  ),
+                );
               },
             ),
           ],
@@ -643,31 +666,31 @@ class _HabitListScreenState extends State<HabitListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: GestureDetector(
-        onLongPress: () {},
-        child: FloatingActionButton(
-          onPressed: () {
-            DateTime now = DateTime.now();
-            Habit habit = Habit(
-                Uuid.v4(),
-                now.toUtc(),
-                DateTime(now.year, now.month, now.day),
-                now.toUtc(),
-                DateTime(now.year, now.month, now.day));
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HabitInputPage(
-                  onPageClosed: () {},
-                  mod: 0,
-                  habit: habit,
-                ),
-              ),
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
-      ),
+      // floatingActionButton: GestureDetector(
+      //   onLongPress: () {},
+      //   child: FloatingActionButton(
+      //     onPressed: () {
+      //       DateTime now = DateTime.now();
+      //       Habit habit = Habit(
+      //           Uuid.v4(),
+      //           now.toUtc(),
+      //           DateTime(now.year, now.month, now.day),
+      //           now.toUtc(),
+      //           DateTime(now.year, now.month, now.day));
+      //       Navigator.push(
+      //         context,
+      //         MaterialPageRoute(
+      //           builder: (context) => HabitInputPage(
+      //             onPageClosed: () {},
+      //             mod: 0,
+      //             habit: habit,
+      //           ),
+      //         ),
+      //       );
+      //     },
+      //     child: const Icon(Icons.add),
+      //   ),
+      // ),
       body: buildBody(),
     );
   }
