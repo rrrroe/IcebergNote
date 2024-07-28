@@ -47,6 +47,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
   GlobalKey repaintWidgetKey = GlobalKey();
   List<GlobalKey> cardsKeys = [];
   bool reordering = false;
+  int durationType = 1;
 
   @override
   void initState() {
@@ -250,203 +251,224 @@ class _HabitListScreenState extends State<HabitListScreen> {
     return 0;
   }
 
-  Widget buildScoreCard(String title, int scores, int target, Color bgColor,
-      double leftPadding, double rightPadding, List<Segment> segments) {
+  Widget buildScoreCard(
+      String title,
+      int scores,
+      int target,
+      Color bgColor,
+      double leftPadding,
+      double rightPadding,
+      List<Segment> segments,
+      VoidCallback tap) {
     return Expanded(
-      child: Container(
-        margin: EdgeInsets.fromLTRB(leftPadding, 5, rightPadding, 5),
-        padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(2.0),
-            bottomRight: Radius.circular(20.0),
-            bottomLeft: Radius.circular(2.0),
+      child: GestureDetector(
+        onTap: tap,
+        child: Container(
+          margin: EdgeInsets.fromLTRB(leftPadding, 5, rightPadding, 5),
+          padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
+          decoration: BoxDecoration(
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.black.withOpacity(0.2), // 阴影颜色
+            //     spreadRadius: 5, // 阴影扩散半径
+            //     blurRadius: 5, // 阴影模糊半径
+            //     offset: const Offset(0, 5), // 阴影偏移
+            //   ),
+            // ],
+            color: bgColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20.0),
+              topRight: Radius.circular(2.0),
+              bottomRight: Radius.circular(20.0),
+              bottomLeft: Radius.circular(2.0),
+            ),
+            border: Border.all(
+              color: Colors.white24,
+              width: 5.0,
+            ),
           ),
-          border: Border.all(
-            color: Colors.white24,
-            width: 5.0,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                Text(
-                  title,
-                  overflow: TextOverflow.visible,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold),
-                ),
-                Expanded(child: Container()),
-                Text(
-                  scores.toInt().toString(),
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                const Text(
-                  '目标',
-                  overflow: TextOverflow.visible,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold),
-                ),
-                Expanded(child: Container()),
-                Text(
-                  target.toString(),
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(congratulationLevel(scores, target) + 1,
-                  (index) {
-                return const Icon(
-                  Icons.star,
-                  size: 13,
-                  color: Colors.white,
-                );
-              }),
-            ),
-            // Text(
-            //   tips[congratulationLevel(scores, target)],
-            //   textAlign: TextAlign.right,
-            //   style: const TextStyle(
-            //       color: Colors.white,
-            //       fontSize: 12,
-            //       fontWeight: FontWeight.bold),
-            // ),
-            SegmentedBar(
-              segments: segments,
-              maxTotalValue: max(scores, target),
-              style: const SegmentedBarStyle(
-                size: 6,
-                gap: 0.1,
-                padding: EdgeInsets.fromLTRB(2, 8, 2, 4),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    title,
+                    overflow: TextOverflow.visible,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(child: Container()),
+                  Text(
+                    scores.toInt().toString(),
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-            ),
-          ],
+              Row(
+                children: [
+                  const Text(
+                    '目标',
+                    overflow: TextOverflow.visible,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(child: Container()),
+                  Text(
+                    target.toString(),
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(congratulationLevel(scores, target) + 1,
+                    (index) {
+                  return const Icon(
+                    Icons.star,
+                    size: 13,
+                    color: Colors.white,
+                  );
+                }),
+              ),
+              // Text(
+              //   tips[congratulationLevel(scores, target)],
+              //   textAlign: TextAlign.right,
+              //   style: const TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 12,
+              //       fontWeight: FontWeight.bold),
+              // ),
+              SegmentedBar(
+                segments: segments,
+                maxTotalValue: max(scores, target),
+                style: const SegmentedBarStyle(
+                  size: 6,
+                  gap: 0.1,
+                  padding: EdgeInsets.fromLTRB(2, 8, 2, 4),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget buildLongScoreCard(String title, int scores, int target, Color bgColor,
-      List<Segment> segments) {
+      List<Segment> segments, VoidCallback tap) {
     return Expanded(
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-        padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(2.0),
-            bottomRight: Radius.circular(20.0),
-            bottomLeft: Radius.circular(2.0),
-          ),
-          border: Border.all(
-            color: Colors.white24,
-            width: 5.0,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                Text(
-                  title,
-                  overflow: TextOverflow.visible,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  scores.toInt().toString(),
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-                Expanded(child: Container()),
-                Column(
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                          congratulationLevel(scores, target) + 1, (index) {
-                        return const Icon(
-                          Icons.star,
-                          size: 13,
-                          color: Colors.white,
-                        );
-                      }),
-                    ),
-                    // Text(
-                    //   tips[congratulationLevel(scores, target)],
-                    //   textAlign: TextAlign.right,
-                    //   style: const TextStyle(
-                    //       color: Colors.white,
-                    //       fontSize: 12,
-                    //       fontWeight: FontWeight.bold),
-                    // ),
-                  ],
-                ),
-                Expanded(child: Container()),
-                const Text(
-                  '目标',
-                  overflow: TextOverflow.visible,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  target.toString(),
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
+      child: GestureDetector(
+        onTap: tap,
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+          padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20.0),
+              topRight: Radius.circular(2.0),
+              bottomRight: Radius.circular(20.0),
+              bottomLeft: Radius.circular(2.0),
             ),
-            SegmentedBar(
-              segments: segments,
-              maxTotalValue: max(scores, target),
-              style: const SegmentedBarStyle(
-                size: 6,
-                gap: 0.1,
-                padding: EdgeInsets.fromLTRB(2, 8, 2, 4),
+            border: Border.all(
+              color: Colors.white24,
+              width: 5.0,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    title,
+                    overflow: TextOverflow.visible,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    scores.toInt().toString(),
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(child: Container()),
+                  Column(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                            congratulationLevel(scores, target) + 1, (index) {
+                          return const Icon(
+                            Icons.star,
+                            size: 13,
+                            color: Colors.white,
+                          );
+                        }),
+                      ),
+                      // Text(
+                      //   tips[congratulationLevel(scores, target)],
+                      //   textAlign: TextAlign.right,
+                      //   style: const TextStyle(
+                      //       color: Colors.white,
+                      //       fontSize: 12,
+                      //       fontWeight: FontWeight.bold),
+                      // ),
+                    ],
+                  ),
+                  Expanded(child: Container()),
+                  const Text(
+                    '目标',
+                    overflow: TextOverflow.visible,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    target.toString(),
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-            ),
-          ],
+              SegmentedBar(
+                segments: segments,
+                maxTotalValue: max(scores, target),
+                style: const SegmentedBarStyle(
+                  size: 6,
+                  gap: 0.1,
+                  padding: EdgeInsets.fromLTRB(2, 8, 2, 4),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -566,20 +588,62 @@ class _HabitListScreenState extends State<HabitListScreen> {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          buildScoreCard('今日', scoresToday[0].toInt(), scoresToday[1].toInt(),
-              const Color.fromARGB(255, 249, 172, 146), 15, 4, scoresToday[2]),
-          buildScoreCard('本周', scoresWeek[0].toInt(), scoresWeek[1].toInt(),
-              const Color.fromARGB(255, 137, 190, 244), 9, 9, scoresWeek[2]),
-          buildScoreCard('七周', scores7Week[0].toInt(), scores7Week[1].toInt(),
-              const Color.fromARGB(255, 137, 198, 131), 4, 15, scores7Week[2]),
+          buildScoreCard(
+            '今日',
+            scoresToday[0].toInt(),
+            scoresToday[1].toInt(),
+            const Color.fromARGB(255, 249, 172, 146),
+            15,
+            4,
+            scoresToday[2],
+            () {
+              durationType = 0;
+              setState(() {});
+            },
+          ),
+          buildScoreCard(
+            '本周',
+            scoresWeek[0].toInt(),
+            scoresWeek[1].toInt(),
+            const Color.fromARGB(255, 137, 190, 244),
+            9,
+            9,
+            scoresWeek[2],
+            () {
+              durationType = 1;
+              setState(() {});
+            },
+          ),
+          buildScoreCard(
+            '七周',
+            scores7Week[0].toInt(),
+            scores7Week[1].toInt(),
+            const Color.fromARGB(255, 137, 198, 131),
+            4,
+            15,
+            scores7Week[2],
+            () {
+              durationType = 2;
+              setState(() {});
+            },
+          ),
         ],
       ),
       Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          buildLongScoreCard('年度', scoresYear[0].toInt(), scoresYear[1].toInt(),
-              const Color.fromARGB(255, 147, 117, 205), scoresYear[2]),
+          buildLongScoreCard(
+            '年度',
+            scoresYear[0].toInt(),
+            scoresYear[1].toInt(),
+            const Color.fromARGB(255, 147, 117, 205),
+            scoresYear[2],
+            () {
+              durationType = 3;
+              setState(() {});
+            },
+          ),
         ],
       ),
     ];
@@ -625,20 +689,89 @@ class _HabitListScreenState extends State<HabitListScreen> {
               reordering = true;
               setState(() {});
             },
-            child: HabitCardWeek(
-              onChanged: () {
+            child: buildCard(
+              durationType,
+              () {
                 updateScore();
               },
-              mod: 0,
-              habit: habits[index],
-              habitRecords:
-                  habitsRecords[index].sublist(firstDayWeek, lastDayWeek),
-              today: today,
-              index: index,
-              bgColor: habitsbgColors[index],
-              ftColor: habitsftColors[index],
+              0,
+              habits[index],
+              habitsRecords[index],
+              today,
+              index,
+              habitsbgColors[index],
+              habitsftColors[index],
             ));
       });
+    }
+  }
+
+  Widget buildCard(
+    int durationType,
+    VoidCallback onChanged,
+    int mod,
+    Habit habit,
+    List<HabitRecord?> habitRecords,
+    DateTime today,
+    int index,
+    Color bgColor,
+    Color ftColor,
+  ) {
+    switch (durationType) {
+      case 0:
+      case 1:
+        return GestureDetector(
+            onTap: () {},
+            onLongPress: () {
+              reordering = true;
+              setState(() {});
+            },
+            child: HabitCardWeek(
+              onChanged: onChanged,
+              mod: mod,
+              habit: habit,
+              habitRecords: habitRecords.sublist(firstDayWeek, lastDayWeek),
+              today: today,
+              index: index,
+              bgColor: bgColor,
+              ftColor: ftColor,
+            ));
+      case 2:
+        return GestureDetector(
+            onTap: () {},
+            onLongPress: () {
+              reordering = true;
+              setState(() {});
+            },
+            child: HabitCardSeason(
+              onChanged: onChanged,
+              mod: mod,
+              habit: habit,
+              habitRecords: habitRecords.sublist(firstDay7Week, lastDay7Week),
+              today: today,
+              todayIndex: today.difference(firstDay).inDays - firstDay7Week,
+              index: index,
+              bgColor: bgColor,
+              ftColor: ftColor,
+            ));
+      case 3:
+      default:
+        return GestureDetector(
+            onTap: () {},
+            onLongPress: () {
+              reordering = true;
+              setState(() {});
+            },
+            child: HabitCardWeek(
+              onChanged: onChanged,
+              mod: mod,
+              habit: habit,
+              habitRecords: habitRecords,
+              today: today,
+              index: index,
+              bgColor: bgColor,
+              ftColor: ftColor,
+            ));
     }
   }
 
