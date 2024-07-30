@@ -727,14 +727,32 @@ class HabitRecord extends _HabitRecord
     DateTime createDate,
     DateTime updateDate, {
     String notes = '',
-    double finish = 0,
+    double data = 0,
     double score = 0,
+    String string1 = '',
+    String string2 = '',
+    String string3 = '',
+    int int1 = 0,
+    int int2 = 0,
+    int int3 = 0,
+    double double1 = 0,
+    double double2 = 0,
+    double double3 = 0,
   }) {
     if (!_defaultsSet) {
       _defaultsSet = RealmObjectBase.setDefaults<HabitRecord>({
         'notes': '',
-        'finish': 0,
+        'data': 0,
         'score': 0,
+        'string1': '',
+        'string2': '',
+        'string3': '',
+        'int1': 0,
+        'int2': 0,
+        'int3': 0,
+        'double1': 0,
+        'double2': 0,
+        'double3': 0,
       });
     }
     RealmObjectBase.set(this, 'id', id);
@@ -744,8 +762,17 @@ class HabitRecord extends _HabitRecord
     RealmObjectBase.set(this, 'currentDate', currentDate);
     RealmObjectBase.set(this, 'createDate', createDate);
     RealmObjectBase.set(this, 'updateDate', updateDate);
-    RealmObjectBase.set(this, 'finish', finish);
+    RealmObjectBase.set(this, 'data', data);
     RealmObjectBase.set(this, 'score', score);
+    RealmObjectBase.set(this, 'string1', string1);
+    RealmObjectBase.set(this, 'string2', string2);
+    RealmObjectBase.set(this, 'string3', string3);
+    RealmObjectBase.set(this, 'int1', int1);
+    RealmObjectBase.set(this, 'int2', int2);
+    RealmObjectBase.set(this, 'int3', int3);
+    RealmObjectBase.set(this, 'double1', double1);
+    RealmObjectBase.set(this, 'double2', double2);
+    RealmObjectBase.set(this, 'double3', double3);
   }
 
   HabitRecord._();
@@ -792,14 +819,59 @@ class HabitRecord extends _HabitRecord
       RealmObjectBase.set(this, 'updateDate', value);
 
   @override
-  double get finish => RealmObjectBase.get<double>(this, 'finish') as double;
+  double get data => RealmObjectBase.get<double>(this, 'data') as double;
   @override
-  set finish(double value) => RealmObjectBase.set(this, 'finish', value);
+  set data(double value) => RealmObjectBase.set(this, 'data', value);
 
   @override
   double get score => RealmObjectBase.get<double>(this, 'score') as double;
   @override
   set score(double value) => RealmObjectBase.set(this, 'score', value);
+
+  @override
+  String get string1 => RealmObjectBase.get<String>(this, 'string1') as String;
+  @override
+  set string1(String value) => RealmObjectBase.set(this, 'string1', value);
+
+  @override
+  String get string2 => RealmObjectBase.get<String>(this, 'string2') as String;
+  @override
+  set string2(String value) => RealmObjectBase.set(this, 'string2', value);
+
+  @override
+  String get string3 => RealmObjectBase.get<String>(this, 'string3') as String;
+  @override
+  set string3(String value) => RealmObjectBase.set(this, 'string3', value);
+
+  @override
+  int get int1 => RealmObjectBase.get<int>(this, 'int1') as int;
+  @override
+  set int1(int value) => RealmObjectBase.set(this, 'int1', value);
+
+  @override
+  int get int2 => RealmObjectBase.get<int>(this, 'int2') as int;
+  @override
+  set int2(int value) => RealmObjectBase.set(this, 'int2', value);
+
+  @override
+  int get int3 => RealmObjectBase.get<int>(this, 'int3') as int;
+  @override
+  set int3(int value) => RealmObjectBase.set(this, 'int3', value);
+
+  @override
+  double get double1 => RealmObjectBase.get<double>(this, 'double1') as double;
+  @override
+  set double1(double value) => RealmObjectBase.set(this, 'double1', value);
+
+  @override
+  double get double2 => RealmObjectBase.get<double>(this, 'double2') as double;
+  @override
+  set double2(double value) => RealmObjectBase.set(this, 'double2', value);
+
+  @override
+  double get double3 => RealmObjectBase.get<double>(this, 'double3') as double;
+  @override
+  set double3(double value) => RealmObjectBase.set(this, 'double3', value);
 
   @override
   Stream<RealmObjectChanges<HabitRecord>> get changes =>
@@ -822,8 +894,17 @@ class HabitRecord extends _HabitRecord
       'currentDate': currentDate.toEJson(),
       'createDate': createDate.toEJson(),
       'updateDate': updateDate.toEJson(),
-      'finish': finish.toEJson(),
+      'data': data.toEJson(),
       'score': score.toEJson(),
+      'string1': string1.toEJson(),
+      'string2': string2.toEJson(),
+      'string3': string3.toEJson(),
+      'int1': int1.toEJson(),
+      'int2': int2.toEJson(),
+      'int3': int3.toEJson(),
+      'double1': double1.toEJson(),
+      'double2': double2.toEJson(),
+      'double3': double3.toEJson(),
     };
   }
 
@@ -838,8 +919,17 @@ class HabitRecord extends _HabitRecord
         'currentDate': EJsonValue currentDate,
         'createDate': EJsonValue createDate,
         'updateDate': EJsonValue updateDate,
-        'finish': EJsonValue finish,
+        'data': EJsonValue data,
         'score': EJsonValue score,
+        'string1': EJsonValue string1,
+        'string2': EJsonValue string2,
+        'string3': EJsonValue string3,
+        'int1': EJsonValue int1,
+        'int2': EJsonValue int2,
+        'int3': EJsonValue int3,
+        'double1': EJsonValue double1,
+        'double2': EJsonValue double2,
+        'double3': EJsonValue double3,
       } =>
         HabitRecord(
           fromEJson(id),
@@ -849,8 +939,17 @@ class HabitRecord extends _HabitRecord
           fromEJson(createDate),
           fromEJson(updateDate),
           notes: fromEJson(notes),
-          finish: fromEJson(finish),
+          data: fromEJson(data),
           score: fromEJson(score),
+          string1: fromEJson(string1),
+          string2: fromEJson(string2),
+          string3: fromEJson(string3),
+          int1: fromEJson(int1),
+          int2: fromEJson(int2),
+          int3: fromEJson(int3),
+          double1: fromEJson(double1),
+          double2: fromEJson(double2),
+          double3: fromEJson(double3),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -867,8 +966,17 @@ class HabitRecord extends _HabitRecord
       SchemaProperty('currentDate', RealmPropertyType.timestamp),
       SchemaProperty('createDate', RealmPropertyType.timestamp),
       SchemaProperty('updateDate', RealmPropertyType.timestamp),
-      SchemaProperty('finish', RealmPropertyType.double),
+      SchemaProperty('data', RealmPropertyType.double),
       SchemaProperty('score', RealmPropertyType.double),
+      SchemaProperty('string1', RealmPropertyType.string),
+      SchemaProperty('string2', RealmPropertyType.string),
+      SchemaProperty('string3', RealmPropertyType.string),
+      SchemaProperty('int1', RealmPropertyType.int),
+      SchemaProperty('int2', RealmPropertyType.int),
+      SchemaProperty('int3', RealmPropertyType.int),
+      SchemaProperty('double1', RealmPropertyType.double),
+      SchemaProperty('double2', RealmPropertyType.double),
+      SchemaProperty('double3', RealmPropertyType.double),
     ]);
   }();
 

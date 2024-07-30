@@ -70,6 +70,15 @@ class _HabitRecord {
   late DateTime currentDate;
   late DateTime createDate;
   late DateTime updateDate;
-  late double finish = 0;
+  late double data = 0;
   late double score = 0;
+  late String string1 = '';
+  late String string2 = '';
+  late String string3 = '';
+  late int int1 = 0;
+  late int int2 = 0;
+  late int int3 = 0;
+  late double double1 = 0;
+  late double double2 = 0;
+  late double double3 = 0;
 }

@@ -281,7 +281,7 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
     int currentSeq = 0;
     for (int i = 0; i < widget.habitRecords.length; i++) {
       if (widget.habitRecords[i] != null) {
-        if (widget.habitRecords[i]!.value > 0) {
+        if (widget.habitRecords[i]!.value == 0) {
           daySum++;
           numSum = numSum + widget.habitRecords[i]!.value;
           scoreSum =

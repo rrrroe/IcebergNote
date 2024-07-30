@@ -184,7 +184,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
       // print('$i: start $start   stop $stop');
       for (int j = max(first, start); j < min(stop, last); j++) {
         if (habitsRecords[i][j] != null) {
-          score = score + habitsRecords[i][j]!.value;
+          score = score + habitsRecords[i][j]!.data;
         } else {}
       }
       scores = scores + score * habits[i].weight;
@@ -209,7 +209,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
   //     num score = 0;
   //     for (int j = 0; j < habitsRecords[i].length; j++) {
   //       if (habitsRecords[i][j] != null) {
-  //         score = score + habitsRecords[i][j]!.value;
+  //         score = score + habitsRecords[i][j]!.finish;
   //       } else {}
   //     }
   //     scores = scores + score * habits[i].weight;
@@ -229,7 +229,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
   //   for (int i = 0; i < habits.length; i++) {
   //     num score = 0;
   //     if (habitsRecords[i][today.weekday - 1] != null) {
-  //       score = score + habitsRecords[i][today.weekday - 1]!.value;
+  //       score = score + habitsRecords[i][today.weekday - 1]!.data;
   //     } else {}
 
   //     scores = scores + score * habits[i].weight;
