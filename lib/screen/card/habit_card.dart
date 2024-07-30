@@ -246,7 +246,7 @@ class HabitCardSeason extends StatefulWidget {
 class _HabitCardSeasonState extends State<HabitCardSeason> {
   IconData? icon;
   int daySum = 0;
-  int numSum = 0;
+  double numSum = 0;
   double scoreSum = 0;
   int maxSeq = 0;
   double percent = 0;

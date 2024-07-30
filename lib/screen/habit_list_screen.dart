@@ -260,6 +260,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
       double rightPadding,
       List<Segment> segments,
       VoidCallback tap) {
+    if (target <= 0) target = 1;
     return Expanded(
       child: GestureDetector(
         onTap: tap,
@@ -371,6 +372,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
 
   Widget buildLongScoreCard(String title, int scores, int target, Color bgColor,
       List<Segment> segments, VoidCallback tap) {
+    if (target <= 0) target = 1;
     return Expanded(
       child: GestureDetector(
         onTap: tap,

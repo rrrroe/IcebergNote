@@ -1,6 +1,6 @@
 import 'package:realm/realm.dart';
 
-part 'habit.g.dart';
+part 'habit.realm.dart';
 
 @RealmModel()
 class _Habit {
@@ -9,7 +9,7 @@ class _Habit {
   late String name = '';
   late String color = 'FFB4CCAB';
   late String fontColor = 'FFFFFFFF';
-  late String description = "";
+  late String description = '';
   late int freqDen = 1; //每x天y次的x
   late int freqNum = 1; //每x天y次的y
   late int highlight = 1;
@@ -25,8 +25,8 @@ class _Habit {
   late bool archived = false; //是否归档
   late bool delete = false; //是否删除
   late bool reminder = false; //是否提醒
-  late String question = ""; //问句提醒
-  late String unit = ""; //单位
+  late String question = ''; //问句提醒
+  late String unit = ''; //单位
   late DateTime createDate;
   late DateTime updateDate;
   late DateTime startDate;
@@ -42,7 +42,22 @@ class _Habit {
   late int todayAfterMin = 0; //当日签到上限的分钟
   late int todayBeforeHour = 0; //当日签到下限的小时
   late int todayBeforeMin = 0; //当日签到下限的分钟
-  late String group = "";
+  late String group = '';
+  late int size = 1; //大小
+  late String string1 = '';
+  late String string2 = '';
+  late String string3 = '';
+  late int int1 = 0;
+  late int int2 = 0;
+  late int int3 = 0;
+  late int int4 = 0;
+  late int int5 = 0;
+  late double double1 = 0;
+  late double double2 = 0;
+  late double double3 = 0;
+  late bool bool1 = false;
+  late bool bool2 = false;
+  late bool bool3 = false;
 }
 
 @RealmModel()
@@ -51,8 +66,10 @@ class _HabitRecord {
   late Uuid id;
   late Uuid habit;
   late int value; //0未完成，1完成，2跳过
-  late String notes = "";
+  late String notes = '';
   late DateTime currentDate;
   late DateTime createDate;
   late DateTime updateDate;
+  late double finish = 0;
+  late double score = 0;
 }

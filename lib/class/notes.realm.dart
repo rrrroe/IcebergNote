@@ -285,12 +285,115 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
       RealmObjectBase.getChanges<Notes>(this);
 
   @override
+  Stream<RealmObjectChanges<Notes>> changesFor([List<String>? keyPaths]) =>
+      RealmObjectBase.getChangesFor<Notes>(this, keyPaths);
+
+  @override
   Notes freeze() => RealmObjectBase.freezeObject<Notes>(this);
 
-  static SchemaObject get schema => _schema ??= _initSchema();
-  static SchemaObject? _schema;
-  static SchemaObject _initSchema() {
+  EJsonValue toEJson() {
+    return <String, dynamic>{
+      'id': id.toEJson(),
+      'noteFolder': noteFolder.toEJson(),
+      'noteTitle': noteTitle.toEJson(),
+      'noteContext': noteContext.toEJson(),
+      'noteType': noteType.toEJson(),
+      'noteProject': noteProject.toEJson(),
+      'noteTags': noteTags.toEJson(),
+      'noteAttachments': noteAttachments.toEJson(),
+      'noteReferences': noteReferences.toEJson(),
+      'noteSource': noteSource.toEJson(),
+      'noteAuthor': noteAuthor.toEJson(),
+      'noteNext': noteNext.toEJson(),
+      'noteLast': noteLast.toEJson(),
+      'notePlace': notePlace.toEJson(),
+      'noteIsStarred': noteIsStarred.toEJson(),
+      'noteIsLocked': noteIsLocked.toEJson(),
+      'noteIstodo': noteIstodo.toEJson(),
+      'noteIsDeleted': noteIsDeleted.toEJson(),
+      'noteIsShared': noteIsShared.toEJson(),
+      'noteIsAchive': noteIsAchive.toEJson(),
+      'noteFinishState': noteFinishState.toEJson(),
+      'noteIsReviewed': noteIsReviewed.toEJson(),
+      'noteCreateDate': noteCreateDate.toEJson(),
+      'noteUpdateDate': noteUpdateDate.toEJson(),
+      'noteAchiveDate': noteAchiveDate.toEJson(),
+      'noteDeleteDate': noteDeleteDate.toEJson(),
+      'noteFinishDate': noteFinishDate.toEJson(),
+      'noteAlarmDate': noteAlarmDate.toEJson(),
+    };
+  }
+
+  static EJsonValue _toEJson(Notes value) => value.toEJson();
+  static Notes _fromEJson(EJsonValue ejson) {
+    return switch (ejson) {
+      {
+        'id': EJsonValue id,
+        'noteFolder': EJsonValue noteFolder,
+        'noteTitle': EJsonValue noteTitle,
+        'noteContext': EJsonValue noteContext,
+        'noteType': EJsonValue noteType,
+        'noteProject': EJsonValue noteProject,
+        'noteTags': EJsonValue noteTags,
+        'noteAttachments': EJsonValue noteAttachments,
+        'noteReferences': EJsonValue noteReferences,
+        'noteSource': EJsonValue noteSource,
+        'noteAuthor': EJsonValue noteAuthor,
+        'noteNext': EJsonValue noteNext,
+        'noteLast': EJsonValue noteLast,
+        'notePlace': EJsonValue notePlace,
+        'noteIsStarred': EJsonValue noteIsStarred,
+        'noteIsLocked': EJsonValue noteIsLocked,
+        'noteIstodo': EJsonValue noteIstodo,
+        'noteIsDeleted': EJsonValue noteIsDeleted,
+        'noteIsShared': EJsonValue noteIsShared,
+        'noteIsAchive': EJsonValue noteIsAchive,
+        'noteFinishState': EJsonValue noteFinishState,
+        'noteIsReviewed': EJsonValue noteIsReviewed,
+        'noteCreateDate': EJsonValue noteCreateDate,
+        'noteUpdateDate': EJsonValue noteUpdateDate,
+        'noteAchiveDate': EJsonValue noteAchiveDate,
+        'noteDeleteDate': EJsonValue noteDeleteDate,
+        'noteFinishDate': EJsonValue noteFinishDate,
+        'noteAlarmDate': EJsonValue noteAlarmDate,
+      } =>
+        Notes(
+          fromEJson(id),
+          fromEJson(noteFolder),
+          fromEJson(noteTitle),
+          fromEJson(noteContext),
+          fromEJson(noteCreateDate),
+          fromEJson(noteUpdateDate),
+          fromEJson(noteAchiveDate),
+          fromEJson(noteDeleteDate),
+          fromEJson(noteFinishDate),
+          fromEJson(noteAlarmDate),
+          noteType: fromEJson(noteType),
+          noteProject: fromEJson(noteProject),
+          noteTags: fromEJson(noteTags),
+          noteAttachments: fromEJson(noteAttachments),
+          noteReferences: fromEJson(noteReferences),
+          noteSource: fromEJson(noteSource),
+          noteAuthor: fromEJson(noteAuthor),
+          noteNext: fromEJson(noteNext),
+          noteLast: fromEJson(noteLast),
+          notePlace: fromEJson(notePlace),
+          noteIsStarred: fromEJson(noteIsStarred),
+          noteIsLocked: fromEJson(noteIsLocked),
+          noteIstodo: fromEJson(noteIstodo),
+          noteIsDeleted: fromEJson(noteIsDeleted),
+          noteIsShared: fromEJson(noteIsShared),
+          noteIsAchive: fromEJson(noteIsAchive),
+          noteFinishState: fromEJson(noteFinishState),
+          noteIsReviewed: fromEJson(noteIsReviewed),
+        ),
+      _ => raiseInvalidEJson(ejson),
+    };
+  }
+
+  static final schema = () {
     RealmObjectBase.registerFactory(Notes._);
+    register(_toEJson, _fromEJson);
     return SchemaObject(ObjectType.realmObject, Notes, 'Notes', [
       SchemaProperty('id', RealmPropertyType.uuid, primaryKey: true),
       SchemaProperty('noteFolder', RealmPropertyType.string),
@@ -321,5 +424,8 @@ class Notes extends _Notes with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('noteFinishDate', RealmPropertyType.timestamp),
       SchemaProperty('noteAlarmDate', RealmPropertyType.timestamp),
     ]);
-  }
+  }();
+
+  @override
+  SchemaObject get objectSchema => RealmObjectBase.getSchema(this) ?? schema;
 }

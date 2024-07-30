@@ -19,40 +19,60 @@ import 'package:slide_switcher/slide_switcher.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 
 Habit deepCopyHabit(Habit h) {
-  return Habit(Uuid.v4(), h.createDate, h.stopDate, h.updateDate, h.startDate,
-      color: h.color,
-      fontColor: h.fontColor,
-      description: h.description,
-      freqDen: h.freqDen,
-      freqNum: h.freqNum,
-      highlight: h.highlight,
-      reminder: h.reminder,
-      reminderDay: h.reminderDay,
-      reminderHour: h.reminderHour,
-      reminderMin: h.reminderMin,
-      weight: h.weight,
-      archived: h.archived,
-      delete: h.delete,
-      question: h.question,
-      unit: h.unit,
-      icon: h.icon,
-      isButtonAdd: h.isButtonAdd,
-      buttonAddNum: h.buttonAddNum,
-      needlog: h.needlog,
-      canExpire: h.canExpire,
-      expireDays: h.expireDays,
-      reward: h.reward,
-      todayAfterHour: h.todayAfterHour,
-      todayAfterMin: h.todayAfterMin,
-      todayBeforeHour: h.todayBeforeHour,
-      todayBeforeMin: h.todayBeforeMin,
-      targetFreq: h.targetFreq,
-      targetType: h.targetType,
-      targetValue: h.targetValue,
-      type: h.type,
-      group: h.group,
-      position: h.position,
-      name: h.name);
+  return Habit(
+    Uuid.v4(),
+    h.createDate,
+    h.stopDate,
+    h.updateDate,
+    h.startDate,
+    color: h.color,
+    fontColor: h.fontColor,
+    description: h.description,
+    freqDen: h.freqDen,
+    freqNum: h.freqNum,
+    highlight: h.highlight,
+    reminder: h.reminder,
+    reminderDay: h.reminderDay,
+    reminderHour: h.reminderHour,
+    reminderMin: h.reminderMin,
+    weight: h.weight,
+    archived: h.archived,
+    delete: h.delete,
+    question: h.question,
+    unit: h.unit,
+    icon: h.icon,
+    isButtonAdd: h.isButtonAdd,
+    buttonAddNum: h.buttonAddNum,
+    needlog: h.needlog,
+    canExpire: h.canExpire,
+    expireDays: h.expireDays,
+    reward: h.reward,
+    todayAfterHour: h.todayAfterHour,
+    todayAfterMin: h.todayAfterMin,
+    todayBeforeHour: h.todayBeforeHour,
+    todayBeforeMin: h.todayBeforeMin,
+    targetFreq: h.targetFreq,
+    targetType: h.targetType,
+    targetValue: h.targetValue,
+    type: h.type,
+    // group: h.group,
+    position: h.position,
+    name: h.name,
+    string1: h.string1,
+    string2: h.string2,
+    string3: h.string3,
+    int1: h.int1,
+    int2: h.int2,
+    int3: h.int3,
+    int4: h.int4,
+    int5: h.int5,
+    double1: h.double1,
+    double2: h.double2,
+    double3: h.double3,
+    bool1: h.bool1,
+    bool2: h.bool2,
+    bool3: h.bool3,
+  );
 }
 
 // ignore: must_be_immutable
@@ -1230,6 +1250,20 @@ class _HabitInputPageState extends State<HabitInputPage> {
         widget.habit.todayBeforeHour = habit.todayBeforeHour;
         widget.habit.todayBeforeMin = habit.todayBeforeMin;
         widget.habit.group = habit.group;
+        widget.habit.string1 = habit.string1;
+        widget.habit.string2 = habit.string2;
+        widget.habit.string3 = habit.string3;
+        widget.habit.int1 = habit.int1;
+        widget.habit.int2 = habit.int2;
+        widget.habit.int3 = habit.int3;
+        widget.habit.int4 = habit.int4;
+        widget.habit.int5 = habit.int5;
+        widget.habit.double1 = habit.double1;
+        widget.habit.double2 = habit.double2;
+        widget.habit.double3 = habit.double3;
+        widget.habit.bool1 = habit.bool1;
+        widget.habit.bool2 = habit.bool2;
+        widget.habit.bool3 = habit.bool3;
       });
     }
   }

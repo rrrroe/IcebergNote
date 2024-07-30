@@ -170,7 +170,7 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   bool useMaterial3 = true;
-  ThemeMode themeMode = ThemeMode.system;
+  ThemeMode themeMode = ThemeMode.light;
   ColorSeed colorSelected = ColorSeed.blue;
 
   bool get useLightMode {

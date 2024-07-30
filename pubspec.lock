@@ -389,18 +389,18 @@ packages:
     dependency: transitive
     description:
       name: ejson
-      sha256: f336c6fb6c5c97db8ae59ba8ed207f542241f1db39cf2ef03776d308de3432ff
+      sha256: "42bdc6f57444e8c9cbf2c8dc8044424c27890a1d8cf64953b95f02d289afd88b"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.3.0"
+    version: "0.3.1"
   ejson_annotation:
     dependency: transitive
     description:
       name: ejson_annotation
-      sha256: b265eea722ee340d77d1c36a55a1f963d517a0dabb569b0775664c319a4e3ebf
+      sha256: "7053cff1b6acf375b8e76270d576915fe434701f1f25b5751c8f9e1e73e50bcf"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.3.0"
+    version: "0.3.1"
   equatable:
     dependency: transitive
     description:
@@ -1249,42 +1249,42 @@ packages:
     dependency: "direct main"
     description:
       name: realm
-      sha256: "1d750c7ba72a311f3241779b47c0590c486b0080014f4e6b45d0a34fcc998a3a"
+      sha256: "939e27315fc5f5c6dc52ee87d9b1d5e44936718b6c0f9fd7d9d0a96d8e025ac1"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.0.0"
+    version: "3.3.0"
   realm_common:
     dependency: transitive
     description:
       name: realm_common
-      sha256: "6db42e97d88a2866521467faa409aca3b92605071e1eb56c9afee78518ed0721"
+      sha256: "73919ec7a92cca6d6889cbf2688cca53e92779a115f5bba5bc69eb341c29581f"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.0.0"
+    version: "3.3.0"
   realm_dart:
     dependency: transitive
     description:
       name: realm_dart
-      sha256: "1b5783b5ef88f7b7e34fe67ab7641ba1d0939052b5ad2c9391b0b2a9171a2a49"
+      sha256: "5ba69ba9a7533beedb23b64ea16291728c1cff2143f699f82bcfae958fcec50b"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.0.0"
+    version: "3.3.0"
   realm_generator:
     dependency: transitive
     description:
       name: realm_generator
-      sha256: "99e056fb6dab76679e9de8928bc7b87e95f162e4cbc569dca09727066d96d63a"
+      sha256: ab1743027815a543faf348b12361662a2bf8ec7b9bcc0d9847276db70430c79e
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.0.0"
+    version: "3.3.0"
   sane_uuid:
     dependency: transitive
     description:
       name: sane_uuid
-      sha256: "5e83f796a7d19d38d3ba3a940642998fdd8c4a4049be135ed25404e37f76a18c"
+      sha256: "5b3fd581f51d01aef0526344c175e198d04ff701249c1a75186429dbb4367265"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.0-alpha.5"
+    version: "1.1.0"
   sasl_scram:
     dependency: transitive
     description:
@@ -1763,5 +1763,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.4.0 <4.0.0"
-  flutter: ">=3.22.0"
+  dart: ">=3.4.3 <4.0.0"
+  flutter: ">=3.22.2"
