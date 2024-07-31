@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -38,13 +37,9 @@ class HabitCardWeek extends StatefulWidget {
 }
 
 class _HabitCardWeekState extends State<HabitCardWeek> {
-  IconData? icon;
-
   @override
   void initState() {
-    if (widget.habit.icon != '') {
-      icon = deserializeIcon(jsonDecode(widget.habit.icon));
-    }
+    if (widget.habit.icon != '') {}
 
     super.initState();
   }
@@ -99,6 +94,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
 
   @override
   Widget build(BuildContext context) {
+    Widget currentIcon = iconDataToWidget(widget.habit.icon, 40);
     return Card(
       margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       elevation: 0,
@@ -129,15 +125,17 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                       Get.to(() => HabitInputPage(
                           onPageClosed: () {}, mod: 1, habit: widget.habit));
                     }
+                    setState(() {});
                   },
                   child: Container(
-                      height: 50,
-                      width: 50,
+                      height: 60,
+                      width: 60,
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.black12, width: 0),
                           borderRadius: BorderRadius.circular(8.0),
-                          color: Colors.white),
-                      child: Icon(icon, color: widget.bgColor, size: 40)),
+                          color: widget.bgColor.withOpacity(0.5)),
+                      child: currentIcon),
                 ),
                 const SizedBox(width: 10),
                 Column(
@@ -244,7 +242,6 @@ class HabitCardSeason extends StatefulWidget {
 }
 
 class _HabitCardSeasonState extends State<HabitCardSeason> {
-  IconData? icon;
   int daySum = 0;
   double numSum = 0;
   double scoreSum = 0;
@@ -255,9 +252,6 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
   int stopIndex = 49;
   @override
   void initState() {
-    if (widget.habit.icon != '') {
-      icon = deserializeIcon(jsonDecode(widget.habit.icon));
-    }
     startIndex = widget.habit.startDate.difference(widget.today).inDays -
         widget.todayIndex;
     if (widget.habit.stopDate.isAfter(widget.habit.startDate)) {
@@ -281,7 +275,7 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
     int currentSeq = 0;
     for (int i = 0; i < widget.habitRecords.length; i++) {
       if (widget.habitRecords[i] != null) {
-        if (widget.habitRecords[i]!.value == 0) {
+        if (widget.habitRecords[i]!.value == 1) {
           daySum++;
           numSum = numSum + widget.habitRecords[i]!.value;
           scoreSum =
@@ -297,7 +291,11 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
         currentSeq = 0;
       }
     }
-    percent = scoreSum / target * 100;
+    if (target != 0) {
+      percent = scoreSum / target * 100;
+    } else {
+      percent = -1;
+    }
   }
 
   void saveRecord(index) {
@@ -343,6 +341,7 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
   @override
   Widget build(BuildContext context) {
     countScores();
+    Widget currentIcon = iconDataToWidget(widget.habit.icon, 40);
     return Card(
       margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       elevation: 0,
@@ -376,14 +375,14 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
                         }
                       },
                       child: Container(
-                          height: 50,
-                          width: 50,
+                          height: 60,
+                          width: 60,
                           decoration: BoxDecoration(
                               border:
                                   Border.all(color: Colors.black12, width: 0),
                               borderRadius: BorderRadius.circular(8.0),
                               color: Colors.white),
-                          child: Icon(icon, color: widget.bgColor, size: 40)),
+                          child: currentIcon),
                     ),
                     const SizedBox(width: 10),
                     Text(
@@ -448,7 +447,7 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
                           Text('最长连续',
                               style: TextStyle(
                                   color: widget.bgColor, fontSize: 14)),
-                          Text('完成率',
+                          Text(percent >= 0 ? '完成率' : '',
                               style: TextStyle(
                                   color: widget.bgColor, fontSize: 14)),
                         ],
@@ -458,7 +457,8 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: List.generate(
                           5,
-                          (int i) => Text(': ',
+                          (int i) => Text(
+                              ((percent >= 0 && i == 4) || i < 4) ? ': ' : '',
                               style: TextStyle(
                                   color: widget.bgColor, fontSize: 14)),
                         ),
@@ -479,7 +479,10 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
                           Text('$maxSeq',
                               style: TextStyle(
                                   color: widget.bgColor, fontSize: 14)),
-                          Text('${percent.toStringAsFixed(0)}%',
+                          Text(
+                              percent >= 0
+                                  ? '${percent.toStringAsFixed(0)}%'
+                                  : '',
                               style: TextStyle(
                                   color: widget.bgColor, fontSize: 14)),
                         ],

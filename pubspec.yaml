@@ -73,6 +73,8 @@ dependencies:
   flutter_svg: ^2.0.10+1
   primer_progress_bar: ^0.4.2
   cherry_toast: ^1.11.0
+  emojis: ^0.9.9
+  unicode_emojis: ^0.4.0
 
 dev_dependencies:
   flutter_test:
@@ -110,6 +112,7 @@ flutter:
     # - lib/assets/fonts/LXGWWenKai-Light.ttf
     # - lib/assets/fonts/LXGWWenKai-Regular.ttf
     - lib/assets/image/
+    - lib/assets/icon/LifeIcon/
     - lib/assets/emoji/
     - lib/assets/image/icebergicon.png
 

@@ -260,7 +260,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
       double rightPadding,
       List<Segment> segments,
       VoidCallback tap) {
-    if (target <= 0) target = 1;
+    if (target < 0) target = 0;
     return Expanded(
       child: GestureDetector(
         onTap: tap,
@@ -356,7 +356,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
               // ),
               SegmentedBar(
                 segments: segments,
-                maxTotalValue: max(scores, target),
+                maxTotalValue: max(scores, max(1, target)),
                 style: const SegmentedBarStyle(
                   size: 6,
                   gap: 0.1,
@@ -372,7 +372,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
 
   Widget buildLongScoreCard(String title, int scores, int target, Color bgColor,
       List<Segment> segments, VoidCallback tap) {
-    if (target <= 0) target = 1;
+    if (target < 0) target = 0;
     return Expanded(
       child: GestureDetector(
         onTap: tap,
@@ -462,7 +462,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
               ),
               SegmentedBar(
                 segments: segments,
-                maxTotalValue: max(scores, target),
+                maxTotalValue: max(scores, max(1, target)),
                 style: const SegmentedBarStyle(
                   size: 6,
                   gap: 0.1,

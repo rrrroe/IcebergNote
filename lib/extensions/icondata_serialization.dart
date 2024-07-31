@@ -142,3 +142,23 @@ IconData? deserializeIcon(
 
 String _getIconKey(Map<String, IconData> icons, IconData icon) =>
     icons.entries.firstWhere((iconEntry) => iconEntry.value == icon).key;
+
+Widget iconDataToWidget(String s, double size) {
+  List<String> tmp = s.split('||');
+  if (tmp.length == 3) {
+    if (tmp[0] != '' && tmp[1] != '' && tmp[2] != '') {
+      if (tmp[0] == 'Image') {
+        return Image.asset(
+          'lib/assets/icon/${tmp[1]}/${tmp[2]}',
+        );
+      }
+      if (tmp[0] == 'Emoji') {
+        return Text(
+          tmp[2],
+          style: TextStyle(fontSize: size),
+        );
+      }
+    }
+  }
+  return Container();
+}

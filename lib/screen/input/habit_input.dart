@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +10,12 @@ import 'package:flutter_pickers/time_picker/model/suffix.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:icebergnote/class/habit.dart';
+import 'package:icebergnote/extensions/icondata_serialization.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/screen/card/habit_card.dart';
+import 'package:icebergnote/screen/input/icon_picker_input.dart';
 import 'package:realm/realm.dart';
 import 'package:slide_switcher/slide_switcher.dart';
-import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 
 Habit deepCopyHabit(Habit h) {
   return Habit(
@@ -134,7 +133,6 @@ class _HabitInputPageState extends State<HabitInputPage> {
     positionErr = habit.position;
     targetValueErr = habit.targetValue;
     weightErr = habit.weight;
-    if (habit.icon != '') icon = deserializeIcon(jsonDecode(habit.icon));
     selection = <int>{};
     int sum = habit.reminderDay;
     if (sum >= 64) {
@@ -187,30 +185,27 @@ class _HabitInputPageState extends State<HabitInputPage> {
     super.dispose();
   }
 
-  Future<void> _pickIcon() async {
-    icon = await showIconPicker(
-      context,
-      adaptiveDialog: false,
-      showTooltips: true,
-      showSearchBar: true,
-      iconPickerShape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      iconPackModes: [IconPack.roundedMaterial],
-      searchComparator: (String search, IconPickerIcon icon) =>
-          search
-              .toLowerCase()
-              .contains(icon.name.replaceAll('_', ' ').toLowerCase()) ||
-          icon.name.toLowerCase().contains(search.toLowerCase()),
-    );
-
-    if (icon != null) {
-      setState(() {});
-      habit.icon = jsonEncode(serializeIcon(icon!));
-    }
-  }
+  // Future<void> _pickIcon() async {
+  //   icon = await showIconPicker(
+  //     context,
+  //     adaptiveDialog: false,
+  //     showTooltips: true,
+  //     showSearchBar: true,
+  //     iconPickerShape:
+  //         RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+  //     iconPackModes: [IconPack.roundedMaterial],
+  //     searchComparator: (String search, IconPickerIcon icon) =>
+  //         search
+  //             .toLowerCase()
+  //             .contains(icon.name.replaceAll('_', ' ').toLowerCase()) ||
+  //         icon.name.toLowerCase().contains(search.toLowerCase()),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
+    Widget currentIcon = iconDataToWidget(habit.icon, 18);
+
     return PopScope(
       onPopInvoked: (a) {
         widget.onPageClosed;
@@ -248,8 +243,8 @@ class _HabitInputPageState extends State<HabitInputPage> {
                             ],
                             today: DateTime.now(),
                             index: 0,
-                            bgColor: Colors.blue,
-                            ftColor: Colors.white,
+                            bgColor: bgColor,
+                            ftColor: ftColor,
                           ),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -293,19 +288,30 @@ class _HabitInputPageState extends State<HabitInputPage> {
                               ),
                               Expanded(child: Container(height: 28)),
                               GestureDetector(
-                                onTap: _pickIcon,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) {
+                                      return IconPickerAlertDialog(
+                                        onSubmitted: (text) {
+                                          setState(() {
+                                            habit.icon = text;
+                                          });
+                                        },
+                                        oldIcon: habit.icon,
+                                      );
+                                    },
+                                  );
+                                },
                                 child: Container(
-                                  height: 25,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(2), // 设置圆角
-                                  ),
-                                  child: Icon(
-                                    icon ?? Icons.add_box_outlined,
-                                    color: bgColor,
-                                  ),
-                                ),
+                                    height: 25,
+                                    width: 40,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(2), // 设置圆角
+                                    ),
+                                    child: currentIcon),
                               ),
                               const SizedBox(width: 2),
                             ],
