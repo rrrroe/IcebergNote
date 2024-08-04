@@ -166,6 +166,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
   }
 
   List countScores(int first, int last) {
+    // print('时间范围：$first~$last');
     num scores = 0;
     num weights = 0;
     List<Segment> segments = [];
@@ -181,10 +182,10 @@ class _HabitListScreenState extends State<HabitListScreen> {
           stop = habits[i].stopDate.difference(firstDay).inDays;
         }
       }
-      // print('$i: start $start   stop $stop');
       for (int j = max(first, start); j < min(stop, last); j++) {
         if (habitsRecords[i][j] != null) {
-          score = score + habitsRecords[i][j]!.data;
+          score = score + habitsRecords[i][j]!.value;
+          // print('j=$j:${habitsRecords[i][j]!.value}');
         } else {}
       }
       scores = scores + score * habits[i].weight;
@@ -196,8 +197,11 @@ class _HabitListScreenState extends State<HabitListScreen> {
       segments.add(Segment(
           value: (score * habits[i].weight).toInt(),
           color: hexToColor(habits[i].color)));
+      // print('${habits[i].name}:$start~$stop');
+      // print('${habits[i].name}:$start+$stop');
     }
     List tmp = [scores, weights, segments];
+    // print('-------------------------------');
     return tmp;
   }
 

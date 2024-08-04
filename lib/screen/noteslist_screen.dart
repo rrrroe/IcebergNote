@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
@@ -209,7 +210,6 @@ class BottomNoteTypeSheet extends StatelessWidget {
                         builder: (context) {
                           return BottomRecordTypeSheet(
                             onDialogClosed: () {},
-                            recordProjectList: recordProjectList,
                           );
                         },
                       );
@@ -298,15 +298,49 @@ class BottomNoteTypeSheet extends StatelessWidget {
 }
 
 class BottomRecordTypeSheet extends StatelessWidget {
-  const BottomRecordTypeSheet(
-      {super.key,
-      required this.recordProjectList,
-      required this.onDialogClosed});
-  final List<String> recordProjectList;
+  const BottomRecordTypeSheet({super.key, required this.onDialogClosed});
   final VoidCallback onDialogClosed;
+
+  void init() {}
 
   @override
   Widget build(BuildContext context) {
+    List<Color> colors = [];
+    for (int i = 0; i < recordTemplates.length; i++) {
+      if (recordTemplatesSettings.values.elementAtOrNull(1) != null) {
+        if (recordTemplatesSettings.values.elementAtOrNull(1)!['color'] !=
+            null) {
+          if (recordTemplatesSettings.values
+                  .elementAtOrNull(1)!['color']!
+                  .length >=
+              3) {
+            colors.add(Color.fromARGB(
+                255,
+                max(
+                    0,
+                    min(
+                        255,
+                        recordTemplatesSettings.values
+                            .elementAtOrNull(i)!['color']![0])),
+                max(
+                    0,
+                    min(
+                        255,
+                        recordTemplatesSettings.values
+                            .elementAtOrNull(i)!['color']![1])),
+                max(
+                    0,
+                    min(
+                        255,
+                        recordTemplatesSettings.values
+                            .elementAtOrNull(i)!['color']![2]))));
+          } else {}
+        }
+      }
+      if (colors.length < i) {
+        colors.add(Colors.black);
+      }
+    }
     return Container(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -314,11 +348,12 @@ class BottomRecordTypeSheet extends StatelessWidget {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: recordProjectList.length,
+              itemCount: recordTemplates.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  leading: const Icon(Icons.data_thresholding),
-                  title: Text(recordProjectList[index]),
+                  leading: Icon(Icons.table_chart, color: colors[index]),
+                  title: Text(recordTemplates.keys.elementAt(index),
+                      style: TextStyle(color: colors[index])),
                   onTap: () {
                     Navigator.pop(context);
                     Notes note = Notes(
@@ -332,7 +367,7 @@ class BottomRecordTypeSheet extends StatelessWidget {
                         DateTime.utc(1970, 1, 1),
                         DateTime.utc(1970, 1, 1),
                         DateTime.utc(1970, 1, 1),
-                        noteProject: recordProjectList[index],
+                        noteProject: recordTemplates.keys.elementAt(index),
                         noteType: '.记录');
                     realm.write(() {
                       realm.add<Notes>(note, update: true);

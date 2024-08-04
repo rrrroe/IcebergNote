@@ -497,12 +497,13 @@ class _HabitInputPageState extends State<HabitInputPage> {
                                     );
                                     if (newDateTime != null) {
                                       setState(() {
+                                        bool v = !habit.stopDate
+                                            .isAfter(habit.startDate);
                                         habit.startDate = DateTime.utc(
                                             newDateTime.year,
                                             newDateTime.month,
                                             newDateTime.day);
-                                        if (!habit.stopDate
-                                            .isAfter(habit.startDate)) {
+                                        if (v) {
                                           habit.stopDate = habit.startDate;
                                         }
                                       });
