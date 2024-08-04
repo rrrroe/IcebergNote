@@ -3,10 +3,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:icebergnote/extensions/screenshot_extensions.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/class/notes.dart';
 import 'package:icebergnote/postgresql/sync.dart';
+import 'package:icebergnote/screen/record_graph_benifit.dart';
 import 'package:intl/intl.dart';
 import 'package:yaml/yaml.dart';
 
@@ -118,7 +121,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
   Color fontColor = const Color.fromARGB(255, 48, 207, 121);
   Color backgroundColor = const Color.fromARGB(20, 48, 207, 121);
   bool isAutofocus = false;
-
+  GlobalKey repaintWidgetKey = GlobalKey();
   List<int> todoCount() {
     List<int> todoCountResults = [0, 0, 0, 0];
     for (int i = 0; i < todoList.length; i++) {
@@ -209,6 +212,25 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                   isAll = !isAll;
                   setState(() {});
                 }),
+            IconButton(
+                icon: const Icon(Icons.fit_screen_outlined),
+                onPressed: () async {
+                  Uint8List pngBytes = await onScreenshot(repaintWidgetKey);
+                  if (userLocalInfo != null) {
+                    userName = userLocalInfo!.getString('userName');
+                    userID = userLocalInfo!.getString('userID');
+                    userCreatDate = userLocalInfo!.getString('userCreatDate');
+                  }
+
+                  showDialog(
+                    builder: (_) => ImagePopup(
+                      pngBytes: pngBytes,
+                      mainColor: AppColors.borderColor,
+                    ),
+                    // ignore: use_build_context_synchronously
+                    context: context,
+                  );
+                }),
             const SizedBox(
               width: 10,
             )
@@ -221,637 +243,691 @@ class CheckListEditPageState extends State<CheckListEditPage> {
               children: [
                 Expanded(
                   child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Row(
+                    child: RepaintBoundary(
+                      key: repaintWidgetKey,
+                      child: Container(
+                        color: Colors.white,
+                        child: Column(
                           children: [
-                            Expanded(
-                              child: Container(
-                                margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                child: TextField(
-                                  textAlign: TextAlign.center,
-                                  controller: titleController,
-                                  style: const TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  minLines: 1,
-                                  maxLines: 2,
-                                  decoration: InputDecoration(
-                                      suffixIcon: Container(
-                                        height: 30,
-                                        width: 30,
-                                        alignment: Alignment.center,
-                                        child: Checkbox.adaptive(
-                                          fillColor: WidgetStateProperty.all(
-                                              const Color.fromARGB(0, 0, 0, 0)),
-                                          checkColor:
-                                              widget.note.noteFinishState ==
-                                                      '已完'
-                                                  ? Colors.grey
-                                                  : fontColor,
-                                          value: widget.note.noteFinishState ==
-                                                  '已完'
-                                              ? true
-                                              : false,
-                                          tristate: false,
-                                          onChanged: (bool? value) {
-                                            // realm.write(() {
-                                            //   if (value != null) {
-                                            //     widget.note.noteFinishState = value ? '已完' : '未完';
-                                            //     widget.note.noteUpdateDate = DateTime.now().toUtc();
-                                            //   }
-                                            // });
-                                            // setState(() {});
-                                            if (value == true) {
-                                              if (todoCountResults[0] +
-                                                      todoCountResults[2] !=
-                                                  0) {
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return AlertDialog(
-                                                      title: const Text('确认操作'),
-                                                      content: const Text(
-                                                          '还有事项未完成，确定要强制清单完成吗？'),
-                                                      actions: <Widget>[
-                                                        TextButton(
-                                                          child:
-                                                              const Text('取消'),
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop(); // 关闭弹窗
-                                                          },
-                                                        ),
-                                                        TextButton(
-                                                          child:
-                                                              const Text('确定'),
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop(); // 关闭弹窗
-                                                            realm.write(() {
-                                                              widget.note
-                                                                      .noteFinishState =
-                                                                  value!
-                                                                      ? '已完'
-                                                                      : '未完';
-                                                              widget.note
-                                                                      .noteUpdateDate =
-                                                                  DateTime.now()
-                                                                      .toUtc();
-                                                              widget.note
-                                                                      .noteFinishDate =
-                                                                  DateTime.now()
-                                                                      .toUtc();
-                                                            });
-                                                            setState(() {});
-                                                          },
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              } else {
-                                                realm.write(() {
-                                                  widget.note.noteFinishState =
-                                                      value! ? '已完' : '未完';
-                                                  widget.note.noteUpdateDate =
-                                                      DateTime.now().toUtc();
-                                                  widget.note.noteFinishDate =
-                                                      DateTime.now().toUtc();
-                                                });
-                                                setState(() {});
-                                              }
-                                            } else if (value == false) {
-                                              if (todoCountResults[0] +
-                                                      todoCountResults[2] ==
-                                                  0) {
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return AlertDialog(
-                                                      title: const Text('确认操作'),
-                                                      content: const Text(
-                                                          '事项已全部，确定要强制清单未完成吗？'),
-                                                      actions: <Widget>[
-                                                        TextButton(
-                                                          child:
-                                                              const Text('取消'),
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop(); // 关闭弹窗
-                                                          },
-                                                        ),
-                                                        TextButton(
-                                                          child:
-                                                              const Text('确定'),
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop(); // 关闭弹窗
-                                                            realm.write(() {
-                                                              widget.note
-                                                                      .noteFinishState =
-                                                                  value!
-                                                                      ? '已完'
-                                                                      : '未完';
-                                                              widget.note
-                                                                      .noteUpdateDate =
-                                                                  DateTime.now()
-                                                                      .toUtc();
-                                                              widget.note
-                                                                      .noteFinishDate =
-                                                                  DateTime.now()
-                                                                      .toUtc();
-                                                            });
-                                                            setState(() {});
-                                                          },
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              } else {
-                                                realm.write(() {
-                                                  widget.note.noteFinishState =
-                                                      value! ? '已完' : '未完';
-                                                  widget.note.noteUpdateDate =
-                                                      DateTime.now().toUtc();
-                                                  widget.note.noteFinishDate =
-                                                      DateTime.now().toUtc();
-                                                });
-                                                setState(() {});
-                                              }
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                      labelText: "标题",
-                                      labelStyle: const TextStyle(
-                                        color: Colors.grey,
-                                      )),
-                                  onChanged: (value) {
-                                    realm.write(() {
-                                      widget.note.noteTitle = value;
-                                      widget.note.noteUpdateDate =
-                                          DateTime.now().toUtc();
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          color: backgroundColor,
-                          padding: const EdgeInsets.all(10),
-                          margin: const EdgeInsets.all(20),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 10,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(0),
+                            Row(
+                              children: [
+                                Expanded(
                                   child: Container(
-                                    constraints: const BoxConstraints(
-                                      minHeight: 30,
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Column(
-                                      children: List.generate(
-                                        todoList.length,
-                                        (index) => Visibility(
-                                          visible: isAll ||
-                                              todoList[index].finishState ==
-                                                  0 ||
-                                              todoList[index].finishState == 2,
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    alignment:
-                                                        Alignment.topCenter,
-                                                    width: 35,
-                                                    height: Platform.isAndroid
-                                                        ? 34
-                                                        : 26,
-                                                    child: Checkbox.adaptive(
-                                                      fillColor:
-                                                          WidgetStateProperty
-                                                              .all(const Color
-                                                                  .fromARGB(
-                                                                  0, 0, 0, 0)),
-                                                      checkColor: todoList[
-                                                                      index]
-                                                                  .finishState ==
-                                                              3
-                                                          ? Colors.grey
-                                                          : fontColor,
-                                                      value: todoList[index]
-                                                                  .finishState ==
-                                                              1
-                                                          ? true
-                                                          : todoList[index]
-                                                                      .finishState ==
-                                                                  0
-                                                              ? false
-                                                              : null,
-                                                      tristate: true,
-                                                      onChanged: (bool? value) {
-                                                        todoList[index]
-                                                                .finishState =
-                                                            todoList[index]
-                                                                    .finishState +
-                                                                1;
-                                                        if (todoList[index]
-                                                                .finishState >
-                                                            1) {
-                                                          todoList[index]
-                                                              .finishState = 0;
-                                                        }
-                                                        switch (todoList[index]
-                                                            .finishState) {
-                                                          case 0:
-                                                            todoList[index]
-                                                                    .startTime =
-                                                                null;
-                                                            todoList[index]
-                                                                    .finishTime =
-                                                                null;
-                                                            todoList[index]
-                                                                    .giveUpTime =
-                                                                null;
-                                                            break;
-                                                          case 1:
-                                                            todoList[index]
-                                                                    .finishTime =
-                                                                DateTime.now()
-                                                                    .toUtc();
-                                                            todoList[index]
-                                                                    .giveUpTime =
-                                                                null;
-
-                                                            break;
-                                                          case 2:
-                                                            todoList[index]
-                                                                    .startTime =
-                                                                DateTime.now()
-                                                                    .toUtc();
-                                                            todoList[index]
-                                                                    .finishTime =
-                                                                null;
-                                                            todoList[index]
-                                                                    .giveUpTime =
-                                                                null;
-                                                            break;
-                                                          case 3:
-                                                            todoList[index]
-                                                                    .giveUpTime =
-                                                                DateTime.now()
-                                                                    .toUtc();
-                                                            todoList[index]
-                                                                    .startTime =
-                                                                null;
-                                                            todoList[index]
-                                                                    .finishTime =
-                                                                null;
-                                                            break;
-                                                        }
-                                                        todoCountResults =
-                                                            todoCount();
-                                                        realm.write(() {
-                                                          widget.note
-                                                                  .noteContext =
-                                                              todoListToString(
-                                                                  todoList);
-                                                          widget.note
-                                                                  .noteUpdateDate =
-                                                              DateTime.now()
-                                                                  .toUtc();
-                                                          if (todoCountResults[
-                                                                      0] ==
-                                                                  0 &&
-                                                              todoCountResults[
-                                                                      0] ==
-                                                                  0) {
-                                                            widget.note
-                                                                    .noteFinishState =
-                                                                '已完';
-                                                          } else {
-                                                            widget.note
-                                                                    .noteFinishState =
-                                                                '未完';
-                                                          }
-                                                        });
-                                                        setState(() {});
+                                    margin:
+                                        const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                    child: TextField(
+                                      textAlign: TextAlign.center,
+                                      controller: titleController,
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      minLines: 1,
+                                      maxLines: 2,
+                                      decoration: InputDecoration(
+                                          suffixIcon: Container(
+                                            height: 30,
+                                            width: 30,
+                                            alignment: Alignment.center,
+                                            child: Checkbox.adaptive(
+                                              fillColor:
+                                                  WidgetStateProperty.all(
+                                                      const Color.fromARGB(
+                                                          0, 0, 0, 0)),
+                                              checkColor:
+                                                  widget.note.noteFinishState ==
+                                                          '已完'
+                                                      ? Colors.grey
+                                                      : fontColor,
+                                              value:
+                                                  widget.note.noteFinishState ==
+                                                          '已完'
+                                                      ? true
+                                                      : false,
+                                              tristate: false,
+                                              onChanged: (bool? value) {
+                                                // realm.write(() {
+                                                //   if (value != null) {
+                                                //     widget.note.noteFinishState = value ? '已完' : '未完';
+                                                //     widget.note.noteUpdateDate = DateTime.now().toUtc();
+                                                //   }
+                                                // });
+                                                // setState(() {});
+                                                if (value == true) {
+                                                  if (todoCountResults[0] +
+                                                          todoCountResults[2] !=
+                                                      0) {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return AlertDialog(
+                                                          title: const Text(
+                                                              '确认操作'),
+                                                          content: const Text(
+                                                              '还有事项未完成，确定要强制清单完成吗？'),
+                                                          actions: <Widget>[
+                                                            TextButton(
+                                                              child: const Text(
+                                                                  '取消'),
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop(); // 关闭弹窗
+                                                              },
+                                                            ),
+                                                            TextButton(
+                                                              child: const Text(
+                                                                  '确定'),
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop(); // 关闭弹窗
+                                                                realm.write(() {
+                                                                  widget.note
+                                                                          .noteFinishState =
+                                                                      value!
+                                                                          ? '已完'
+                                                                          : '未完';
+                                                                  widget.note
+                                                                      .noteUpdateDate = DateTime
+                                                                          .now()
+                                                                      .toUtc();
+                                                                  widget.note
+                                                                      .noteFinishDate = DateTime
+                                                                          .now()
+                                                                      .toUtc();
+                                                                });
+                                                                setState(() {});
+                                                              },
+                                                            ),
+                                                          ],
+                                                        );
                                                       },
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              0),
-                                                      alignment:
-                                                          Alignment.center,
-                                                      child: TextField(
-                                                        keyboardType:
-                                                            TextInputType
-                                                                .multiline,
-                                                        textAlign:
-                                                            TextAlign.start,
-                                                        style: checkTextStyle[
+                                                    );
+                                                  } else {
+                                                    realm.write(() {
+                                                      widget.note
+                                                              .noteFinishState =
+                                                          value! ? '已完' : '未完';
+                                                      widget.note
+                                                              .noteUpdateDate =
+                                                          DateTime.now()
+                                                              .toUtc();
+                                                      widget.note
+                                                              .noteFinishDate =
+                                                          DateTime.now()
+                                                              .toUtc();
+                                                    });
+                                                    setState(() {});
+                                                  }
+                                                } else if (value == false) {
+                                                  if (todoCountResults[0] +
+                                                          todoCountResults[2] ==
+                                                      0) {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return AlertDialog(
+                                                          title: const Text(
+                                                              '确认操作'),
+                                                          content: const Text(
+                                                              '事项已全部，确定要强制清单未完成吗？'),
+                                                          actions: <Widget>[
+                                                            TextButton(
+                                                              child: const Text(
+                                                                  '取消'),
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop(); // 关闭弹窗
+                                                              },
+                                                            ),
+                                                            TextButton(
+                                                              child: const Text(
+                                                                  '确定'),
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop(); // 关闭弹窗
+                                                                realm.write(() {
+                                                                  widget.note
+                                                                          .noteFinishState =
+                                                                      value!
+                                                                          ? '已完'
+                                                                          : '未完';
+                                                                  widget.note
+                                                                      .noteUpdateDate = DateTime
+                                                                          .now()
+                                                                      .toUtc();
+                                                                  widget.note
+                                                                      .noteFinishDate = DateTime
+                                                                          .now()
+                                                                      .toUtc();
+                                                                });
+                                                                setState(() {});
+                                                              },
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                  } else {
+                                                    realm.write(() {
+                                                      widget.note
+                                                              .noteFinishState =
+                                                          value! ? '已完' : '未完';
+                                                      widget.note
+                                                              .noteUpdateDate =
+                                                          DateTime.now()
+                                                              .toUtc();
+                                                      widget.note
+                                                              .noteFinishDate =
+                                                          DateTime.now()
+                                                              .toUtc();
+                                                    });
+                                                    setState(() {});
+                                                  }
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                          labelText: "清单",
+                                          labelStyle: const TextStyle(
+                                            color: Colors.grey,
+                                          )),
+                                      onChanged: (value) {
+                                        realm.write(() {
+                                          widget.note.noteTitle = value;
+                                          widget.note.noteUpdateDate =
+                                              DateTime.now().toUtc();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              color: backgroundColor,
+                              padding: const EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(20),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 10,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(0),
+                                      child: Container(
+                                        constraints: const BoxConstraints(
+                                          minHeight: 30,
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Column(
+                                          children: List.generate(
+                                            todoList.length,
+                                            (index) => Visibility(
+                                              visible: isAll ||
+                                                  todoList[index].finishState ==
+                                                      0 ||
+                                                  todoList[index].finishState ==
+                                                      2,
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Container(
+                                                        alignment:
+                                                            Alignment.topCenter,
+                                                        width: 35,
+                                                        height:
+                                                            Platform.isAndroid
+                                                                ? 34
+                                                                : 26,
+                                                        child:
+                                                            Checkbox.adaptive(
+                                                          fillColor:
+                                                              WidgetStateProperty
+                                                                  .all(const Color
+                                                                      .fromARGB(
+                                                                      0,
+                                                                      0,
+                                                                      0,
+                                                                      0)),
+                                                          checkColor: todoList[
+                                                                          index]
+                                                                      .finishState ==
+                                                                  3
+                                                              ? Colors.grey
+                                                              : fontColor,
+                                                          value: todoList[index]
+                                                                      .finishState ==
+                                                                  1
+                                                              ? true
+                                                              : todoList[index]
+                                                                          .finishState ==
+                                                                      0
+                                                                  ? false
+                                                                  : null,
+                                                          tristate: true,
+                                                          onChanged:
+                                                              (bool? value) {
                                                             todoList[index]
-                                                                .finishState],
-                                                        controller:
-                                                            todoListController[
-                                                                index],
-                                                        autofocus: isAutofocus,
-                                                        decoration:
-                                                            InputDecoration(
-                                                          border:
-                                                              InputBorder.none,
-                                                          isCollapsed: true,
-                                                          contentPadding: Platform
-                                                                  .isAndroid
-                                                              ? const EdgeInsets
-                                                                  .fromLTRB(
-                                                                  5, 0, 0, 5)
-                                                              : const EdgeInsets
-                                                                  .all(0),
+                                                                    .finishState =
+                                                                todoList[index]
+                                                                        .finishState +
+                                                                    1;
+                                                            if (todoList[index]
+                                                                    .finishState >
+                                                                1) {
+                                                              todoList[index]
+                                                                  .finishState = 0;
+                                                            }
+                                                            switch (todoList[
+                                                                    index]
+                                                                .finishState) {
+                                                              case 0:
+                                                                todoList[index]
+                                                                        .startTime =
+                                                                    null;
+                                                                todoList[index]
+                                                                        .finishTime =
+                                                                    null;
+                                                                todoList[index]
+                                                                        .giveUpTime =
+                                                                    null;
+                                                                break;
+                                                              case 1:
+                                                                todoList[index]
+                                                                        .finishTime =
+                                                                    DateTime.now()
+                                                                        .toUtc();
+                                                                todoList[index]
+                                                                        .giveUpTime =
+                                                                    null;
+
+                                                                break;
+                                                              case 2:
+                                                                todoList[index]
+                                                                        .startTime =
+                                                                    DateTime.now()
+                                                                        .toUtc();
+                                                                todoList[index]
+                                                                        .finishTime =
+                                                                    null;
+                                                                todoList[index]
+                                                                        .giveUpTime =
+                                                                    null;
+                                                                break;
+                                                              case 3:
+                                                                todoList[index]
+                                                                        .giveUpTime =
+                                                                    DateTime.now()
+                                                                        .toUtc();
+                                                                todoList[index]
+                                                                        .startTime =
+                                                                    null;
+                                                                todoList[index]
+                                                                        .finishTime =
+                                                                    null;
+                                                                break;
+                                                            }
+                                                            todoCountResults =
+                                                                todoCount();
+                                                            realm.write(() {
+                                                              widget.note
+                                                                      .noteContext =
+                                                                  todoListToString(
+                                                                      todoList);
+                                                              widget.note
+                                                                      .noteUpdateDate =
+                                                                  DateTime.now()
+                                                                      .toUtc();
+                                                              if (todoCountResults[
+                                                                          0] ==
+                                                                      0 &&
+                                                                  todoCountResults[
+                                                                          0] ==
+                                                                      0) {
+                                                                widget.note
+                                                                        .noteFinishState =
+                                                                    '已完';
+                                                              } else {
+                                                                widget.note
+                                                                        .noteFinishState =
+                                                                    '未完';
+                                                              }
+                                                            });
+                                                            setState(() {});
+                                                          },
                                                         ),
-                                                        minLines: 1,
-                                                        maxLines: 3,
-                                                        onChanged:
-                                                            (value) async {
+                                                      ),
+                                                      Expanded(
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(0),
+                                                          alignment:
+                                                              Alignment.center,
+                                                          child: TextField(
+                                                            keyboardType:
+                                                                TextInputType
+                                                                    .multiline,
+                                                            textAlign:
+                                                                TextAlign.start,
+                                                            style: checkTextStyle[
+                                                                todoList[index]
+                                                                    .finishState],
+                                                            controller:
+                                                                todoListController[
+                                                                    index],
+                                                            autofocus:
+                                                                isAutofocus,
+                                                            decoration:
+                                                                InputDecoration(
+                                                              border:
+                                                                  InputBorder
+                                                                      .none,
+                                                              isCollapsed: true,
+                                                              contentPadding: Platform
+                                                                      .isAndroid
+                                                                  ? const EdgeInsets
+                                                                      .fromLTRB(
+                                                                      5,
+                                                                      0,
+                                                                      0,
+                                                                      5)
+                                                                  : const EdgeInsets
+                                                                      .all(0),
+                                                            ),
+                                                            minLines: 1,
+                                                            maxLines: 3,
+                                                            onChanged:
+                                                                (value) async {
+                                                              todoList[index]
+                                                                      .title =
+                                                                  value;
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      GestureDetector(
+                                                        child: Container(
+                                                          height: 25,
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(0),
+                                                          alignment: Alignment
+                                                              .bottomLeft,
+                                                          child: Icon(
+                                                            todoList[index]
+                                                                    .isCollapsed
+                                                                ? Icons
+                                                                    .arrow_right
+                                                                : Icons
+                                                                    .arrow_drop_down,
+                                                            size: 25,
+                                                            color: fontColor,
+                                                          ),
+                                                        ),
+                                                        onTap: () {
                                                           todoList[index]
-                                                              .title = value;
+                                                                  .isCollapsed =
+                                                              !todoList[index]
+                                                                  .isCollapsed;
+
+                                                          realm.write(() {
+                                                            widget.note
+                                                                    .noteContext =
+                                                                todoListToString(
+                                                                    todoList);
+                                                            widget.note
+                                                                    .noteUpdateDate =
+                                                                DateTime.now()
+                                                                    .toUtc();
+                                                          });
+                                                          setState(() {});
                                                         },
                                                       ),
-                                                    ),
+                                                    ],
                                                   ),
-                                                  GestureDetector(
-                                                    child: Container(
-                                                      height: 25,
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              0),
-                                                      alignment:
-                                                          Alignment.bottomLeft,
-                                                      child: Icon(
-                                                        todoList[index]
-                                                                .isCollapsed
-                                                            ? Icons.arrow_right
-                                                            : Icons
-                                                                .arrow_drop_down,
-                                                        size: 25,
-                                                        color: fontColor,
-                                                      ),
-                                                    ),
-                                                    onTap: () {
-                                                      todoList[index]
-                                                              .isCollapsed =
-                                                          !todoList[index]
-                                                              .isCollapsed;
-
-                                                      realm.write(() {
-                                                        widget.note
-                                                                .noteContext =
-                                                            todoListToString(
-                                                                todoList);
-                                                        widget.note
-                                                                .noteUpdateDate =
-                                                            DateTime.now()
-                                                                .toUtc();
-                                                      });
-                                                      setState(() {});
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                              Visibility(
-                                                visible: !todoList[index]
-                                                    .isCollapsed,
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      margin: const EdgeInsets
-                                                          .fromLTRB(
-                                                          0, 10, 0, 0),
-                                                      padding: const EdgeInsets
-                                                          .fromLTRB(
-                                                          0, 10, 0, 10),
-                                                      color: Colors.white,
-                                                      child: TextField(
-                                                          textAlign:
-                                                              TextAlign.start,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 16,
-                                                            color:
-                                                                Colors.black54,
-                                                          ),
-                                                          controller:
-                                                              todoListContentController[
-                                                                  index],
-                                                          decoration:
-                                                              InputDecoration(
-                                                            border: InputBorder
-                                                                .none,
-                                                            isCollapsed: true,
-                                                            contentPadding: Platform
-                                                                    .isAndroid
-                                                                ? const EdgeInsets
-                                                                    .fromLTRB(
-                                                                    5, 0, 0, 5)
-                                                                : const EdgeInsets
-                                                                    .all(0),
-                                                          ),
-                                                          maxLines: 10,
-                                                          minLines: 1,
-                                                          onChanged:
-                                                              (value) async {
-                                                            todoList[index]
-                                                                    .content =
-                                                                value;
-                                                          }),
-                                                    ),
-                                                    const SizedBox(height: 5),
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              0),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Column(
+                                                  Visibility(
+                                                    visible: !todoList[index]
+                                                        .isCollapsed,
+                                                    child: Column(
+                                                      children: [
+                                                        Container(
+                                                          margin:
+                                                              const EdgeInsets
+                                                                  .fromLTRB(
+                                                                  0, 10, 0, 0),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .fromLTRB(
+                                                                  0, 10, 0, 10),
+                                                          color: Colors.white,
+                                                          child: TextField(
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .start,
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .black54,
+                                                              ),
+                                                              controller:
+                                                                  todoListContentController[
+                                                                      index],
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                border:
+                                                                    InputBorder
+                                                                        .none,
+                                                                isCollapsed:
+                                                                    true,
+                                                                contentPadding: Platform
+                                                                        .isAndroid
+                                                                    ? const EdgeInsets
+                                                                        .fromLTRB(
+                                                                        5,
+                                                                        0,
+                                                                        0,
+                                                                        5)
+                                                                    : const EdgeInsets
+                                                                        .all(0),
+                                                              ),
+                                                              maxLines: 10,
+                                                              minLines: 1,
+                                                              onChanged:
+                                                                  (value) async {
+                                                                todoList[index]
+                                                                        .content =
+                                                                    value;
+                                                              }),
+                                                        ),
+                                                        const SizedBox(
+                                                            height: 5),
+                                                        Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(0),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
                                                             children: [
-                                                              Visibility(
-                                                                visible: todoList[
-                                                                            index]
-                                                                        .createTime !=
-                                                                    null,
-                                                                child: Text(
-                                                                  '创建时间：${todoList[index].createTime != null ? todoList[index].createTime!.toLocal().toString().substring(0, 19) : ''}',
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      color: Colors
-                                                                          .black54),
-                                                                ),
+                                                              Column(
+                                                                children: [
+                                                                  Visibility(
+                                                                    visible:
+                                                                        todoList[index].createTime !=
+                                                                            null,
+                                                                    child: Text(
+                                                                      '创建时间：${todoList[index].createTime != null ? todoList[index].createTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                                      style: const TextStyle(
+                                                                          fontSize:
+                                                                              12,
+                                                                          color:
+                                                                              Colors.black54),
+                                                                    ),
+                                                                  ),
+                                                                  Visibility(
+                                                                    visible:
+                                                                        todoList[index].startTime !=
+                                                                            null,
+                                                                    child: Text(
+                                                                      '开始时间：${todoList[index].startTime != null ? todoList[index].startTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                                      style: const TextStyle(
+                                                                          fontSize:
+                                                                              12),
+                                                                    ),
+                                                                  ),
+                                                                  Visibility(
+                                                                    visible:
+                                                                        todoList[index].finishTime !=
+                                                                            null,
+                                                                    child: Text(
+                                                                      '完成时间：${todoList[index].finishTime != null ? todoList[index].finishTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                                      style: const TextStyle(
+                                                                          fontSize:
+                                                                              12),
+                                                                    ),
+                                                                  ),
+                                                                  Visibility(
+                                                                    visible:
+                                                                        todoList[index].alarmTime !=
+                                                                            null,
+                                                                    child: Text(
+                                                                      '提醒时间：${todoList[index].alarmTime != null ? todoList[index].alarmTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                                      style: const TextStyle(
+                                                                          fontSize:
+                                                                              12),
+                                                                    ),
+                                                                  ),
+                                                                  Visibility(
+                                                                    visible:
+                                                                        todoList[index].giveUpTime !=
+                                                                            null,
+                                                                    child: Text(
+                                                                      '放弃时间：${todoList[index].giveUpTime != null ? todoList[index].giveUpTime!.toLocal().toString().substring(0, 19) : ''}',
+                                                                      style: const TextStyle(
+                                                                          fontSize:
+                                                                              12),
+                                                                    ),
+                                                                  ),
+                                                                ],
                                                               ),
-                                                              Visibility(
-                                                                visible: todoList[
-                                                                            index]
-                                                                        .startTime !=
-                                                                    null,
-                                                                child: Text(
-                                                                  '开始时间：${todoList[index].startTime != null ? todoList[index].startTime!.toLocal().toString().substring(0, 19) : ''}',
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          12),
+                                                              GestureDetector(
+                                                                child:
+                                                                    Container(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          0),
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .bottomLeft,
+                                                                  child: Icon(
+                                                                    Icons
+                                                                        .delete,
+                                                                    size: 25,
+                                                                    color:
+                                                                        fontColor,
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              Visibility(
-                                                                visible: todoList[
-                                                                            index]
-                                                                        .finishTime !=
-                                                                    null,
-                                                                child: Text(
-                                                                  '完成时间：${todoList[index].finishTime != null ? todoList[index].finishTime!.toLocal().toString().substring(0, 19) : ''}',
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          12),
-                                                                ),
-                                                              ),
-                                                              Visibility(
-                                                                visible: todoList[
-                                                                            index]
-                                                                        .alarmTime !=
-                                                                    null,
-                                                                child: Text(
-                                                                  '提醒时间：${todoList[index].alarmTime != null ? todoList[index].alarmTime!.toLocal().toString().substring(0, 19) : ''}',
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          12),
-                                                                ),
-                                                              ),
-                                                              Visibility(
-                                                                visible: todoList[
-                                                                            index]
-                                                                        .giveUpTime !=
-                                                                    null,
-                                                                child: Text(
-                                                                  '放弃时间：${todoList[index].giveUpTime != null ? todoList[index].giveUpTime!.toLocal().toString().substring(0, 19) : ''}',
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          12),
-                                                                ),
+                                                                onTap: () {
+                                                                  todoList
+                                                                      .removeAt(
+                                                                          index);
+                                                                  realm.write(
+                                                                      () {
+                                                                    widget.note
+                                                                            .noteContext =
+                                                                        todoListToString(
+                                                                            todoList);
+                                                                    widget.note
+                                                                        .noteUpdateDate = DateTime
+                                                                            .now()
+                                                                        .toUtc();
+                                                                  });
+                                                                  todoListController
+                                                                      .removeAt(
+                                                                          index);
+                                                                  todoListContentController
+                                                                      .removeAt(
+                                                                          index);
+                                                                  setState(
+                                                                      () {});
+                                                                },
                                                               ),
                                                             ],
                                                           ),
-                                                          GestureDetector(
-                                                            child: Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(0),
-                                                              alignment: Alignment
-                                                                  .bottomLeft,
-                                                              child: Icon(
-                                                                Icons.delete,
-                                                                size: 25,
-                                                                color:
-                                                                    fontColor,
-                                                              ),
-                                                            ),
-                                                            onTap: () {
-                                                              todoList.removeAt(
-                                                                  index);
-                                                              realm.write(() {
-                                                                widget.note
-                                                                        .noteContext =
-                                                                    todoListToString(
-                                                                        todoList);
-                                                                widget.note
-                                                                        .noteUpdateDate =
-                                                                    DateTime.now()
-                                                                        .toUtc();
-                                                              });
-                                                              todoListController
-                                                                  .removeAt(
-                                                                      index);
-                                                              todoListContentController
-                                                                  .removeAt(
-                                                                      index);
-                                                              setState(() {});
-                                                            },
-                                                          ),
-                                                        ],
-                                                      ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                  Divider(
+                                                    color: backgroundColor,
+                                                    thickness: 3,
+                                                  ),
+                                                ],
                                               ),
-                                              Divider(
-                                                color: backgroundColor,
-                                                thickness: 3,
-                                              ),
-                                            ],
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 250,
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 40),
-                              Table(
-                                children: [
-                                  TableRow(children: [
-                                    const Text('合计', textAlign: TextAlign.end),
-                                    Text('    ${todoList.length}'),
-                                  ]),
-                                  TableRow(children: [
-                                    const Text('未完成', textAlign: TextAlign.end),
-                                    Text('    ${todoCountResults[0]}'),
-                                  ]),
-                                  TableRow(children: [
-                                    const Text('已完成', textAlign: TextAlign.end),
-                                    Text('    ${todoCountResults[1]}'),
-                                  ]),
-                                  TableRow(children: [
-                                    const Text('进行中', textAlign: TextAlign.end),
-                                    Text('    ${todoCountResults[2]}'),
-                                  ]),
-                                  TableRow(children: [
-                                    const Text('已放弃', textAlign: TextAlign.end),
-                                    Text('    ${todoCountResults[3]}'),
-                                  ]),
                                 ],
-                              )
-                            ],
-                          ),
-                        )
-                      ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 160,
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 10),
+                                  Table(
+                                    children: [
+                                      TableRow(children: [
+                                        const Text('合计',
+                                            textAlign: TextAlign.end),
+                                        Text('    ${todoList.length}'),
+                                      ]),
+                                      TableRow(children: [
+                                        const Text('未完成',
+                                            textAlign: TextAlign.end),
+                                        Text('    ${todoCountResults[0]}'),
+                                      ]),
+                                      TableRow(children: [
+                                        const Text('已完成',
+                                            textAlign: TextAlign.end),
+                                        Text('    ${todoCountResults[1]}'),
+                                      ]),
+                                      TableRow(children: [
+                                        const Text('进行中',
+                                            textAlign: TextAlign.end),
+                                        Text('    ${todoCountResults[2]}'),
+                                      ]),
+                                      TableRow(children: [
+                                        const Text('已放弃',
+                                            textAlign: TextAlign.end),
+                                        Text('    ${todoCountResults[3]}'),
+                                      ]),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
