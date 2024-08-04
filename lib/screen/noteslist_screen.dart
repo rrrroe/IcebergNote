@@ -14,6 +14,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/class/anniversary_class.dart';
+import 'package:icebergnote/extensions/color_extensions.dart';
 import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/card/anniversary_card.dart';
 import 'package:icebergnote/screen/card/check_list_card.dart';
@@ -307,34 +308,11 @@ class BottomRecordTypeSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Color> colors = [];
     for (int i = 0; i < recordTemplates.length; i++) {
-      if (recordTemplatesSettings.values.elementAtOrNull(1) != null) {
-        if (recordTemplatesSettings.values.elementAtOrNull(1)!['color'] !=
+      if (recordTemplatesSettings.values.elementAtOrNull(i) != null) {
+        if (recordTemplatesSettings.values.elementAtOrNull(i)!['color'] !=
             null) {
-          if (recordTemplatesSettings.values
-                  .elementAtOrNull(1)!['color']!
-                  .length >=
-              3) {
-            colors.add(Color.fromARGB(
-                255,
-                max(
-                    0,
-                    min(
-                        255,
-                        recordTemplatesSettings.values
-                            .elementAtOrNull(i)!['color']![0])),
-                max(
-                    0,
-                    min(
-                        255,
-                        recordTemplatesSettings.values
-                            .elementAtOrNull(i)!['color']![1])),
-                max(
-                    0,
-                    min(
-                        255,
-                        recordTemplatesSettings.values
-                            .elementAtOrNull(i)!['color']![2]))));
-          } else {}
+          colors.add(list2color(
+              recordTemplatesSettings.values.elementAtOrNull(i)!['color']!));
         }
       }
       if (colors.length < i) {

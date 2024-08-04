@@ -1,4 +1,7 @@
+import 'dart:math';
 import 'dart:ui';
+
+import 'package:flutter/material.dart';
 
 extension ColorExtension on Color {
   /// Convert the color to a darken color based on the [percent]
@@ -31,4 +34,12 @@ extension ColorExtension on Color {
     final alpha = (this.alpha + other.alpha) ~/ 2;
     return Color.fromARGB(alpha, red, green, blue);
   }
+}
+
+Color list2color(List l) {
+  if (l.length == 3) {
+    return Color.fromARGB(255, max(0, min(255, l[0])), max(0, min(255, l[1])),
+        max(0, min(255, l[2])));
+  }
+  return Colors.black;
 }
