@@ -14,6 +14,7 @@ NumberFormat numberFormatMaxf2 = NumberFormat('#.##');
 
 class HabitCardWeek extends StatefulWidget {
   final VoidCallback onChanged;
+  final VoidCallback delete;
   final int mod;
   final Habit habit;
   final List<HabitRecord?> habitRecords;
@@ -31,7 +32,8 @@ class HabitCardWeek extends StatefulWidget {
       required this.today,
       required this.index,
       required this.bgColor,
-      required this.ftColor});
+      required this.ftColor,
+      required this.delete});
 
   @override
   State<HabitCardWeek> createState() => _HabitCardWeekState();
@@ -181,6 +183,18 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                   ],
                 ),
                 Expanded(child: Container()),
+                Expanded(child: Container()),
+                Visibility(
+                  visible: widget.mod == 2,
+                  child: GestureDetector(
+                    onTap: widget.delete,
+                    child: const Icon(
+                      Icons.delete_forever_rounded,
+                      size: 30,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
                 GestureDetector(
                   onTap: () {
                     saveRecord(widget.today.weekday - 1);

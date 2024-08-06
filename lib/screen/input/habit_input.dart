@@ -231,6 +231,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
                           ),
                           HabitCardWeek(
                             onChanged: () {},
+                            delete: () {},
                             mod: 1,
                             habit: habit,
                             habitRecords: [

@@ -683,6 +683,41 @@ class _HabitListScreenState extends State<HabitListScreen> {
                     index: index,
                     bgColor: habitsbgColors[index],
                     ftColor: habitsftColors[index],
+                    delete: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('删除'),
+                            content: const Text('确定要删除习惯吗？'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('取消'),
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // 关闭弹窗
+                                },
+                              ),
+                              TextButton(
+                                child: const Text(
+                                  '删除',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // 关闭弹窗
+                                  realmHabit.write(() {
+                                    habits[index].delete = true;
+                                    habits[index].updateDate =
+                                        DateTime.now().toUtc();
+                                  });
+                                  setState(() {});
+                                  syncHabitToRemote(habits[index]);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                   ));
             }),
           ),
@@ -702,6 +737,40 @@ class _HabitListScreenState extends State<HabitListScreen> {
                 updateScore();
                 setState(() {});
               },
+              () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('删除'),
+                      content: const Text('确定要删除习惯吗？'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('取消'),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // 关闭弹窗
+                          },
+                        ),
+                        TextButton(
+                          child: const Text(
+                            '删除',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // 关闭弹窗
+                            realmHabit.write(() {
+                              habits[index].delete = true;
+                              habits[index].updateDate = DateTime.now().toUtc();
+                            });
+                            setState(() {});
+                            syncHabitToRemote(habits[index]);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
               0,
               habits[index],
               habitsRecords[index],
@@ -717,6 +786,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
   Widget buildCard(
     int durationType,
     VoidCallback onChanged,
+    VoidCallback delete,
     int mod,
     Habit habit,
     List<HabitRecord?> habitRecords,
@@ -743,6 +813,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
               index: index,
               bgColor: bgColor,
               ftColor: ftColor,
+              delete: delete,
             ));
       case 2:
         return GestureDetector(
@@ -779,6 +850,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
               index: index,
               bgColor: bgColor,
               ftColor: ftColor,
+              delete: delete,
             ));
     }
   }
