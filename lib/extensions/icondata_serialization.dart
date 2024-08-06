@@ -160,5 +160,7 @@ Widget iconDataToWidget(String s, double size) {
       }
     }
   }
-  return Container();
+  return Image.asset(
+    'lib/assets/icon/LifeIcon/image19.png',
+  );
 }

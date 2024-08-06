@@ -673,6 +673,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
                   child: HabitCardWeek(
                     onChanged: () {
                       updateScore();
+                      setState(() {});
                     },
                     mod: 2,
                     habit: habits[index],
@@ -699,6 +700,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
               durationType,
               () {
                 updateScore();
+                setState(() {});
               },
               0,
               habits[index],
@@ -785,7 +787,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-
+    DateTime now = DateTime.now();
     var temp1 = habits.removeAt(oldIndex);
     var temp2 = habitsRecords.removeAt(oldIndex);
     var temp3 = habitsbgColors.removeAt(oldIndex);
@@ -798,6 +800,8 @@ class _HabitListScreenState extends State<HabitListScreen> {
     realmHabit.write(() {
       for (int i = 0; i < habits.length; i++) {
         habits[i].position = i;
+        habits[i].updateDate = now.toUtc();
+        syncHabitToRemote(habits[i]);
       }
     });
   }

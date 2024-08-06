@@ -31,7 +31,7 @@ class IconPickerAlertDialog extends StatefulWidget {
 class IconPickerAlertDialogState extends State<IconPickerAlertDialog> {
   late Widget currentIcon;
   late String name;
-  String group = '表情';
+  String group = '生活';
   List<String> groupList = ['生活', '表情'];
   static const emojis = UnicodeEmojis.allEmojis;
   Emoji? newEmoji;

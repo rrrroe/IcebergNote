@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:icebergnote/class/habit.dart';
 import 'package:icebergnote/extensions/icondata_serialization.dart';
 import 'package:icebergnote/main.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/input/habit_input.dart';
 import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
@@ -68,6 +69,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
           realmHabitRecord.add(widget.habitRecords[index]!);
         }
       });
+      syncHabitRecordToRemote(widget.habitRecords[index]!);
     }
     setState(() {});
   }
@@ -123,7 +125,11 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                   onTap: () {
                     if (widget.mod == 0 || widget.mod == 2) {
                       Get.to(() => HabitInputPage(
-                          onPageClosed: () {}, mod: 1, habit: widget.habit));
+                          onPageClosed: () {
+                            widget.onChanged();
+                          },
+                          mod: 1,
+                          habit: widget.habit));
                     }
                     setState(() {});
                   },
@@ -322,6 +328,7 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
           realmHabitRecord.add(widget.habitRecords[index]!);
         }
       });
+      syncHabitRecordToRemote(widget.habitRecords[index]!);
     }
     setState(() {});
   }
@@ -369,7 +376,9 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
                       onTap: () {
                         if (widget.mod == 0 || widget.mod == 2) {
                           Get.to(() => HabitInputPage(
-                              onPageClosed: () {},
+                              onPageClosed: () {
+                                widget.onChanged();
+                              },
                               mod: 1,
                               habit: widget.habit));
                         }
@@ -377,6 +386,7 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
                       child: Container(
                           height: 60,
                           width: 60,
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
                               border:
                                   Border.all(color: Colors.black12, width: 0),

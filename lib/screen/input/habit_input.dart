@@ -12,6 +12,7 @@ import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:icebergnote/class/habit.dart';
 import 'package:icebergnote/extensions/icondata_serialization.dart';
 import 'package:icebergnote/main.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/card/habit_card.dart';
 import 'package:icebergnote/screen/input/icon_picker_input.dart';
 import 'package:realm/realm.dart';
@@ -21,9 +22,9 @@ Habit deepCopyHabit(Habit h) {
   return Habit(
     Uuid.v4(),
     h.createDate,
-    h.stopDate,
     h.updateDate,
     h.startDate,
+    h.stopDate,
     color: h.color,
     fontColor: h.fontColor,
     description: h.description,
@@ -1195,9 +1196,9 @@ class _HabitInputPageState extends State<HabitInputPage> {
                       child: const Text('取消'),
                     ),
                     TextButton(
-                      onPressed: () async {
+                      onPressed: () {
                         save();
-                        // syncNoteToRemote(habit);
+
                         Navigator.pop(context);
                         widget.onPageClosed();
                       },
@@ -1218,6 +1219,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
       realmHabit.write(() {
         realmHabit.add(habit);
       });
+      syncHabitToRemote(habit);
     } else {
       realmHabit.write(() {
         widget.habit.name = habit.name;
@@ -1272,6 +1274,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
         widget.habit.bool2 = habit.bool2;
         widget.habit.bool3 = habit.bool3;
       });
+      syncHabitToRemote(widget.habit);
     }
   }
 }
