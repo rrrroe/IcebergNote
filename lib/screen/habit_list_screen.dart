@@ -113,16 +113,14 @@ class _HabitListScreenState extends State<HabitListScreen> {
 
   void dataInit() {
     habitsRecords = [];
-
     for (int i = 0; i < habits.length; i++) {
       List<HabitRecord> tmp = realmHabitRecord.query<HabitRecord>(
           'currentDate >= \$0 && currentDate <= \$1 && habit == \$2 SORT(currentDate ASC)',
           [firstDay, lastDay, habits[i].id]).toList();
       habitsRecords.add(List.generate(durationLenth, (index) => null));
       for (int j = 0; j < tmp.length; j++) {
-        habitsRecords[i][
-            tmp[j].currentDate.difference(DateTime(today.year, 1, 1)).inDays +
-                3] = tmp[j];
+        habitsRecords[i][tmp[j].currentDate.difference(firstDay).inDays] =
+            tmp[j];
       }
     }
     if (lastDay7Week > durationLenth) {

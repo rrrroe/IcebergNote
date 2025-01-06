@@ -25,7 +25,7 @@ class LoginScreenState extends State<LoginScreen> {
   Future<String?> _authUser(LoginData data) async {
     try {
       connection = await Connection.open(Endpoint(
-          host: '111.229.224.55',
+          host: '118.25.189.25',
           database: 'users',
           username: "admin",
           password: "456321rrRR"));
@@ -91,7 +91,7 @@ class LoginScreenState extends State<LoginScreen> {
   Future<String?> _signupUser(SignupData data) async {
     try {
       connection = await Connection.open(Endpoint(
-          host: '111.229.224.55',
+          host: '118.25.189.25',
           database: 'users',
           username: "admin",
           password: "456321rrRR"));

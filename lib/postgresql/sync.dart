@@ -42,7 +42,7 @@ class SyncProcessController extends GetxController {
 
 // Future<void> postgreSQLQuery() async {
 //   final postgreSQLConnection = await Connection.open(Endpoint(
-//       host: '111.229.224.55',
+//       host: '118.25.189.25',
 //       database: 'users',
 //       username: "admin",
 //       password: "456321rrRR"));
@@ -113,7 +113,7 @@ class SyncPageState extends State<SyncPage> {
                     '$syncProcess\n--------------------开始上传本地--------------------';
                 setState(() {});
                 final postgreSQLConnection = await Connection.open(Endpoint(
-                    host: '111.229.224.55',
+                    host: '118.25.189.25',
                     database: 'users',
                     username: "admin",
                     password: "456321rrRR"));
@@ -271,7 +271,7 @@ class SyncPageState extends State<SyncPage> {
                     '$syncProcess\n--------------------开始下载云端--------------------';
                 setState(() {});
                 final postgreSQLConnection = await Connection.open(Endpoint(
-                    host: '111.229.224.55',
+                    host: '118.25.189.25',
                     database: 'users',
                     username: "admin",
                     password: "456321rrRR"));
@@ -404,7 +404,7 @@ class SyncPageState extends State<SyncPage> {
 Future<int> checkRemoteDatabase() async {
   SyncProcessController syncProcessController = Get.find();
   final postgreSQLConnection = await Connection.open(Endpoint(
-      host: '111.229.224.55',
+      host: '118.25.189.25',
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
@@ -436,7 +436,7 @@ Future<bool> createRemoteDatabase() async {
   SyncProcessController syncProcessController = Get.find();
   syncProcessController.syncProcessAddLine('准备新建云端数据库');
   final postgreSQLConnection = await Connection.open(Endpoint(
-      host: '111.229.224.55',
+      host: '118.25.189.25',
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
@@ -463,7 +463,7 @@ Future<bool> createRemoteDatabase() async {
 Future<bool> clearRemoteDatabase() async {
   SyncProcessController syncProcessController = Get.find();
   final postgreSQLConnection = await Connection.open(Endpoint(
-      host: '111.229.224.55',
+      host: '118.25.189.25',
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
@@ -494,7 +494,7 @@ Future<void> allLocalToRemote() async {
   SyncProcessController syncProcessController = Get.find();
   var localResults = realm.all<Notes>();
   final postgreSQLConnection = await Connection.open(Endpoint(
-      host: '111.229.224.55',
+      host: '118.25.189.25',
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
@@ -545,7 +545,7 @@ Future<void> allRemoteToLocal() async {
   SyncProcessController syncProcessController = Get.find();
   syncProcessController.syncProcessAddLine('开始下载云端数据');
   final postgreSQLConnection = await Connection.open(Endpoint(
-      host: '111.229.224.55',
+      host: '118.25.189.25',
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
@@ -565,7 +565,7 @@ Future<void> allRemoteToLocal() async {
 
 Future<bool> exchangeSmart() async {
   final postgreSQLConnection = await Connection.open(Endpoint(
-      host: '111.229.224.55',
+      host: '118.25.189.25',
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
@@ -589,7 +589,7 @@ Future<bool> exchangeSmart() async {
       RealmResults<Notes> localNewNotes = realm.query<Notes>(
           "noteUpdateDate > \$0 SORT(noteUpdateDate ASC)", [lastRefresh]);
       final postgreSQLConnection = await Connection.open(Endpoint(
-          host: '111.229.224.55',
+          host: '118.25.189.25',
           database: 'users',
           username: "admin",
           password: "456321rrRR"));
@@ -1013,7 +1013,7 @@ String insertOrUpdateRemoteHabitRecord(HabitRecord habitRecord, String id) {
 
 void syncNoteToRemote(Notes note) async {
   final postgreSQLConnection = await Connection.open(Endpoint(
-      host: '111.229.224.55',
+      host: '118.25.189.25',
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
@@ -1041,7 +1041,7 @@ void syncNoteToRemote(Notes note) async {
 
 void syncHabitToRemote(Habit habit) async {
   final postgreSQLConnection = await Connection.open(Endpoint(
-      host: '111.229.224.55',
+      host: '118.25.189.25',
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
@@ -1070,7 +1070,7 @@ void syncHabitToRemote(Habit habit) async {
 
 void syncHabitRecordToRemote(HabitRecord habitRecord) async {
   final postgreSQLConnection = await Connection.open(Endpoint(
-      host: '111.229.224.55',
+      host: '118.25.189.25',
       database: 'users',
       username: "admin",
       password: "456321rrRR"));
