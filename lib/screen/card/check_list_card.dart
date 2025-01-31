@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/class/notes.dart';
+import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/input/check_list_input.dart';
 import 'package:icebergnote/screen/search_screen.dart';
 import 'package:icebergnote/theme.dart';
@@ -246,13 +247,6 @@ class CheckListCardState extends State<CheckListCard> {
                       value: widget.note.noteFinishState == '已完' ? true : false,
                       tristate: false,
                       onChanged: (bool? value) {
-                        // realm.write(() {
-                        //   if (value != null) {
-                        //     widget.note.noteFinishState = value ? '已完' : '未完';
-                        //     widget.note.noteUpdateDate = DateTime.now().toUtc();
-                        //   }
-                        // });
-                        // setState(() {});
                         if (value == true) {
                           if (todoCountResults[0] + todoCountResults[2] != 0) {
                             showDialog(
@@ -281,6 +275,7 @@ class CheckListCardState extends State<CheckListCard> {
                                               DateTime.now().toUtc();
                                         });
                                         setState(() {});
+                                        syncNoteToRemote(widget.note);
                                       },
                                     ),
                                   ],
@@ -297,6 +292,7 @@ class CheckListCardState extends State<CheckListCard> {
                                   DateTime.now().toUtc();
                             });
                             setState(() {});
+                            syncNoteToRemote(widget.note);
                           }
                         } else if (value == false) {
                           if (todoCountResults[0] + todoCountResults[2] == 0) {
@@ -326,6 +322,7 @@ class CheckListCardState extends State<CheckListCard> {
                                               DateTime.now().toUtc();
                                         });
                                         setState(() {});
+                                        syncNoteToRemote(widget.note);
                                       },
                                     ),
                                   ],
@@ -342,6 +339,7 @@ class CheckListCardState extends State<CheckListCard> {
                                   DateTime.now().toUtc();
                             });
                             setState(() {});
+                            syncNoteToRemote(widget.note);
                           }
                         }
                       },
@@ -450,6 +448,7 @@ class CheckListCardState extends State<CheckListCard> {
                                         widget.note.noteUpdateDate =
                                             DateTime.now().toUtc();
                                       });
+                                      syncNoteToRemote(widget.note);
                                     },
                                     onLongPressStart: (details) async {
                                       // 监听长按点击并弹出菜单
@@ -466,6 +465,7 @@ class CheckListCardState extends State<CheckListCard> {
                                         widget.note.noteUpdateDate =
                                             DateTime.now().toUtc();
                                       });
+                                      syncNoteToRemote(widget.note);
                                     },
                                     child: Checkbox.adaptive(
                                       fillColor: WidgetStateProperty.all(
@@ -506,6 +506,7 @@ class CheckListCardState extends State<CheckListCard> {
                                               DateTime.now().toUtc();
                                         });
                                         setState(() {});
+                                        syncNoteToRemote(widget.note);
                                       },
                                     ),
                                   ),
