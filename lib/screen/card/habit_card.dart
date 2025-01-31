@@ -55,8 +55,6 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
       DateTime now = DateTime.now();
       realmHabitRecord.write(() {
         if (widget.habitRecords[index] != null) {
-          print('old');
-          print(widget.habitRecords[index]!.currentDate);
           if (widget.habitRecords[index]!.value == 0) {
             widget.habitRecords[index]!.value = 1;
           } else {
@@ -64,9 +62,6 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
           }
           widget.habitRecords[index]!.updateDate = now.toUtc();
         } else {
-          print('new');
-          print(widget.today
-              .add(Duration(days: index - widget.today.weekday + 1)));
           widget.habitRecords[index] = HabitRecord(
               Uuid.v4(),
               widget.habit.id,

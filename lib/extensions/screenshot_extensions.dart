@@ -70,52 +70,54 @@ class _ImagePopupState extends State<ImagePopup> {
             SingleChildScrollView(
               child: RepaintBoundary(
                 key: aLLRepaintWidgetKey,
-                child: Column(
-                  children: [
-                    Image.memory(widget.pngBytes),
-                    Container(height: 6, color: Colors.white),
-                    Container(
-                      color: Colors.white,
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(width: 20),
-                          svg,
-                          const SizedBox(width: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                userName ?? '',
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                              Text(
-                                userID == null ? '' : 'No.$userID',
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          Expanded(child: Container()),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                '$noteSum NOTES',
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                              Text(
-                                '$days DAYS',
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(width: 25),
-                        ],
+                child: Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      Image.memory(widget.pngBytes),
+                      Container(height: 6, color: Colors.white),
+                      Container(
+                        color: Colors.white,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(width: 20),
+                            svg,
+                            const SizedBox(width: 8),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  userName ?? '',
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                                Text(
+                                  userID == null ? '' : 'No.$userID',
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              ],
+                            ),
+                            Expanded(child: Container()),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '$noteSum NOTES',
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                                Text(
+                                  '$days DAYS',
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 25),
+                          ],
+                        ),
                       ),
-                    ),
-                    Container(height: 16, color: Colors.white),
-                  ],
+                      Container(height: 16, color: Colors.white),
+                    ],
+                  ),
                 ),
               ),
             ),
