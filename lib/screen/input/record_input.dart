@@ -1349,6 +1349,7 @@ class _PropertyCardState extends State<PropertyCard> {
                   child: FilledButton.tonal(
                     style: selectedContextButtonStyle,
                     onPressed: () async {
+                      FocusScope.of(context).unfocus(); // 在点击日期按钮时收起软键盘
                       DateTime? newDateTime = await showRoundedDatePicker(
                         initialDate: setDay,
                         height: 300,
