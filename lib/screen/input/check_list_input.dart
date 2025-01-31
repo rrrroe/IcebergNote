@@ -13,6 +13,8 @@ import 'package:icebergnote/screen/record_graph_benifit.dart';
 import 'package:intl/intl.dart';
 import 'package:yaml/yaml.dart';
 
+import '../card/check_list_card.dart';
+
 final dateTimeFormat = DateFormat("yyyy-MM-dd HH:mm:ss'Z'");
 
 class Todo {
@@ -373,7 +375,7 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                           title: const Text(
                                                               '确认操作'),
                                                           content: const Text(
-                                                              '事项已全部，确定要强制清单未完成吗？'),
+                                                              '事项已全部完成，确定要强制清单未完成吗？'),
                                                           actions: <Widget>[
                                                             TextButton(
                                                               child: const Text(
@@ -490,96 +492,22 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                             Platform.isAndroid
                                                                 ? 34
                                                                 : 26,
-                                                        child:
-                                                            Checkbox.adaptive(
-                                                          fillColor:
-                                                              WidgetStateProperty
-                                                                  .all(const Color
-                                                                      .fromARGB(
-                                                                      0,
-                                                                      0,
-                                                                      0,
-                                                                      0)),
-                                                          checkColor: todoList[
-                                                                          index]
-                                                                      .finishState ==
-                                                                  3
-                                                              ? Colors.grey
-                                                              : fontColor,
-                                                          value: todoList[index]
-                                                                      .finishState ==
-                                                                  1
-                                                              ? true
-                                                              : todoList[index]
-                                                                          .finishState ==
-                                                                      0
-                                                                  ? false
-                                                                  : null,
-                                                          tristate: true,
-                                                          onChanged:
-                                                              (bool? value) {
-                                                            todoList[index]
-                                                                    .finishState =
-                                                                todoList[index]
-                                                                        .finishState +
-                                                                    1;
-                                                            if (todoList[index]
-                                                                    .finishState >
-                                                                1) {
-                                                              todoList[index]
-                                                                  .finishState = 0;
-                                                            }
-                                                            switch (todoList[
-                                                                    index]
-                                                                .finishState) {
-                                                              case 0:
-                                                                todoList[index]
-                                                                        .startTime =
-                                                                    null;
-                                                                todoList[index]
-                                                                        .finishTime =
-                                                                    null;
-                                                                todoList[index]
-                                                                        .giveUpTime =
-                                                                    null;
-                                                                break;
-                                                              case 1:
-                                                                todoList[index]
-                                                                        .finishTime =
-                                                                    DateTime.now()
-                                                                        .toUtc();
-                                                                todoList[index]
-                                                                        .giveUpTime =
-                                                                    null;
-
-                                                                break;
-                                                              case 2:
-                                                                todoList[index]
-                                                                        .startTime =
-                                                                    DateTime.now()
-                                                                        .toUtc();
-                                                                todoList[index]
-                                                                        .finishTime =
-                                                                    null;
-                                                                todoList[index]
-                                                                        .giveUpTime =
-                                                                    null;
-                                                                break;
-                                                              case 3:
-                                                                todoList[index]
-                                                                        .giveUpTime =
-                                                                    DateTime.now()
-                                                                        .toUtc();
-                                                                todoList[index]
-                                                                        .startTime =
-                                                                    null;
-                                                                todoList[index]
-                                                                        .finishTime =
-                                                                    null;
-                                                                break;
-                                                            }
+                                                        child: GestureDetector(
+                                                          onSecondaryTapUp:
+                                                              (details) async {
+                                                            // 监听右键点击并弹出菜单
+                                                            Todo newTodo =
+                                                                await setTodoStatus(
+                                                                    context,
+                                                                    details,
+                                                                    null,
+                                                                    todoList[
+                                                                        index]);
+                                                            todoList[index] =
+                                                                newTodo;
                                                             todoCountResults =
                                                                 todoCount();
+                                                            setState(() {});
                                                             realm.write(() {
                                                               widget.note
                                                                       .noteContext =
@@ -589,23 +517,155 @@ class CheckListEditPageState extends State<CheckListEditPage> {
                                                                       .noteUpdateDate =
                                                                   DateTime.now()
                                                                       .toUtc();
-                                                              if (todoCountResults[
-                                                                          0] ==
-                                                                      0 &&
-                                                                  todoCountResults[
-                                                                          0] ==
-                                                                      0) {
-                                                                widget.note
-                                                                        .noteFinishState =
-                                                                    '已完';
-                                                              } else {
-                                                                widget.note
-                                                                        .noteFinishState =
-                                                                    '未完';
-                                                              }
                                                             });
-                                                            setState(() {});
                                                           },
+                                                          onLongPressStart:
+                                                              (details) async {
+                                                            // 监听长按点击并弹出菜单
+                                                            Todo newTodo =
+                                                                await setTodoStatus(
+                                                                    context,
+                                                                    null,
+                                                                    details,
+                                                                    todoList[
+                                                                        index]);
+                                                            todoList[index] =
+                                                                newTodo;
+                                                            todoCountResults =
+                                                                todoCount();
+                                                            setState(() {});
+                                                            realm.write(() {
+                                                              widget.note
+                                                                      .noteContext =
+                                                                  todoListToString(
+                                                                      todoList);
+                                                              widget.note
+                                                                      .noteUpdateDate =
+                                                                  DateTime.now()
+                                                                      .toUtc();
+                                                            });
+                                                          },
+                                                          child:
+                                                              Checkbox.adaptive(
+                                                            fillColor:
+                                                                WidgetStateProperty
+                                                                    .all(const Color
+                                                                        .fromARGB(
+                                                                        0,
+                                                                        0,
+                                                                        0,
+                                                                        0)),
+                                                            checkColor: todoList[
+                                                                            index]
+                                                                        .finishState ==
+                                                                    3
+                                                                ? Colors.grey
+                                                                : fontColor,
+                                                            value: todoList[index]
+                                                                        .finishState ==
+                                                                    1
+                                                                ? true
+                                                                : todoList[index]
+                                                                            .finishState ==
+                                                                        0
+                                                                    ? false
+                                                                    : null,
+                                                            tristate: true,
+                                                            onChanged:
+                                                                (bool? value) {
+                                                              if (todoList[index]
+                                                                          .finishState ==
+                                                                      0 ||
+                                                                  todoList[index]
+                                                                          .finishState ==
+                                                                      2) {
+                                                                todoList[index]
+                                                                    .finishState = 1;
+                                                              } else {
+                                                                todoList[index]
+                                                                    .finishState = 0;
+                                                              }
+                                                              switch (todoList[
+                                                                      index]
+                                                                  .finishState) {
+                                                                case 0:
+                                                                  todoList[index]
+                                                                          .startTime =
+                                                                      null;
+                                                                  todoList[index]
+                                                                          .finishTime =
+                                                                      null;
+                                                                  todoList[index]
+                                                                          .giveUpTime =
+                                                                      null;
+                                                                  break;
+                                                                case 1:
+                                                                  todoList[
+                                                                          index]
+                                                                      .finishTime = DateTime
+                                                                          .now()
+                                                                      .toUtc();
+                                                                  todoList[index]
+                                                                          .giveUpTime =
+                                                                      null;
+
+                                                                  break;
+                                                                case 2:
+                                                                  todoList[
+                                                                          index]
+                                                                      .startTime = DateTime
+                                                                          .now()
+                                                                      .toUtc();
+                                                                  todoList[index]
+                                                                          .finishTime =
+                                                                      null;
+                                                                  todoList[index]
+                                                                          .giveUpTime =
+                                                                      null;
+                                                                  break;
+                                                                case 3:
+                                                                  todoList[
+                                                                          index]
+                                                                      .giveUpTime = DateTime
+                                                                          .now()
+                                                                      .toUtc();
+                                                                  todoList[index]
+                                                                          .startTime =
+                                                                      null;
+                                                                  todoList[index]
+                                                                          .finishTime =
+                                                                      null;
+                                                                  break;
+                                                              }
+                                                              todoCountResults =
+                                                                  todoCount();
+                                                              realm.write(() {
+                                                                widget.note
+                                                                        .noteContext =
+                                                                    todoListToString(
+                                                                        todoList);
+                                                                widget.note
+                                                                        .noteUpdateDate =
+                                                                    DateTime.now()
+                                                                        .toUtc();
+                                                                if (todoCountResults[
+                                                                            0] ==
+                                                                        0 &&
+                                                                    todoCountResults[
+                                                                            0] ==
+                                                                        0) {
+                                                                  widget.note
+                                                                          .noteFinishState =
+                                                                      '已完';
+                                                                } else {
+                                                                  widget.note
+                                                                          .noteFinishState =
+                                                                      '未完';
+                                                                }
+                                                              });
+                                                              setState(() {});
+                                                            },
+                                                          ),
                                                         ),
                                                       ),
                                                       Expanded(
