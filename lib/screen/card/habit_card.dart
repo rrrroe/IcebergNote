@@ -83,7 +83,8 @@ class _HabitCardDayState extends State<HabitCardDay> {
 
   @override
   Widget build(BuildContext context) {
-    Widget currentIcon = iconDataToWidget(widget.habit.icon, 40);
+    Widget currentIcon =
+        iconDataToWidget(widget.habit.icon, 40, isFinished() ? 1 : 0.5);
     return Column(
       children: [
         Card(
@@ -95,7 +96,7 @@ class _HabitCardDayState extends State<HabitCardDay> {
             borderRadius: BorderRadius.circular(20),
             side: BorderSide(
               color: widget.bgColor,
-              width: isFinished() ? 5 : 1,
+              width: isFinished() ? 5 : 0.1,
             ),
           ),
           child: Padding(
@@ -215,7 +216,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
 
   @override
   Widget build(BuildContext context) {
-    Widget currentIcon = iconDataToWidget(widget.habit.icon, 40);
+    Widget currentIcon = iconDataToWidget(widget.habit.icon, 40, 1);
     return Card(
       margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       elevation: 0,
@@ -479,7 +480,7 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
   @override
   Widget build(BuildContext context) {
     countScores();
-    Widget currentIcon = iconDataToWidget(widget.habit.icon, 40);
+    Widget currentIcon = iconDataToWidget(widget.habit.icon, 40, 1);
     return Card(
       margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       elevation: 0,

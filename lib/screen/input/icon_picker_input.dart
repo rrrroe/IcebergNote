@@ -46,7 +46,7 @@ class IconPickerAlertDialogState extends State<IconPickerAlertDialog> {
 
   @override
   void initState() {
-    currentIcon = iconDataToWidget(widget.oldIcon, 40);
+    currentIcon = iconDataToWidget(widget.oldIcon, 40, 1);
     lifeIcon = List.generate(
       417,
       (int index) => 'image${index + 1}.png',
@@ -68,7 +68,7 @@ class IconPickerAlertDialogState extends State<IconPickerAlertDialog> {
               onTap: () {
                 setState(() {
                   name = 'Emoji||Common||${emojis[index].emoji}';
-                  currentIcon = iconDataToWidget(name, 40);
+                  currentIcon = iconDataToWidget(name, 40, 1);
                 });
               },
               child: Text(
@@ -93,7 +93,7 @@ class IconPickerAlertDialogState extends State<IconPickerAlertDialog> {
               onTap: () {
                 setState(() {
                   name = 'Image||LifeIcon||${lifeIcon[index]}';
-                  currentIcon = iconDataToWidget(name, 40);
+                  currentIcon = iconDataToWidget(name, 40, 1);
                 });
               },
               child: Image.asset(

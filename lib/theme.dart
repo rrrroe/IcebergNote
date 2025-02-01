@@ -35,3 +35,34 @@ class TodoColor {
 }
 
 TodoColor todoColor = TodoColor();
+
+enum MacaronColors {
+  pink,
+  blue,
+  green,
+  purple,
+  yellow,
+  peach,
+}
+
+extension MacaronColorExtension on MacaronColors {
+  // 使用扩展方法为每个枚举值关联一个柔和的背景颜色
+  Color get color {
+    switch (this) {
+      case MacaronColors.pink:
+        return const Color(0xFFF8D0D8); // 轻柔马卡龙粉
+      case MacaronColors.blue:
+        return const Color(0xFFB6D8F7); // 轻柔马卡龙蓝
+      case MacaronColors.green:
+        return const Color(0xFFC3E1D9); // 轻柔马卡龙绿
+      case MacaronColors.purple:
+        return const Color(0xFFD6A8D1); // 轻柔马卡龙紫
+      case MacaronColors.yellow:
+        return const Color(0xFFF9E6A6); // 轻柔马卡龙黄
+      case MacaronColors.peach:
+        return const Color(0xFFF2D2C7); // 轻柔马卡龙桃
+      default:
+        return Colors.transparent; // 默认颜色
+    }
+  }
+}

@@ -205,7 +205,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget currentIcon = iconDataToWidget(habit.icon, 18);
+    Widget currentIcon = iconDataToWidget(habit.icon, 18, 1);
 
     return PopScope(
       onPopInvoked: (a) {
