@@ -47,7 +47,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
   GlobalKey repaintWidgetKey = GlobalKey();
   List<GlobalKey> cardsKeys = [];
   bool reordering = false;
-  int durationType = 1;
+  int durationType = 0;
 
   @override
   void initState() {
@@ -654,6 +654,29 @@ class _HabitListScreenState extends State<HabitListScreen> {
   }
 
   List<Widget> buildList() {
+    if (durationType == 0) {
+      return [
+        Wrap(
+          alignment: WrapAlignment.start,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: List.generate(habits.length, (index) {
+            return HabitCardDay(
+              onChanged: () {
+                updateScore();
+                setState(() {});
+              },
+              mod: 2,
+              habit: habits[index],
+              habitRecord:
+                  habitsRecords[index].sublist(todayIndex, todayIndex + 1),
+              today: today,
+              bgColor: habitsbgColors[index],
+              ftColor: habitsftColors[index],
+            );
+          }),
+        )
+      ];
+    }
     if (reordering) {
       return [
         Expanded(
@@ -795,6 +818,21 @@ class _HabitListScreenState extends State<HabitListScreen> {
   ) {
     switch (durationType) {
       case 0:
+        return GestureDetector(
+            onTap: () {},
+            onLongPress: () {
+              reordering = true;
+              setState(() {});
+            },
+            child: HabitCardDay(
+              onChanged: onChanged,
+              mod: mod,
+              habit: habit,
+              habitRecord: habitRecords.sublist(todayIndex, todayIndex + 1),
+              today: today,
+              bgColor: bgColor,
+              ftColor: ftColor,
+            ));
       case 1:
         return GestureDetector(
             onTap: () {},

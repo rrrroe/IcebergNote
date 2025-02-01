@@ -12,6 +12,122 @@ import 'package:realm/realm.dart';
 
 NumberFormat numberFormatMaxf2 = NumberFormat('#.##');
 
+class HabitCardDay extends StatefulWidget {
+  final VoidCallback onChanged;
+  final int mod;
+  final Habit habit;
+  final List<HabitRecord?> habitRecord;
+  final DateTime today;
+  final Color bgColor;
+  final Color ftColor;
+
+  const HabitCardDay({
+    super.key,
+    required this.onChanged,
+    required this.mod, //0正常，1实例无法进一步跳转，2拖动模式
+    required this.habit,
+    required this.habitRecord,
+    required this.today,
+    required this.bgColor,
+    required this.ftColor,
+  });
+
+  @override
+  State<HabitCardDay> createState() => _HabitCardDayState();
+}
+
+class _HabitCardDayState extends State<HabitCardDay> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  bool isFinished() {
+    if (widget.habitRecord[0] == null) {
+      return false;
+    } else {
+      if (widget.habitRecord[0]!.value == 1) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  void saveRecord(index) {
+    DateTime now = DateTime.now();
+    realmHabitRecord.write(() {
+      if (widget.habitRecord[0] != null) {
+        if (widget.habitRecord[0]!.value == 0) {
+          widget.habitRecord[0]!.value = 1;
+        } else {
+          widget.habitRecord[0]!.value = 0;
+        }
+        widget.habitRecord[0]!.updateDate = now.toUtc();
+      } else {
+        widget.habitRecord[0] = HabitRecord(
+            Uuid.v4(),
+            widget.habit.id,
+            1,
+            widget.today
+                .add(Duration(days: index - widget.today.weekday + 1))
+                .add(Duration(hours: now.timeZoneOffset.inHours)),
+            now.toUtc(),
+            now.toUtc());
+        realmHabitRecord.add(widget.habitRecord[0]!);
+      }
+    });
+    syncHabitRecordToRemote(widget.habitRecord[0]!);
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget currentIcon = iconDataToWidget(widget.habit.icon, 40);
+    return Column(
+      children: [
+        Card(
+          margin: const EdgeInsets.fromLTRB(15, 5, 15, 2),
+          elevation: 0,
+          shadowColor: Colors.grey,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: widget.bgColor,
+              width: isFinished() ? 5 : 1,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: GestureDetector(
+              onTap: () {
+                saveRecord(widget.today.weekday - 1);
+                widget.onChanged();
+              },
+              child: Container(
+                  height: 45,
+                  width: 45,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black12, width: 0),
+                      borderRadius: BorderRadius.circular(8.0),
+                      color:
+                          widget.bgColor.withOpacity(isFinished() ? 0.7 : 0.1)),
+                  child: currentIcon),
+            ),
+          ),
+        ),
+        Text(
+          widget.habit.name,
+          style: TextStyle(color: widget.bgColor, fontSize: 14),
+        ),
+        const SizedBox(height: 5)
+      ],
+    );
+  }
+}
+
 class HabitCardWeek extends StatefulWidget {
   final VoidCallback onChanged;
   final VoidCallback delete;
@@ -42,8 +158,6 @@ class HabitCardWeek extends StatefulWidget {
 class _HabitCardWeekState extends State<HabitCardWeek> {
   @override
   void initState() {
-    if (widget.habit.icon != '') {}
-
     super.initState();
   }
 
