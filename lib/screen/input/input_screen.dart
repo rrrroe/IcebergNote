@@ -148,18 +148,18 @@ class ChangePageState extends State<ChangePage> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              save();
-              Navigator.pop(context);
-              widget.onPageClosed();
-            },
-          ),
-          title: const Text(""),
-          actions: const [],
-        ),
+        // appBar: AppBar(
+        //   leading: IconButton(
+        //     icon: const Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       save();
+        //       Navigator.pop(context);
+        //       widget.onPageClosed();
+        //     },
+        //   ),
+        //   title: const Text(""),
+        //   actions: const [],
+        // ),
         body: Stack(
           children: [
             Column(
@@ -174,6 +174,7 @@ class ChangePageState extends State<ChangePage> {
                           ),
                       child: Column(
                         children: [
+                          const SizedBox(height: 10),
                           TextField(
                             textAlign: TextAlign.center,
                             controller: titleController,
