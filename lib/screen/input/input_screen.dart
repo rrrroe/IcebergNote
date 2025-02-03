@@ -513,11 +513,19 @@ class ChangePageState extends State<ChangePage> {
                           Container(
                             constraints: const BoxConstraints(maxWidth: 800),
                             child: TextField(
+                              cursorHeight: 25,
+                              cursorWidth: 2,
                               focusNode: focusNode,
                               style: const TextStyle(
+                                  fontSize: 18,
+                                  height: 2,
+                                  wordSpacing: 4,
+                                  textBaseline: TextBaseline.ideographic),
+                              strutStyle: const StrutStyle(
                                 fontSize: 18,
-                                height: 2,
-                                wordSpacing: 4,
+                                height: 1.4,
+                                leading: 0.6,
+                                forceStrutHeight: true,
                               ),
                               controller: contentController,
                               decoration: const InputDecoration(
