@@ -799,18 +799,114 @@ class _HabitInputPageState extends State<HabitInputPage> {
                                 containerWight: 150,
                                 indents: 2,
                                 onSelect: (int index) {
-                                  habit.type = index;
+                                  if (widget.habit.type != index) {
+                                    if (index == 1) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('警告'),
+                                            content: const Text(
+                                                '修改习惯类型将会修改已有的习惯数据，是否需要将已存在的仅完成习惯记录迁移到计量数据中(已完成的习惯记录会将为0的计量数据修改为1)?\n误点或不确定请选择“否”'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                child: const Text('是'),
+                                                onPressed: () {
+                                                  habit.type = index;
+                                                  List<HabitRecord> records =
+                                                      realmHabitRecord.query<
+                                                              HabitRecord>(
+                                                          'habit == \$0 SORT(currentDate ASC)',
+                                                          [
+                                                        widget.habit.id
+                                                      ]).toList();
+                                                  for (int i = 0;
+                                                      i < records.length;
+                                                      i++) {
+                                                    realmHabitRecord.write(() {
+                                                      if (records[i].value ==
+                                                              1 &&
+                                                          records[i].data ==
+                                                              0) {
+                                                        records[i].data = 1;
+                                                      }
+                                                    });
+                                                  }
+                                                  Navigator.of(context).pop();
+                                                  setState(() {});
+                                                },
+                                              ),
+                                              TextButton(
+                                                child: const Text('否'),
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(); // 关闭弹窗
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    } else if (index == 0) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('警告'),
+                                            content: const Text(
+                                                '修改习惯类型将会修改已有的习惯数据，是否需要将已存在的计量习惯记录迁移到仅完成数据中(非零的习惯记录会将未完成的计量数据修改为已完成)?  \n误点或不确定请选择“否”'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                child: const Text('是'),
+                                                onPressed: () {
+                                                  habit.type = index;
+                                                  List<HabitRecord> records =
+                                                      realmHabitRecord.query<
+                                                              HabitRecord>(
+                                                          'habit == \$0 SORT(currentDate ASC)',
+                                                          [
+                                                        widget.habit.id
+                                                      ]).toList();
+                                                  for (int i = 0;
+                                                      i < records.length;
+                                                      i++) {
+                                                    realmHabitRecord.write(() {
+                                                      if (records[i].data >=
+                                                              0 &&
+                                                          records[i].value ==
+                                                              0) {
+                                                        records[i].value = 1;
+                                                      }
+                                                    });
+                                                  }
+                                                  Navigator.of(context).pop();
+                                                  setState(() {});
+                                                },
+                                              ),
+                                              TextButton(
+                                                child: const Text('否'),
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(); // 关闭弹窗
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    }
+                                  }
                                   setState(() {});
                                 },
                                 children: [
                                   Text(
-                                    '仅完成的',
+                                    '仅完成',
                                     style: TextStyle(
                                         color: ftColor,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
-                                    '可计量的',
+                                    '可计量',
                                     style: TextStyle(
                                         color: ftColor,
                                         fontWeight: FontWeight.bold),

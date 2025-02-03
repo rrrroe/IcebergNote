@@ -56,29 +56,36 @@ class _HabitCardDayState extends State<HabitCardDay> {
 
   void saveRecord(index) {
     DateTime now = DateTime.now();
-    realmHabitRecord.write(() {
-      if (widget.habitRecord[0] != null) {
-        if (widget.habitRecord[0]!.value == 0) {
-          widget.habitRecord[0]!.value = 1;
-        } else {
-          widget.habitRecord[0]!.value = 0;
-        }
-        widget.habitRecord[0]!.updateDate = now.toUtc();
-      } else {
-        widget.habitRecord[0] = HabitRecord(
-            Uuid.v4(),
-            widget.habit.id,
-            1,
-            widget.today
-                .add(Duration(days: index - widget.today.weekday + 1))
-                .add(Duration(hours: now.timeZoneOffset.inHours)),
-            now.toUtc(),
-            now.toUtc());
-        realmHabitRecord.add(widget.habitRecord[0]!);
-      }
-    });
-    syncHabitRecordToRemote(widget.habitRecord[0]!);
-    setState(() {});
+    // realmHabitRecord.write(() {
+    //   if (widget.habitRecord[0] != null) {
+    //     if (widget.habitRecord[0]!.value == 0) {
+    //       widget.habitRecord[0]!.value = 1;
+    //     } else {
+    //       widget.habitRecord[0]!.value = 0;
+    //     }
+    //     widget.habitRecord[0]!.updateDate = now.toUtc();
+    //   } else {
+    //     widget.habitRecord[0] = HabitRecord(
+    //         Uuid.v4(),
+    //         widget.habit.id,
+    //         1,
+    //         widget.today
+    //             .add(Duration(days: index - widget.today.weekday + 1))
+    //             .add(Duration(hours: now.timeZoneOffset.inHours)),
+    //         now.toUtc(),
+    //         now.toUtc());
+    //     realmHabitRecord.add(widget.habitRecord[0]!);
+    //   }
+    // });
+    // syncHabitRecordToRemote(widget.habitRecord[0]!);
+    // setState(() {});
+    saveSingleRecord(
+        widget.habitRecord[0],
+        widget.habit.id,
+        widget.today
+            .add(Duration(days: index - widget.today.weekday + 1))
+            .add(Duration(hours: now.timeZoneOffset.inHours)),
+        now);
   }
 
   @override
@@ -168,30 +175,36 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
     //     : widget.habitRecords[index]!.currentDate);
     if (widget.mod == 0) {
       DateTime now = DateTime.now();
-      realmHabitRecord.write(() {
-        if (widget.habitRecords[index] != null) {
-          if (widget.habitRecords[index]!.value == 0) {
-            widget.habitRecords[index]!.value = 1;
-          } else {
-            widget.habitRecords[index]!.value = 0;
-          }
-          widget.habitRecords[index]!.updateDate = now.toUtc();
-        } else {
-          widget.habitRecords[index] = HabitRecord(
-              Uuid.v4(),
-              widget.habit.id,
-              1,
-              widget.today
-                  .add(Duration(days: index - widget.today.weekday + 1))
-                  .add(Duration(hours: now.timeZoneOffset.inHours)),
-              now.toUtc(),
-              now.toUtc());
-          realmHabitRecord.add(widget.habitRecords[index]!);
-        }
-      });
-      syncHabitRecordToRemote(widget.habitRecords[index]!);
+      // realmHabitRecord.write(() {
+      //   if (widget.habitRecords[index] != null) {
+      //     if (widget.habitRecords[index]!.value == 0) {
+      //       widget.habitRecords[index]!.value = 1;
+      //     } else {
+      //       widget.habitRecords[index]!.value = 0;
+      //     }
+      //     widget.habitRecords[index]!.updateDate = now.toUtc();
+      //   } else {
+      //     widget.habitRecords[index] = HabitRecord(
+      //         Uuid.v4(),
+      //         widget.habit.id,
+      //         1,
+      //         widget.today
+      //             .add(Duration(days: index - widget.today.weekday + 1))
+      //             .add(Duration(hours: now.timeZoneOffset.inHours)),
+      //         now.toUtc(),
+      //         now.toUtc());
+      //     realmHabitRecord.add(widget.habitRecords[index]!);
+      //   }
+      // });
+      // syncHabitRecordToRemote(widget.habitRecords[index]!);
+      saveSingleRecord(
+          widget.habitRecords[index],
+          widget.habit.id,
+          widget.today
+              .add(Duration(days: index - widget.today.weekday + 1))
+              .add(Duration(hours: now.timeZoneOffset.inHours)),
+          now);
     }
-    setState(() {});
   }
 
   bool isFinished(int index) {
@@ -439,30 +452,36 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
   void saveRecord(index) {
     if (widget.mod == 0) {
       DateTime now = DateTime.now();
-      realmHabitRecord.write(() {
-        if (widget.habitRecords[index] != null) {
-          if (widget.habitRecords[index]!.value == 0) {
-            widget.habitRecords[index]!.value = 1;
-          } else {
-            widget.habitRecords[index]!.value = 0;
-          }
-          widget.habitRecords[index]!.updateDate = now.toUtc();
-        } else {
-          widget.habitRecords[index] = HabitRecord(
-              Uuid.v4(),
-              widget.habit.id,
-              1,
-              widget.today
-                  .add(Duration(days: index - widget.todayIndex))
-                  .add(Duration(hours: now.timeZoneOffset.inHours)),
-              now.toUtc(),
-              now.toUtc());
-          realmHabitRecord.add(widget.habitRecords[index]!);
-        }
-      });
-      syncHabitRecordToRemote(widget.habitRecords[index]!);
+      // realmHabitRecord.write(() {
+      //   if (widget.habitRecords[index] != null) {
+      //     if (widget.habitRecords[index]!.value == 0) {
+      //       widget.habitRecords[index]!.value = 1;
+      //     } else {
+      //       widget.habitRecords[index]!.value = 0;
+      //     }
+      //     widget.habitRecords[index]!.updateDate = now.toUtc();
+      //   } else {
+      //     widget.habitRecords[index] = HabitRecord(
+      //         Uuid.v4(),
+      //         widget.habit.id,
+      //         1,
+      //         widget.today
+      //             .add(Duration(days: index - widget.todayIndex))
+      //             .add(Duration(hours: now.timeZoneOffset.inHours)),
+      //         now.toUtc(),
+      //         now.toUtc());
+      //     realmHabitRecord.add(widget.habitRecords[index]!);
+      //   }
+      // });
+      // syncHabitRecordToRemote(widget.habitRecords[index]!);
+      saveSingleRecord(
+          widget.habitRecords[index],
+          widget.habit.id,
+          widget.today
+              .add(Duration(days: index - widget.todayIndex))
+              .add(Duration(hours: now.timeZoneOffset.inHours)),
+          now);
     }
-    setState(() {});
   }
 
   bool isFinished(int index) {
@@ -670,4 +689,23 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
       ),
     );
   }
+}
+
+void saveSingleRecord(
+    HabitRecord? record, Uuid habitId, DateTime currentDay, DateTime now) {
+  realmHabitRecord.write(() {
+    if (record != null) {
+      if (record!.value == 0) {
+        record!.value = 1;
+      } else {
+        record!.value = 0;
+      }
+      record!.updateDate = now.toUtc();
+    } else {
+      record = HabitRecord(
+          Uuid.v4(), habitId, 1, currentDay, now.toUtc(), now.toUtc());
+      realmHabitRecord.add(record!);
+    }
+  });
+  syncHabitRecordToRemote(record!);
 }
