@@ -182,7 +182,9 @@ class _HabitListScreenState extends State<HabitListScreen> {
       }
       for (int j = max(first, start); j < min(stop, last); j++) {
         if (habitsRecords[i][j] != null) {
-          score = score + habitsRecords[i][j]!.value;
+          score = score + habits[i].type == 1
+              ? habitsRecords[i][j]!.data
+              : habitsRecords[i][j]!.value;
           // print('j=$j:${habitsRecords[i][j]!.value}');
         } else {}
       }

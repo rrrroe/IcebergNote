@@ -807,7 +807,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
                                           return AlertDialog(
                                             title: const Text('警告'),
                                             content: const Text(
-                                                '修改习惯类型将会修改已有的习惯数据，是否需要将已存在的仅完成习惯记录迁移到计量数据中(已完成的习惯记录会将为0的计量数据修改为1)?\n误点或不确定请选择“否”'),
+                                                '修改习惯类型将会修改已有的习惯记录，是否需要将已存在的打卡习惯记录迁移到计量习惯记录中(已完成的打卡习惯记录会将“0”的计量习惯记录修改为“1”)?\n误点或不确定请选择“否”'),
                                             actions: <Widget>[
                                               TextButton(
                                                 child: const Text('是'),
@@ -854,7 +854,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
                                           return AlertDialog(
                                             title: const Text('警告'),
                                             content: const Text(
-                                                '修改习惯类型将会修改已有的习惯数据，是否需要将已存在的计量习惯记录迁移到仅完成数据中(非零的习惯记录会将未完成的计量数据修改为已完成)?  \n误点或不确定请选择“否”'),
+                                                '修改习惯类型将会修改已有的习惯记录，是否需要将已存在的计量习惯记录迁移到打卡习惯记录中(非零的计量习惯记录会将“未完成”的计量数据修改为“已完成”)?  \n误点或不确定请选择“否”'),
                                             actions: <Widget>[
                                               TextButton(
                                                 child: const Text('是'),
@@ -900,13 +900,13 @@ class _HabitInputPageState extends State<HabitInputPage> {
                                 },
                                 children: [
                                   Text(
-                                    '仅完成',
+                                    '打卡',
                                     style: TextStyle(
                                         color: ftColor,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
-                                    '可计量',
+                                    '计量',
                                     style: TextStyle(
                                         color: ftColor,
                                         fontWeight: FontWeight.bold),

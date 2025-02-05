@@ -47,7 +47,7 @@ class _Habit {
   late String string1 = '';
   late String string2 = '';
   late String string3 = '';
-  late int int1 = 0;
+  late int int1 = 0; //data 小数位数
   late int int2 = 0;
   late int int3 = 0;
   late int int4 = 0;

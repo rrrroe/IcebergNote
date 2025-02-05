@@ -41,3 +41,13 @@ Color list2color(List l) {
   }
   return Colors.black;
 }
+
+Color hexToColor(String hex) {
+  // 确保字符串是 8 位长的十六进制颜色代码
+  if (hex.length != 8) {
+    throw ArgumentError('Hex color must be 8 characters long, e.g., FF93C8D6');
+  }
+
+  // 解析颜色代码
+  return Color(int.parse(hex, radix: 16));
+}

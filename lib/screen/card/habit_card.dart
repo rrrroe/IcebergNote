@@ -3,12 +3,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/class/habit.dart';
+import 'package:icebergnote/extensions/color_extensions.dart';
 import 'package:icebergnote/extensions/icondata_serialization.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/input/habit_input.dart';
 import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
+import 'package:input_slider/input_slider.dart';
 
 NumberFormat numberFormatMaxf2 = NumberFormat('#.##');
 
@@ -43,14 +45,29 @@ class _HabitCardDayState extends State<HabitCardDay> {
   }
 
   bool isFinished() {
-    if (widget.habitRecord[0] == null) {
-      return false;
-    } else {
-      if (widget.habitRecord[0]!.value == 1) {
-        return true;
-      } else {
+    if (widget.habit.type == 0) {
+      if (widget.habitRecord[0] == null) {
         return false;
+      } else {
+        if (widget.habitRecord[0]!.value == 1) {
+          return true;
+        } else {
+          return false;
+        }
       }
+    } else if (widget.habit.type == 1) {
+      if (widget.habitRecord[0] == null) {
+        return false;
+      } else {
+        if (widget.habitRecord[0]!.data >=
+            widget.habit.freqDen / widget.habit.freqNum) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } else {
+      return false;
     }
   }
 
@@ -81,11 +98,13 @@ class _HabitCardDayState extends State<HabitCardDay> {
     // setState(() {});
     saveSingleRecord(
         widget.habitRecord[0],
-        widget.habit.id,
+        widget.habit,
         widget.today
             .add(Duration(days: index - widget.today.weekday + 1))
             .add(Duration(hours: now.timeZoneOffset.inHours)),
-        now);
+        now,
+        context,
+        widget.onChanged);
   }
 
   @override
@@ -199,23 +218,40 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
       // syncHabitRecordToRemote(widget.habitRecords[index]!);
       saveSingleRecord(
           widget.habitRecords[index],
-          widget.habit.id,
+          widget.habit,
           widget.today
               .add(Duration(days: index - widget.today.weekday + 1))
               .add(Duration(hours: now.timeZoneOffset.inHours)),
-          now);
+          now,
+          context,
+          widget.onChanged);
     }
   }
 
   bool isFinished(int index) {
-    if (widget.habitRecords[index] == null) {
-      return false;
-    } else {
-      if (widget.habitRecords[index]!.value == 1) {
-        return true;
-      } else {
+    if (widget.habit.type == 0) {
+      if (widget.habitRecords[index] == null) {
         return false;
+      } else {
+        if (widget.habitRecords[index]!.value == 1) {
+          return true;
+        } else {
+          return false;
+        }
       }
+    } else if (widget.habit.type == 1) {
+      if (widget.habitRecords[index] == null) {
+        return false;
+      } else {
+        if (widget.habitRecords[index]!.data >=
+            widget.habit.freqDen / widget.habit.freqNum) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } else {
+      return false;
     }
   }
 
@@ -476,23 +512,43 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
       // syncHabitRecordToRemote(widget.habitRecords[index]!);
       saveSingleRecord(
           widget.habitRecords[index],
-          widget.habit.id,
+          widget.habit,
           widget.today
               .add(Duration(days: index - widget.todayIndex))
               .add(Duration(hours: now.timeZoneOffset.inHours)),
-          now);
+          now,
+          context,
+          widget.onChanged);
     }
+    setState(() {
+      countScores();
+    });
   }
 
   bool isFinished(int index) {
-    if (widget.habitRecords[index] == null) {
-      return false;
-    } else {
-      if (widget.habitRecords[index]!.value == 1) {
-        return true;
-      } else {
+    if (widget.habit.type == 0) {
+      if (widget.habitRecords[index] == null) {
         return false;
+      } else {
+        if (widget.habitRecords[index]!.value == 1) {
+          return true;
+        } else {
+          return false;
+        }
       }
+    } else if (widget.habit.type == 1) {
+      if (widget.habitRecords[index] == null) {
+        return false;
+      } else {
+        if (widget.habitRecords[index]!.data >=
+            widget.habit.freqDen / widget.habit.freqNum) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } else {
+      return false;
     }
   }
 
@@ -691,21 +747,99 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
   }
 }
 
-void saveSingleRecord(
-    HabitRecord? record, Uuid habitId, DateTime currentDay, DateTime now) {
-  realmHabitRecord.write(() {
-    if (record != null) {
-      if (record!.value == 0) {
-        record!.value = 1;
+void saveSingleRecord(HabitRecord? record, Habit habit, DateTime currentDay,
+    DateTime now, BuildContext context, VoidCallback onChanged) {
+  if (habit.type == 0) {
+    realmHabitRecord.write(() {
+      if (record != null) {
+        if (record!.value == 0) {
+          record!.value = 1;
+        } else {
+          record!.value = 0;
+        }
+        record!.updateDate = now.toUtc();
       } else {
-        record!.value = 0;
+        record = HabitRecord(
+            Uuid.v4(), habit.id, 1, currentDay, now.toUtc(), now.toUtc());
+        realmHabitRecord.add(record!);
       }
-      record!.updateDate = now.toUtc();
-    } else {
-      record = HabitRecord(
-          Uuid.v4(), habitId, 1, currentDay, now.toUtc(), now.toUtc());
-      realmHabitRecord.add(record!);
-    }
-  });
-  syncHabitRecordToRemote(record!);
+    });
+    onChanged();
+    syncHabitRecordToRemote(record!);
+  } else if (habit.type == 1) {
+    double tmpdata = record != null ? record.data : 0;
+    Color color = hexToColor(habit.color);
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+          contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+          insetPadding: const EdgeInsets.all(20),
+          actionsPadding: const EdgeInsets.all(10),
+          title: Container(
+            width: 50,
+            height: 10,
+            padding: const EdgeInsets.all(0),
+            // color: Colors.white,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              InputSlider(
+                onChange: (value) {
+                  tmpdata = double.parse(value.toStringAsFixed(habit.int1));
+                },
+                min: 0.0,
+                max: 10.0,
+                decimalPlaces: habit.int1,
+                fillColor: color,
+                borderColor: color,
+                focusBorderColor: color,
+                activeSliderColor: color,
+                inactiveSliderColor: color,
+                leading: Text(
+                  habit.name,
+                  style: TextStyle(
+                      color: color, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                defaultValue: record == null ? 0 : record!.data,
+              )
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('取消', style: TextStyle(color: Colors.grey)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              onPressed: () {
+                realmHabitRecord.write(() {
+                  if (record != null) {
+                    record!.data = tmpdata;
+                    record!.updateDate = now.toUtc();
+                  } else {
+                    record = HabitRecord(
+                        Uuid.v4(),
+                        habit.id,
+                        tmpdata > 0 ? 1 : 0,
+                        currentDay,
+                        now.toUtc(),
+                        now.toUtc(),
+                        data: tmpdata);
+                    realmHabitRecord.add(record!);
+                  }
+                });
+                onChanged();
+                syncHabitRecordToRemote(record!);
+                Navigator.of(context).pop();
+              },
+              child: Text('确定', style: TextStyle(color: color)),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.spaceAround,
+        );
+      },
+    );
+  }
 }
