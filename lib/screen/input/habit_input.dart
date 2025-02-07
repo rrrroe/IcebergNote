@@ -100,6 +100,8 @@ class _HabitInputPageState extends State<HabitInputPage> {
   TextEditingController positionController = TextEditingController();
   TextEditingController targetValueController = TextEditingController();
   TextEditingController weightController = TextEditingController();
+  TextEditingController dataDecimalPlacestErrController =
+      TextEditingController();
 
   final bgColorTextController = TextEditingController(text: '#FF7062DB');
   final ftColorTextController = TextEditingController(text: '#FFFFFFFF');
@@ -113,6 +115,8 @@ class _HabitInputPageState extends State<HabitInputPage> {
   int? positionErr;
   double? targetValueErr;
   double? weightErr;
+  int? dataDecimalPlacestErr;
+
   Set<int> selection = <int>{};
   HabitRecord? tmpHabitRecord;
   @override
@@ -134,6 +138,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
     positionErr = habit.position;
     targetValueErr = habit.targetValue;
     weightErr = habit.weight;
+    dataDecimalPlacestErr = habit.int1;
     selection = <int>{};
     int sum = habit.reminderDay;
     if (sum >= 64) {
@@ -182,6 +187,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
     positionController.dispose();
     targetValueController.dispose();
     weightController.dispose();
+    dataDecimalPlacestErrController.dispose();
 
     super.dispose();
   }
@@ -916,6 +922,65 @@ class _HabitInputPageState extends State<HabitInputPage> {
                             ],
                           ),
                           const Divider(),
+                          Visibility(
+                              visible: habit.type == 1,
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        '小数位数',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Expanded(child: Container(height: 28)),
+                                      SlideSwitcher(
+                                        direction: Axis.horizontal,
+                                        initialIndex: widget.habit.int1,
+                                        containerColor: bgColor,
+                                        slidersColors: const [
+                                          Colors.transparent
+                                        ],
+                                        slidersBorder: Border.all(
+                                            color: Colors.white, width: 2),
+                                        containerBorder: Border.all(
+                                            color: Colors.white, width: 0),
+                                        containerHeight: 28,
+                                        containerWight: 100,
+                                        indents: 2,
+                                        onSelect: (int index) {
+                                          habit.int1 = index;
+                                          setState(() {});
+                                        },
+                                        children: [
+                                          Text(
+                                            '0',
+                                            style: TextStyle(
+                                                color: ftColor,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            '1',
+                                            style: TextStyle(
+                                                color: ftColor,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            '2',
+                                            style: TextStyle(
+                                                color: ftColor,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  const Divider(),
+                                ],
+                              )),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
