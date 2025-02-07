@@ -60,7 +60,7 @@ class _HabitCardDayState extends State<HabitCardDay> {
         return false;
       } else {
         if (widget.habitRecord[0]!.data >=
-            widget.habit.freqDen / widget.habit.freqNum) {
+            widget.habit.freqNum / widget.habit.freqDen) {
           return true;
         } else {
           return false;
@@ -244,7 +244,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
         return false;
       } else {
         if (widget.habitRecords[index]!.data >=
-            widget.habit.freqDen / widget.habit.freqNum) {
+            widget.habit.freqNum / widget.habit.freqDen) {
           return true;
         } else {
           return false;
@@ -541,7 +541,7 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
         return false;
       } else {
         if (widget.habitRecords[index]!.data >=
-            widget.habit.freqDen / widget.habit.freqNum) {
+            widget.habit.freqNum / widget.habit.freqDen) {
           return true;
         } else {
           return false;
