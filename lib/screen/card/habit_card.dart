@@ -12,6 +12,30 @@ import 'package:intl/intl.dart';
 import 'package:realm/realm.dart';
 import 'package:input_slider/input_slider.dart';
 
+double isFinished(Habit habit, HabitRecord? record) {
+  if (record == null) {
+    return 0;
+  } else {
+    if (habit.type == 0) {
+      if (record.value == 1) {
+        return 1;
+      } else {
+        return 0;
+      }
+    } else if (habit.type == 1) {
+      if (record.data >= habit.freqNum / habit.freqDen) {
+        return 1;
+      } else if (record.data < 0) {
+        return 0;
+      } else {
+        return record.data / habit.freqNum * habit.freqDen;
+      }
+    } else {
+      return 0;
+    }
+  }
+}
+
 NumberFormat numberFormatMaxf2 = NumberFormat('#.##');
 
 class HabitCardDay extends StatefulWidget {
@@ -42,33 +66,6 @@ class _HabitCardDayState extends State<HabitCardDay> {
   @override
   void initState() {
     super.initState();
-  }
-
-  bool isFinished() {
-    if (widget.habit.type == 0) {
-      if (widget.habitRecord[0] == null) {
-        return false;
-      } else {
-        if (widget.habitRecord[0]!.value == 1) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } else if (widget.habit.type == 1) {
-      if (widget.habitRecord[0] == null) {
-        return false;
-      } else {
-        if (widget.habitRecord[0]!.data >=
-            widget.habit.freqNum / widget.habit.freqDen) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
   }
 
   void saveRecord(index) {
@@ -109,8 +106,9 @@ class _HabitCardDayState extends State<HabitCardDay> {
 
   @override
   Widget build(BuildContext context) {
+    double score = isFinished(widget.habit, widget.habitRecord[0]);
     Widget currentIcon =
-        iconDataToWidget(widget.habit.icon, 40, isFinished() ? 1 : 0.5);
+        iconDataToWidget(widget.habit.icon, 40, score > 0 ? 1 : 0.1);
     return Column(
       children: [
         Card(
@@ -122,7 +120,7 @@ class _HabitCardDayState extends State<HabitCardDay> {
             borderRadius: BorderRadius.circular(20),
             side: BorderSide(
               color: widget.bgColor,
-              width: isFinished() ? 5 : 0.1,
+              width: score >= 1 ? 5 : 1,
             ),
           ),
           child: Padding(
@@ -137,10 +135,9 @@ class _HabitCardDayState extends State<HabitCardDay> {
                   width: 45,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black12, width: 0),
+                      border: Border.all(color: Colors.black12, width: 1),
                       borderRadius: BorderRadius.circular(8.0),
-                      color:
-                          widget.bgColor.withOpacity(isFinished() ? 0.7 : 0.1)),
+                      color: widget.bgColor.withOpacity(score)),
                   child: currentIcon),
             ),
           ),
@@ -228,33 +225,6 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
     }
   }
 
-  bool isFinished(int index) {
-    if (widget.habit.type == 0) {
-      if (widget.habitRecords[index] == null) {
-        return false;
-      } else {
-        if (widget.habitRecords[index]!.value == 1) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } else if (widget.habit.type == 1) {
-      if (widget.habitRecords[index] == null) {
-        return false;
-      } else {
-        if (widget.habitRecords[index]!.data >=
-            widget.habit.freqNum / widget.habit.freqDen) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-  }
-
   bool istoday(int index) {
     if (widget.today.weekday == index + 1) {
       return true;
@@ -266,6 +236,22 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
   @override
   Widget build(BuildContext context) {
     Widget currentIcon = iconDataToWidget(widget.habit.icon, 40, 1);
+    double sum = 0;
+    if (widget.habit.type == 0) {
+      for (int i = 0; i < widget.habitRecords.length; i++) {
+        if (widget.habitRecords[i] != null) {
+          sum += widget.habitRecords[i]!.value;
+        }
+      }
+    } else if (widget.habit.type == 1) {
+      for (int i = 0; i < widget.habitRecords.length; i++) {
+        if (widget.habitRecords[i] != null) {
+          sum += widget.habitRecords[i]!.data;
+        }
+      }
+    }
+    double score = sum / widget.habit.freqNum * widget.habit.freqDen / 7;
+
     return Card(
       margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       elevation: 0,
@@ -277,7 +263,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
           color: widget.bgColor,
           width: widget.mod == 2
               ? 5
-              : isFinished(widget.today.weekday - 1)
+              : score >= 1
                   ? 5
                   : 1,
         ),
@@ -331,6 +317,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                                   widget.onChanged();
                                 },
                                 child: Container(
+                                  alignment: Alignment.center,
                                   height: istoday(index) ? 22 : 18,
                                   width: istoday(index) ? 22 : 18,
                                   margin: const EdgeInsets.fromLTRB(2, 0, 1, 0),
@@ -341,9 +328,19 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                                               : Colors.black12,
                                           width: istoday(index) ? 3 : 1),
                                       borderRadius: BorderRadius.circular(3),
-                                      color: isFinished(index)
+                                      color: isFinished(widget.habit,
+                                                  widget.habitRecords[index]) >=
+                                              1
                                           ? widget.bgColor
-                                          : Colors.black12),
+                                          : isFinished(
+                                                      widget.habit,
+                                                      widget.habitRecords[
+                                                          index]) >
+                                                  0
+                                              ? widget.bgColor.withOpacity(0.5)
+                                              : Colors.grey.withOpacity(0.2)),
+                                  // child: Icon(Icons.verified_outlined,
+                                  //     size: 18, color: Colors.white),
                                 ),
                               )),
                     )
@@ -363,10 +360,7 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    saveRecord(widget.today.weekday - 1);
-                    widget.onChanged();
-                  },
+                  onTap: () {},
                   child: Container(
                     height: 50,
                     width: 50,
@@ -384,11 +378,12 @@ class _HabitCardWeekState extends State<HabitCardWeek> {
                           )
                         : Icon(
                             Icons.verified_outlined,
-                            size:
-                                isFinished(widget.today.weekday - 1) ? 50 : 35,
-                            color: isFinished(widget.today.weekday - 1)
+                            size: score >= 1 ? 50 : 35,
+                            color: score >= 1
                                 ? widget.bgColor
-                                : Colors.black12,
+                                : score > 0
+                                    ? widget.bgColor.withOpacity(0.3)
+                                    : Colors.white,
                           ),
                   ),
                 ),
@@ -525,33 +520,6 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
     });
   }
 
-  bool isFinished(int index) {
-    if (widget.habit.type == 0) {
-      if (widget.habitRecords[index] == null) {
-        return false;
-      } else {
-        if (widget.habitRecords[index]!.value == 1) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } else if (widget.habit.type == 1) {
-      if (widget.habitRecords[index] == null) {
-        return false;
-      } else {
-        if (widget.habitRecords[index]!.data >=
-            widget.habit.freqNum / widget.habit.freqDen) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     countScores();
@@ -636,7 +604,11 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
                                                       : 0),
                                               // borderRadius:
                                               //     BorderRadius.circular(0),
-                                              color: isFinished(i * 7 + j)
+                                              color: isFinished(
+                                                          widget.habit,
+                                                          widget.habitRecords[
+                                                              i * 7 + j]) >=
+                                                      1
                                                   ? widget.bgColor
                                                   : Colors.black12),
                                         ),
