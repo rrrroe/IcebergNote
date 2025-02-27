@@ -604,13 +604,16 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
                                                       : 0),
                                               // borderRadius:
                                               //     BorderRadius.circular(0),
-                                              color: isFinished(
-                                                          widget.habit,
-                                                          widget.habitRecords[
-                                                              i * 7 + j]) >=
-                                                      1
-                                                  ? widget.bgColor
-                                                  : Colors.black12),
+                                              color: (i * 7 + j) >=
+                                                      widget.habitRecords.length
+                                                  ? Colors.white
+                                                  : isFinished(
+                                                              widget.habit,
+                                                              widget.habitRecords[
+                                                                  i * 7 + j]) >=
+                                                          1
+                                                      ? widget.bgColor
+                                                      : Colors.black12),
                                         ),
                                       )),
                             ))),
@@ -741,6 +744,11 @@ void saveSingleRecord(HabitRecord? record, Habit habit, DateTime currentDay,
   } else if (habit.type == 1) {
     double tmpdata = record != null ? record.data : 0;
     Color color = hexToColor(habit.color);
+    if (habit.double1 == habit.double2) {
+      realmHabit.write(() {
+        habit.double2 = habit.double1 + 1;
+      });
+    }
     showDialog(
       context: context,
       builder: (ctx) {
@@ -762,8 +770,8 @@ void saveSingleRecord(HabitRecord? record, Habit habit, DateTime currentDay,
                 onChange: (value) {
                   tmpdata = double.parse(value.toStringAsFixed(habit.int1));
                 },
-                min: 0.0,
-                max: 10.0,
+                min: habit.double1,
+                max: habit.double2,
                 decimalPlaces: habit.int1,
                 fillColor: color,
                 borderColor: color,

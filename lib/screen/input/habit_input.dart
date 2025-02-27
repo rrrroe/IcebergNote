@@ -3,10 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:flutter_pickers/pickers.dart';
-import 'package:flutter_pickers/time_picker/model/date_mode.dart';
-import 'package:flutter_pickers/time_picker/model/pduration.dart';
-import 'package:flutter_pickers/time_picker/model/suffix.dart';
+// import 'package:flutter_pickers/pickers.dart';
+// import 'package:flutter_pickers/time_picker/model/date_mode.dart';
+// import 'package:flutter_pickers/time_picker/model/pduration.dart';
+// import 'package:flutter_pickers/time_picker/model/suffix.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:icebergnote/class/habit.dart';
@@ -102,6 +102,8 @@ class _HabitInputPageState extends State<HabitInputPage> {
   TextEditingController weightController = TextEditingController();
   TextEditingController dataDecimalPlacestErrController =
       TextEditingController();
+  TextEditingController dataUpperController = TextEditingController();
+  TextEditingController dataLowerController = TextEditingController();
 
   final bgColorTextController = TextEditingController(text: '#FF7062DB');
   final ftColorTextController = TextEditingController(text: '#FFFFFFFF');
@@ -115,6 +117,9 @@ class _HabitInputPageState extends State<HabitInputPage> {
   int? positionErr;
   double? targetValueErr;
   double? weightErr;
+  double? dataUpperErr;
+  double? dataLowerErr;
+
   int? dataDecimalPlacestErr;
 
   Set<int> selection = <int>{};
@@ -133,11 +138,16 @@ class _HabitInputPageState extends State<HabitInputPage> {
     positionController.text = habit.position.toString();
     targetValueController.text = habit.targetValue.toString();
     weightController.text = habit.weight.toString();
+    dataUpperController.text = habit.double2.toString();
+    dataLowerController.text = habit.double1.toString();
+    dataDecimalPlacestErrController.text = habit.int1.toString();
     freqDenErr = habit.freqDen;
     freqNumErr = habit.freqNum;
     positionErr = habit.position;
     targetValueErr = habit.targetValue;
     weightErr = habit.weight;
+    dataLowerErr = habit.double1;
+    dataUpperErr = habit.double2;
     dataDecimalPlacestErr = habit.int1;
     selection = <int>{};
     int sum = habit.reminderDay;
@@ -188,6 +198,8 @@ class _HabitInputPageState extends State<HabitInputPage> {
     targetValueController.dispose();
     weightController.dispose();
     dataDecimalPlacestErrController.dispose();
+    dataUpperController.dispose();
+    dataLowerController.dispose();
 
     super.dispose();
   }
@@ -990,37 +1002,37 @@ class _HabitInputPageState extends State<HabitInputPage> {
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                               Expanded(child: Container(height: 28)),
-                              SlideSwitcher(
-                                direction: Axis.horizontal,
-                                initialIndex: widget.habit.type,
-                                containerColor: bgColor,
-                                slidersColors: const [Colors.transparent],
-                                slidersBorder:
-                                    Border.all(color: Colors.white, width: 2),
-                                containerBorder:
-                                    Border.all(color: Colors.white, width: 0),
-                                containerHeight: 28,
-                                containerWight: 100,
-                                indents: 2,
-                                onSelect: (int index) {
-                                  habit.type = index;
-                                  setState(() {});
-                                },
-                                children: [
-                                  Text(
-                                    '至少',
-                                    style: TextStyle(
-                                        color: ftColor,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    '至多',
-                                    style: TextStyle(
-                                        color: ftColor,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
+                              // SlideSwitcher(
+                              //   direction: Axis.horizontal,
+                              //   initialIndex: widget.habit.type,
+                              //   containerColor: bgColor,
+                              //   slidersColors: const [Colors.transparent],
+                              //   slidersBorder:
+                              //       Border.all(color: Colors.white, width: 2),
+                              //   containerBorder:
+                              //       Border.all(color: Colors.white, width: 0),
+                              //   containerHeight: 28,
+                              //   containerWight: 100,
+                              //   indents: 2,
+                              //   onSelect: (int index) {
+                              //     habit.type = index;
+                              //     setState(() {});
+                              //   },
+                              //   children: [
+                              //     Text(
+                              //       '至少',
+                              //       style: TextStyle(
+                              //           color: ftColor,
+                              //           fontWeight: FontWeight.bold),
+                              //     ),
+                              //     Text(
+                              //       '至多',
+                              //       style: TextStyle(
+                              //           color: ftColor,
+                              //           fontWeight: FontWeight.bold),
+                              //     ),
+                              //   ],
+                              // ),
                               SizedBox(
                                 width: 50,
                                 child: TextField(
@@ -1057,7 +1069,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                '每次得分',
+                                '单次得分',
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
@@ -1091,54 +1103,34 @@ class _HabitInputPageState extends State<HabitInputPage> {
                               ),
                             ],
                           ),
-                          const Divider(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                '是否提醒',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              Expanded(child: Container(height: 28)),
-                              SizedBox(
-                                height: 20,
-                                child: Switch(
-                                    value: habit.reminder,
-                                    activeColor: bgColor,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        habit.reminder = value;
-                                      });
-                                    }),
-                              )
-                            ],
-                          ),
-                          const Divider(),
                           Visibility(
-                            visible: habit.reminder,
+                            visible: habit.type == 1,
                             child: Column(
                               children: [
+                                const Divider(),
                                 Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Text(
-                                      '提醒问句',
+                                      '计量习惯常用下限',
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    const SizedBox(width: 10, height: 28),
                                     Expanded(
                                       child: TextField(
+                                        keyboardType: TextInputType.number,
                                         textAlign: TextAlign.right,
-                                        controller: questionController,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        controller: dataLowerController,
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: dataLowerErr == null
+                                                ? Colors.red
+                                                : Colors.black),
                                         minLines: 1,
-                                        maxLines: 5,
+                                        maxLines: 1,
                                         decoration: const InputDecoration(
                                           border: InputBorder.none,
                                           contentPadding:
@@ -1146,187 +1138,303 @@ class _HabitInputPageState extends State<HabitInputPage> {
                                           isDense: true,
                                         ),
                                         onChanged: (value) async {
-                                          habit.question = value;
+                                          dataLowerErr = double.tryParse(value);
+                                          setState(() {});
+                                          if (dataLowerErr != null) {
+                                            habit.double1 = dataLowerErr!;
+                                          }
                                         },
                                       ),
                                     ),
                                   ],
                                 ),
-                                const Divider(),
-                                Row(
-                                  children: [
-                                    const Text(
-                                      '提醒时刻',
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Expanded(child: Container(height: 28)),
-                                    Container(
-                                      alignment: Alignment.centerLeft,
-                                      height: 28,
-                                      child: GestureDetector(
-                                        onTap: () async {
-                                          Pickers.showDatePicker(
-                                            context,
-                                            mode: DateMode.HM,
-                                            suffix: Suffix.normal(),
-                                            selectDate: PDuration(
-                                              hour: habit.reminderHour,
-                                              minute: habit.reminderMin,
-                                            ),
-                                            onConfirm: (p) {
-                                              setState(() {
-                                                if (p.hour != null) {
-                                                  habit.reminderHour = p.hour!;
-                                                }
-                                                if (p.minute != null) {
-                                                  habit.reminderMin = p.minute!;
-                                                }
-                                              });
-                                            },
-                                          );
-                                        },
-                                        child: Text(
-                                          '${habit.reminderHour}:${habit.reminderMin}',
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      '提醒日',
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SegmentedButton<int>(
-                                      emptySelectionAllowed: true,
-                                      segments: const [
-                                        ButtonSegment(
-                                            value: 1, label: Text('一')),
-                                        ButtonSegment(
-                                            value: 2, label: Text('二')),
-                                        ButtonSegment(
-                                            value: 4, label: Text('三')),
-                                        ButtonSegment(
-                                            value: 8, label: Text('四')),
-                                        ButtonSegment(
-                                            value: 16, label: Text('五')),
-                                        ButtonSegment(
-                                            value: 32, label: Text('六')),
-                                        ButtonSegment(
-                                            value: 64, label: Text('日')),
-                                      ],
-                                      style: const ButtonStyle(
-                                          visualDensity:
-                                              VisualDensity.standard),
-                                      onSelectionChanged: (newSelection) {
-                                        setState(() {
-                                          selection = newSelection;
-                                        });
-                                        habit.reminderDay = 0;
-                                        for (var value in newSelection) {
-                                          habit.reminderDay =
-                                              habit.reminderDay + value;
-                                        }
-                                      },
-                                      selected: selection,
-                                      multiSelectionEnabled: true,
-                                      showSelectedIcon: false,
-                                    ),
-                                    const SizedBox(width: 10, height: 28),
-                                  ],
-                                ),
-                                const Divider(),
                               ],
                             ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                '是否删除',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              Expanded(child: Container(height: 28)),
-                              SizedBox(
-                                height: 20,
-                                child: Switch(
-                                    value: habit.delete,
-                                    activeColor: bgColor,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        habit.delete = value;
-                                      });
-                                    }),
-                              )
-                            ],
-                          ),
-                          const Divider(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                '是否归档',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              Expanded(child: Container(height: 28)),
-                              SizedBox(
-                                height: 20,
-                                child: Switch(
-                                    value: habit.archived,
-                                    activeColor: bgColor,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        habit.archived = value;
-                                      });
-                                    }),
-                              )
-                            ],
-                          ),
-                          const Divider(),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Text(
-                                '备注',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(width: 10, height: 28),
-                              Expanded(
-                                child: TextField(
-                                  textAlign: TextAlign.right,
-                                  controller: descriptionController,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  minLines: 1,
-                                  maxLines: 5,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding:
-                                        EdgeInsets.symmetric(vertical: 0),
-                                    isDense: true,
-                                  ),
-                                  onChanged: (value) async {
-                                    habit.description = value;
-                                  },
+                          Visibility(
+                            visible: habit.type == 1,
+                            child: Column(
+                              children: [
+                                const Divider(),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      '计量习惯常用上限',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Expanded(
+                                      child: TextField(
+                                        keyboardType: TextInputType.number,
+                                        textAlign: TextAlign.right,
+                                        controller: dataUpperController,
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: dataUpperErr == null
+                                                ? Colors.red
+                                                : Colors.black),
+                                        minLines: 1,
+                                        maxLines: 1,
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          contentPadding:
+                                              EdgeInsets.symmetric(vertical: 0),
+                                          isDense: true,
+                                        ),
+                                        onChanged: (value) async {
+                                          dataUpperErr = double.tryParse(value);
+                                          setState(() {});
+                                          if (dataUpperErr != null) {
+                                            habit.double2 = dataUpperErr!;
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
+                          // const Divider(),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     const Text(
+                          //       '是否提醒',
+                          //       style: TextStyle(
+                          //           fontSize: 18, fontWeight: FontWeight.bold),
+                          //     ),
+                          //     Expanded(child: Container(height: 28)),
+                          //     SizedBox(
+                          //       height: 20,
+                          //       child: Switch(
+                          //           value: habit.reminder,
+                          //           activeColor: bgColor,
+                          //           onChanged: (value) {
+                          //             setState(() {
+                          //               habit.reminder = value;
+                          //             });
+                          //           }),
+                          //     )
+                          //   ],
+                          // ),
+                          // const Divider(),
+                          // Visibility(
+                          //   visible: habit.reminder,
+                          //   child: Column(
+                          //     children: [
+                          //       Row(
+                          //         crossAxisAlignment: CrossAxisAlignment.center,
+                          //         children: [
+                          //           const Text(
+                          //             '提醒问句',
+                          //             style: TextStyle(
+                          //                 fontSize: 18,
+                          //                 fontWeight: FontWeight.bold),
+                          //           ),
+                          //           const SizedBox(width: 10, height: 28),
+                          //           Expanded(
+                          //             child: TextField(
+                          //               textAlign: TextAlign.right,
+                          //               controller: questionController,
+                          //               style: const TextStyle(
+                          //                 fontSize: 18,
+                          //                 fontWeight: FontWeight.bold,
+                          //               ),
+                          //               minLines: 1,
+                          //               maxLines: 5,
+                          //               decoration: const InputDecoration(
+                          //                 border: InputBorder.none,
+                          //                 contentPadding:
+                          //                     EdgeInsets.symmetric(vertical: 0),
+                          //                 isDense: true,
+                          //               ),
+                          //               onChanged: (value) async {
+                          //                 habit.question = value;
+                          //               },
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //       const Divider(),
+                          //       Row(
+                          //         children: [
+                          //           const Text(
+                          //             '提醒时刻',
+                          //             style: TextStyle(
+                          //                 fontSize: 18,
+                          //                 fontWeight: FontWeight.bold),
+                          //           ),
+                          //           Expanded(child: Container(height: 28)),
+                          //           Container(
+                          //             alignment: Alignment.centerLeft,
+                          //             height: 28,
+                          //             child: GestureDetector(
+                          //               onTap: () async {
+                          //                 Pickers.showDatePicker(
+                          //                   context,
+                          //                   mode: DateMode.HM,
+                          //                   suffix: Suffix.normal(),
+                          //                   selectDate: PDuration(
+                          //                     hour: habit.reminderHour,
+                          //                     minute: habit.reminderMin,
+                          //                   ),
+                          //                   onConfirm: (p) {
+                          //                     setState(() {
+                          //                       if (p.hour != null) {
+                          //                         habit.reminderHour = p.hour!;
+                          //                       }
+                          //                       if (p.minute != null) {
+                          //                         habit.reminderMin = p.minute!;
+                          //                       }
+                          //                     });
+                          //                   },
+                          //                 );
+                          //               },
+                          //               child: Text(
+                          //                 '${habit.reminderHour}:${habit.reminderMin}',
+                          //                 style: const TextStyle(
+                          //                     fontSize: 18,
+                          //                     fontWeight: FontWeight.bold),
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //       const Divider(),
+                          //       Row(
+                          //         crossAxisAlignment: CrossAxisAlignment.center,
+                          //         children: [
+                          //           const Text(
+                          //             '提醒日',
+                          //             style: TextStyle(
+                          //                 fontSize: 18,
+                          //                 fontWeight: FontWeight.bold),
+                          //           ),
+                          //           SegmentedButton<int>(
+                          //             emptySelectionAllowed: true,
+                          //             segments: const [
+                          //               ButtonSegment(
+                          //                   value: 1, label: Text('一')),
+                          //               ButtonSegment(
+                          //                   value: 2, label: Text('二')),
+                          //               ButtonSegment(
+                          //                   value: 4, label: Text('三')),
+                          //               ButtonSegment(
+                          //                   value: 8, label: Text('四')),
+                          //               ButtonSegment(
+                          //                   value: 16, label: Text('五')),
+                          //               ButtonSegment(
+                          //                   value: 32, label: Text('六')),
+                          //               ButtonSegment(
+                          //                   value: 64, label: Text('日')),
+                          //             ],
+                          //             style: const ButtonStyle(
+                          //                 visualDensity:
+                          //                     VisualDensity.standard),
+                          //             onSelectionChanged: (newSelection) {
+                          //               setState(() {
+                          //                 selection = newSelection;
+                          //               });
+                          //               habit.reminderDay = 0;
+                          //               for (var value in newSelection) {
+                          //                 habit.reminderDay =
+                          //                     habit.reminderDay + value;
+                          //               }
+                          //             },
+                          //             selected: selection,
+                          //             multiSelectionEnabled: true,
+                          //             showSelectedIcon: false,
+                          //           ),
+                          //           const SizedBox(width: 10, height: 28),
+                          //         ],
+                          //       ),
+                          //       const Divider(),
+                          //     ],
+                          //   ),
+                          // ),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     const Text(
+                          //       '是否删除',
+                          //       style: TextStyle(
+                          //           fontSize: 18, fontWeight: FontWeight.bold),
+                          //     ),
+                          //     Expanded(child: Container(height: 28)),
+                          //     SizedBox(
+                          //       height: 20,
+                          //       child: Switch(
+                          //           value: habit.delete,
+                          //           activeColor: bgColor,
+                          //           onChanged: (value) {
+                          //             setState(() {
+                          //               habit.delete = value;
+                          //             });
+                          //           }),
+                          //     )
+                          //   ],
+                          // ),
+                          // const Divider(),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     const Text(
+                          //       '是否归档',
+                          //       style: TextStyle(
+                          //           fontSize: 18, fontWeight: FontWeight.bold),
+                          //     ),
+                          //     Expanded(child: Container(height: 28)),
+                          //     SizedBox(
+                          //       height: 20,
+                          //       child: Switch(
+                          //           value: habit.archived,
+                          //           activeColor: bgColor,
+                          //           onChanged: (value) {
+                          //             setState(() {
+                          //               habit.archived = value;
+                          //             });
+                          //           }),
+                          //     )
+                          //   ],
+                          // ),
+                          // const Divider(),
+                          // Row(
+                          //   crossAxisAlignment: CrossAxisAlignment.center,
+                          //   children: [
+                          //     const Text(
+                          //       '备注',
+                          //       style: TextStyle(
+                          //           fontSize: 18, fontWeight: FontWeight.bold),
+                          //     ),
+                          //     const SizedBox(width: 10, height: 28),
+                          //     Expanded(
+                          //       child: TextField(
+                          //         textAlign: TextAlign.right,
+                          //         controller: descriptionController,
+                          //         style: const TextStyle(
+                          //           fontSize: 18,
+                          //           fontWeight: FontWeight.bold,
+                          //         ),
+                          //         minLines: 1,
+                          //         maxLines: 5,
+                          //         decoration: const InputDecoration(
+                          //           border: InputBorder.none,
+                          //           contentPadding:
+                          //               EdgeInsets.symmetric(vertical: 0),
+                          //           isDense: true,
+                          //         ),
+                          //         onChanged: (value) async {
+                          //           habit.description = value;
+                          //         },
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                           const Divider(),
                         ],
                       ),

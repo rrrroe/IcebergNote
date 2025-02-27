@@ -52,8 +52,8 @@ class _Habit {
   late int int3 = 0;
   late int int4 = 0;
   late int int5 = 0;
-  late double double1 = 0;
-  late double double2 = 0;
+  late double double1 = 0; //手动输入滑块下限
+  late double double2 = 0; //手动输入滑块上限
   late double double3 = 0;
   late bool bool1 = false;
   late bool bool2 = false;

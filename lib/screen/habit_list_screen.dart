@@ -67,6 +67,11 @@ class _HabitListScreenState extends State<HabitListScreen> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void dateInit() {
     todayOffsetWeekYear = offsetWeekYear(today);
 
@@ -491,13 +496,50 @@ class _HabitListScreenState extends State<HabitListScreen> {
         ),
       );
     } else {
-      return SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: RepaintBoundary(
-          key: repaintWidgetKey,
-          child: Container(
-            color: Colors.white,
-            child: Column(children: buildTitle() + buildList()),
+      return Dismissible(
+        key: Key(today.toString()),
+        onDismissed: (direction) {
+          // 判断是左滑还是右滑
+          if (direction == DismissDirection.startToEnd) {
+            // 右滑,切换到前一天
+            setState(() {
+              if (durationType == 0) {
+                today = today.add(const Duration(days: -1));
+              } else if (durationType == 1) {
+                today = today.add(const Duration(days: -7));
+              } else if (durationType == 2) {
+                today = firstDay.add(Duration(days: firstDay7Week - 1));
+              } else if (durationType == 3) {
+                today = DateTime(today.year - 1, today.month, today.day);
+              }
+              dateInit();
+              dataInit();
+            });
+          } else {
+            // 左滑,切换到后一天
+            setState(() {
+              if (durationType == 0) {
+                today = today.add(const Duration(days: 1));
+              } else if (durationType == 1) {
+                today = today.add(const Duration(days: 7));
+              } else if (durationType == 2) {
+                today = firstDay.add(Duration(days: lastDay7Week));
+              } else if (durationType == 3) {
+                today = DateTime(today.year + 1, today.month, today.day);
+              }
+              dateInit();
+              dataInit();
+            });
+          }
+        },
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: RepaintBoundary(
+            key: repaintWidgetKey,
+            child: Container(
+              color: Colors.white,
+              child: Column(children: buildTitle() + buildList()),
+            ),
           ),
         ),
       );
@@ -807,6 +849,10 @@ class _HabitListScreenState extends State<HabitListScreen> {
     }
   }
 
+  List<Widget> buildTail() {
+    return [];
+  }
+
   Widget buildCard(
     int durationType,
     VoidCallback onChanged,
@@ -920,31 +966,6 @@ class _HabitListScreenState extends State<HabitListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButton: GestureDetector(
-      //   onLongPress: () {},
-      //   child: FloatingActionButton(
-      //     onPressed: () {
-      //       DateTime now = DateTime.now();
-      //       Habit habit = Habit(
-      //           Uuid.v4(),
-      //           now.toUtc(),
-      //           DateTime(now.year, now.month, now.day),
-      //           now.toUtc(),
-      //           DateTime(now.year, now.month, now.day));
-      //       Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //           builder: (context) => HabitInputPage(
-      //             onPageClosed: () {},
-      //             mod: 0,
-      //             habit: habit,
-      //           ),
-      //         ),
-      //       );
-      //     },
-      //     child: const Icon(Icons.add),
-      //   ),
-      // ),
       body: buildBody(),
     );
   }
