@@ -236,7 +236,7 @@ class _HabitInputPageState extends State<HabitInputPage> {
             Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 0),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(
