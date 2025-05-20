@@ -525,8 +525,8 @@ class ChangePageState extends State<ChangePage> {
                                   textBaseline: TextBaseline.ideographic),
                               strutStyle: const StrutStyle(
                                 fontSize: 18,
-                                height: 1.4,
-                                leading: 0.6,
+                                height: 1.6,
+                                leading: 0,
                                 forceStrutHeight: true,
                               ),
                               controller: contentController,
@@ -537,6 +537,9 @@ class ChangePageState extends State<ChangePage> {
                               minLines: 6,
                               onChanged: _onContextChanged,
                             ),
+                          ),
+                          const SizedBox(
+                            height: 10,
                           ),
                         ],
                       ),
@@ -606,6 +609,33 @@ class ChangePageState extends State<ChangePage> {
                         poplog(true, '复制', context);
                       },
                       child: const Text('复制'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            width: 225,
+                            content: Text(
+                              '字      数  ${widget.note.noteContext.length + widget.note.noteTitle.length}\n创建时间  ${widget.note.noteCreateDate.toLocal().toString().substring(0, 16)}\n修改时间  ${widget.note.noteUpdateDate.toLocal().toString().substring(0, 16)}',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
+                              ),
+                            ),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                            shape: RoundedRectangleBorder(
+                              // 设置形状
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(seconds: 2),
+                            elevation: 8.0,
+                          ),
+                        );
+                      },
+                      child: const Text('统计'),
                     ),
                     TextButton(
                       onPressed: () async {
