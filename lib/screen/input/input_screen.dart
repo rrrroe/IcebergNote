@@ -204,6 +204,7 @@ class ChangePageState extends State<ChangePage> {
                           //     Text('${wordCount1 + wordCount2}字符'),
                           //   ],
                           // ),
+                          const SizedBox(height: 15),
                           Wrap(
                             direction: Axis.horizontal,
                             alignment: WrapAlignment.start, // Left align
