@@ -149,7 +149,8 @@ class BottomPopSheet extends StatelessWidget {
                 note.noteUpdateDate = DateTime.now().toUtc();
                 note.noteDeleteDate = DateTime.now().toUtc();
               });
-              onDialogClosed();
+              syncNoteToRemote(note);
+              mainnotesList.reinit(0);
               Navigator.pop(context);
             },
           ),
@@ -1065,7 +1066,7 @@ class BottomPopSheetDeleted extends StatelessWidget {
                 note.noteIsDeleted = false;
                 note.noteUpdateDate = DateTime.now().toUtc();
               });
-              onDialogClosed();
+              mainnotesList.reinit(0);
               Navigator.pop(context);
             },
           ),
@@ -1076,7 +1077,7 @@ class BottomPopSheetDeleted extends StatelessWidget {
               realm.write(() {
                 realm.delete(note);
               });
-              onDialogClosed();
+              mainnotesList.reinit(0);
               Navigator.pop(context);
             },
           ),
