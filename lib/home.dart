@@ -8,6 +8,7 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:icebergnote/main.dart';
 import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/habit_list_screen.dart';
 import 'package:icebergnote/screen/login_screen.dart';
@@ -253,6 +254,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         autoDismiss: true)
                     .show(context);
               }
+              mainnotesList.reinit(0);
             },
           ),
           PopupMenuButton(

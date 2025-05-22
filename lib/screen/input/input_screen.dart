@@ -641,8 +641,9 @@ class ChangePageState extends State<ChangePage> {
                       onPressed: () async {
                         save();
                         syncNoteToRemote(widget.note);
+                        mainnotesList.reinit(0);
                         Navigator.pop(context);
-                        widget.onPageClosed();
+                        // widget.onPageClosed();
                       },
                       child: const Text('保存'),
                     ),
