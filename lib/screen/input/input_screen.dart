@@ -515,7 +515,7 @@ class ChangePageState extends State<ChangePage> {
                           Container(
                             constraints: const BoxConstraints(maxWidth: 800),
                             child: TextField(
-                              cursorHeight: 25,
+                              cursorHeight: 28,
                               cursorWidth: 2,
                               focusNode: focusNode,
                               style: const TextStyle(
