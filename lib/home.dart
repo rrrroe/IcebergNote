@@ -221,7 +221,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           //   handleBrightnessChange: widget.handleBrightnessChange,
           //   showTooltipBelow: false,
           // ),
-          
+
           IconButton(
             icon: const Icon(Icons.cloud_queue_rounded),
             onPressed: () async {

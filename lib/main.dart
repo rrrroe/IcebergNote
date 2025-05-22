@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:cherry_toast/cherry_toast.dart';
+import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -57,6 +59,7 @@ class NotesList {
         });
       }
     }
+    Get.forceAppUpdate();
   }
 
   search(String n, int m) {
@@ -149,16 +152,80 @@ void main() async {
   getUniqueId();
   recordTemplateInit();
 
-  try {
-    await exchangeSmart().timeout(const Duration(seconds: 3));
-  } catch (e) {
-    if (kDebugMode) {
-      print('超时:$e');
-    }
-  }
+  // try {
+  //   await exchangeSmart().timeout(const Duration(seconds: 3));
+  // } catch (e) {
+  //   if (kDebugMode) {
+  //     print('超时:$e');
+  //   }
+  // }
   runApp(
     const App(),
   );
+
+  // 在应用启动后执行同步
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    try {
+      await exchangeSmart().timeout(const Duration(seconds: 10));
+      mainnotesList.reinit(0);
+      CherryToast(
+              icon: Icons.cloud_done_outlined,
+              iconColor: Colors.green,
+              themeColor: Colors.grey,
+              description:
+                  const Text('远程同步完成', style: TextStyle(color: Colors.black)),
+              toastPosition: Position.bottom,
+              animationType: AnimationType.fromBottom,
+              animationDuration: const Duration(milliseconds: 1000),
+              autoDismiss: true)
+          .show(Get.context!);
+    } catch (e) {
+      if (kDebugMode) {
+        print('同步失败: $e');
+      }
+      CherryToast(
+              icon: Icons.error_outline_outlined,
+              iconColor: Colors.red,
+              themeColor: Colors.grey,
+              description:
+                  const Text('远程同步失败', style: TextStyle(color: Colors.black)),
+              toastPosition: Position.bottom,
+              animationType: AnimationType.fromBottom,
+              animationDuration: const Duration(milliseconds: 1000),
+              autoDismiss: true)
+          .show(Get.context!);
+      try {
+        await exchangeSmart().timeout(const Duration(seconds: 10));
+        mainnotesList.reinit(0);
+        CherryToast(
+                icon: Icons.cloud_done_outlined,
+                iconColor: Colors.green,
+                themeColor: Colors.grey,
+                description:
+                    const Text('远程同步完成', style: TextStyle(color: Colors.black)),
+                toastPosition: Position.bottom,
+                animationType: AnimationType.fromBottom,
+                animationDuration: const Duration(milliseconds: 1000),
+                autoDismiss: true)
+            .show(Get.context!);
+      } catch (e) {
+        if (kDebugMode) {
+          print('重试失败: $e');
+        }
+        CherryToast(
+                icon: Icons.error_outline_outlined,
+                iconColor: Colors.red,
+                themeColor: Colors.grey,
+                description:
+                    const Text('远程重试失败', style: TextStyle(color: Colors.black)),
+                toastPosition: Position.bottom,
+                animationType: AnimationType.fromBottom,
+                animationDuration: const Duration(milliseconds: 1000),
+                autoDismiss: true)
+            .show(Get.context!);
+      }
+    }
+  });
 }
 
 class App extends StatefulWidget {
