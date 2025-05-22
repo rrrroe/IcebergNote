@@ -512,8 +512,8 @@ class RecordChangePageState extends State<RecordChangePage> {
                       onPressed: () async {
                         save();
                         syncNoteToRemote(widget.note);
+                        mainnotesList.reinit(0);
                         Navigator.pop(context);
-                        widget.onPageClosed();
                       },
                       child: const Text('保存'),
                     ),
@@ -2495,8 +2495,8 @@ class RecordTemplateChangePageState extends State<RecordTemplateChangePage> {
                       onPressed: () async {
                         save();
                         syncNoteToRemote(widget.note);
+                        mainnotesList.reinit(0);
                         Navigator.pop(context);
-                        widget.onPageClosed();
                       },
                       child: const Text('保存'),
                     ),
