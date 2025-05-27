@@ -162,7 +162,8 @@ class BottomPopSheet extends StatelessWidget {
                 note.noteIsStarred = !note.noteIsStarred;
                 note.noteUpdateDate = DateTime.now().toUtc();
               });
-              onDialogClosed();
+              syncNoteToRemote(note);
+              mainnotesList.reinit(0);
               Navigator.pop(context);
             },
           ),

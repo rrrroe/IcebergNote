@@ -275,12 +275,14 @@ class _AppState extends State<App> {
     return GetMaterialApp(
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: const [
         Locale('en', 'US'), // English
         Locale('zh', 'CN'), // Thai
       ],
+      locale: const Locale('zh', 'CN'),
       debugShowCheckedModeBanner: false,
       title: 'Material 3',
       themeMode: themeMode,
