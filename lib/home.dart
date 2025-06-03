@@ -236,9 +236,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         themeColor: Colors.grey,
                         description: const Text('远程同步完成',
                             style: TextStyle(color: Colors.black)),
-                        toastPosition: Position.bottom,
-                        animationType: AnimationType.fromBottom,
-                        animationDuration: const Duration(milliseconds: 1000),
+                        toastPosition: Position.top,
+                        animationType: AnimationType.fromTop,
+                        animationDuration: const Duration(milliseconds: 400),
+                        toastDuration: const Duration(milliseconds: 1000),
                         autoDismiss: true)
                     .show(context);
               } else {
@@ -248,9 +249,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         themeColor: Colors.grey,
                         description: const Text('远程同步失败',
                             style: TextStyle(color: Colors.black)),
-                        toastPosition: Position.bottom,
-                        animationType: AnimationType.fromBottom,
-                        animationDuration: const Duration(milliseconds: 1000),
+                        toastPosition: Position.top,
+                        animationType: AnimationType.fromTop,
+                        animationDuration: const Duration(milliseconds: 400),
+                        toastDuration: const Duration(milliseconds: 1000),
                         autoDismiss: true)
                     .show(context);
               }
