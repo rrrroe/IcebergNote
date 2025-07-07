@@ -459,9 +459,12 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
       if (widget.habitRecords[i] != null) {
         if (widget.habitRecords[i]!.value == 1) {
           daySum++;
-          numSum = numSum + widget.habitRecords[i]!.value;
-          scoreSum =
-              scoreSum + widget.habitRecords[i]!.value * widget.habit.weight;
+          if (widget.habit.type == 0) {
+            numSum = numSum + widget.habitRecords[i]!.value;
+          } else if (widget.habit.type == 1) {
+            numSum = numSum + widget.habitRecords[i]!.data;
+          }
+          scoreSum = scoreSum + widget.habitRecords[i]!.score;
           currentSeq++;
           if (currentSeq > maxSeq) {
             maxSeq = currentSeq;
@@ -729,13 +732,16 @@ void saveSingleRecord(HabitRecord? record, Habit habit, DateTime currentDay,
       if (record != null) {
         if (record!.value == 0) {
           record!.value = 1;
+          record!.score = record!.value * habit.weight;
         } else {
           record!.value = 0;
+          record!.score = 0;
         }
         record!.updateDate = now.toUtc();
       } else {
         record = HabitRecord(
-            Uuid.v4(), habit.id, 1, currentDay, now.toUtc(), now.toUtc());
+            Uuid.v4(), habit.id, 1, currentDay, now.toUtc(), now.toUtc(),
+            score: 1 * habit.weight);
         realmHabitRecord.add(record!);
       }
     });
@@ -746,7 +752,7 @@ void saveSingleRecord(HabitRecord? record, Habit habit, DateTime currentDay,
     Color color = hexToColor(habit.color);
     if (habit.double1 == habit.double2) {
       realmHabit.write(() {
-        habit.double2 = habit.double1 + 1;
+        habit.double2 = habit.double1 + 1; // 将滑块最大值设为最小值+1，保证有效区间
       });
     }
     showDialog(
@@ -797,6 +803,7 @@ void saveSingleRecord(HabitRecord? record, Habit habit, DateTime currentDay,
                 realmHabitRecord.write(() {
                   if (record != null) {
                     record!.data = tmpdata;
+                    record!.score = tmpdata * habit.weight;
                     record!.updateDate = now.toUtc();
                   } else {
                     record = HabitRecord(
@@ -806,7 +813,8 @@ void saveSingleRecord(HabitRecord? record, Habit habit, DateTime currentDay,
                         currentDay,
                         now.toUtc(),
                         now.toUtc(),
-                        data: tmpdata);
+                        data: tmpdata,
+                        score: tmpdata * habit.weight);
                     realmHabitRecord.add(record!);
                   }
                 });

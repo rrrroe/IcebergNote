@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:icebergnote/class/habit.dart';
+import 'package:icebergnote/extensions/color_extensions.dart';
 import 'package:icebergnote/extensions/date_extensions.dart';
 import 'package:icebergnote/extensions/screenshot_extensions.dart';
 import 'package:icebergnote/main.dart';
@@ -187,11 +187,12 @@ class _HabitListScreenState extends State<HabitListScreen> {
       }
       for (int j = max(first, start); j < min(stop, last); j++) {
         if (habitsRecords[i][j] != null) {
-          if (habits[i].type == 1) {
-            score = score + habitsRecords[i][j]!.data;
-          } else {
-            score = score + habitsRecords[i][j]!.value;
-          }
+          // if (habits[i].type == 1) {
+          //   score = score + habitsRecords[i][j]!.data;
+          // } else {
+          //   score = score + habitsRecords[i][j]!.value;
+          // }
+          score = score + habitsRecords[i][j]!.score;
         } else {}
       }
       scores = scores + score * habits[i].weight;
