@@ -1467,6 +1467,50 @@ class _HabitInputPageState extends State<HabitInputPage> {
                     ),
                     TextButton(
                       onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('警告'),
+                              content: const Text(
+                                  '修改习惯类型将会修改已有的习惯记录，是否需要将已存在的打卡习惯记录迁移到计量习惯记录中(已完成的打卡习惯记录会将“0”的计量习惯记录修改为“1”)?\n不确定请选择“否”'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('是'),
+                                  onPressed: () {
+                                    List<HabitRecord> records = realmHabitRecord
+                                        .query<HabitRecord>(
+                                            'habit == \$0 SORT(currentDate ASC)',
+                                            [widget.habit.id]).toList();
+                                    if (habit.type == 0) {
+                                      for (int i = 0; i < records.length; i++) {
+                                        realmHabitRecord.write(() {
+                                          records[i].score =
+                                              records[i].value * habit.weight;
+                                        });
+                                      }
+                                    } else if (habit.type == 1) {
+                                      for (int i = 0; i < records.length; i++) {
+                                        realmHabitRecord.write(() {
+                                          records[i].score =
+                                              records[i].data * habit.weight;
+                                        });
+                                      }
+                                    }
+                                    Navigator.of(context).pop();
+                                    setState(() {});
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('否'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); // 关闭弹窗
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
                         save();
 
                         Navigator.pop(context);
