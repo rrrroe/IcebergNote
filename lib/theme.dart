@@ -60,9 +60,7 @@ extension MacaronColorExtension on MacaronColors {
       case MacaronColors.yellow:
         return const Color(0xFFF9E6A6); // 轻柔马卡龙黄
       case MacaronColors.peach:
-        return const Color(0xFFF2D2C7); // 轻柔马卡龙桃
-      default:
-        return Colors.transparent; // 默认颜色
+        return const Color(0xFFF2D2C7); // 默认颜色
     }
   }
 }

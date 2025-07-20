@@ -84,8 +84,6 @@ Map<String, dynamic>? serializeIcon(IconData icon, {IconPack? iconPack}) {
           'matchTextDirection': icon.matchTextDirection,
         }
       };
-    default:
-      return null;
   }
 }
 

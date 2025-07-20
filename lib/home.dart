@@ -181,8 +181,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             ),
           ),
         );
-      default:
-        return starPage;
     }
   }
 
