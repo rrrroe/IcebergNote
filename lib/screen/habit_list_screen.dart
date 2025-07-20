@@ -195,15 +195,14 @@ class _HabitListScreenState extends State<HabitListScreen> {
           score = score + habitsRecords[i][j]!.score;
         } else {}
       }
-      scores = scores + score * habits[i].weight;
+      scores = scores + score;
       weights = weights +
           habits[i].weight *
               habits[i].freqNum /
               habits[i].freqDen *
               (last - first);
-      segments.add(Segment(
-          value: (score * habits[i].weight).toInt(),
-          color: hexToColor(habits[i].color)));
+      segments.add(
+          Segment(value: (score).toInt(), color: hexToColor(habits[i].color)));
       // print('${habits[i].name}:$start~$stop');
       // print('${habits[i].name}:$start+$stop');
     }
