@@ -551,10 +551,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_iconpicker
-      sha256: b2f33c2e4b1cd09bddbcca9019fcf8e54a676acb35c1992d93b91b4274c2cf77
+      sha256: d53b35bcb73325fcfdd36931769a8e7ff33b38e3b7c39b518a226fd0a5f3dc29
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.6.6"
+    version: "4.0.1"
   flutter_keyboard_visibility:
     dependency: "direct main"
     description:

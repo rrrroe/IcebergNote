@@ -72,7 +72,7 @@ dependencies:
   html: ^0.15.4
   flutter_colorpicker: ^1.1.0
   slide_switcher: ^1.1.2
-  flutter_iconpicker: ^3.4.5
+  flutter_iconpicker: ^4.0.1
   flutter_svg: ^2.0.10+1
   primer_progress_bar: ^0.4.2
   cherry_toast: ^1.11.0

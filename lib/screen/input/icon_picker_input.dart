@@ -1,7 +1,7 @@
 import 'package:icebergnote/constants.dart';
+import 'package:icebergnote/extensions/icondata_serialization.dart';
 import 'package:unicode_emojis/unicode_emojis.dart';
 import 'package:flutter/material.dart';
-import 'package:icebergnote/extensions/icondata_serialization.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 
