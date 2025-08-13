@@ -22,6 +22,7 @@ import 'package:icebergnote/screen/card/normal_card.dart';
 import 'package:icebergnote/screen/input/anniversary_input.dart';
 import 'package:icebergnote/screen/input/input_screen.dart';
 import 'package:icebergnote/class/notes.dart';
+import 'package:icebergnote/screen/richtext/richtext_input.dart';
 import 'package:icebergnote/screen/widget/poplog.dart';
 import 'package:realm/realm.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -267,6 +268,29 @@ class BottomNoteTypeSheet extends StatelessWidget {
                             },
                             mod: 0,
                             anniversary: anniversary,
+                          ));
+                    } else if (noteTypeList[index] == '.长文') {
+                      Navigator.pop(context);
+                      Notes note = Notes(
+                          Uuid.v4(),
+                          '',
+                          '',
+                          '',
+                          DateTime.now().toUtc(),
+                          DateTime.now().toUtc(),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          DateTime.utc(1970, 1, 1),
+                          noteType: noteTypeList[index]);
+                      realm.write(() {
+                        realm.add<Notes>(note, update: true);
+                      });
+                      Get.to(() => RichTextPage(
+                            note: note,
+                            onPageClosed: () {
+                              onDialogClosed();
+                            },
                           ));
                     } else {
                       Navigator.pop(context);

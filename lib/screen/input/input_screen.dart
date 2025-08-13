@@ -12,7 +12,6 @@ import '../../class/notes.dart';
 import '../../main.dart';
 import 'check_list_input.dart';
 import 'record_input.dart';
-import 'rich_input_screen.dart';
 
 String tmpTitle = "", tmpContext = "";
 late Notes latestNote;
@@ -583,8 +582,6 @@ class ChangePageState extends State<ChangePage> {
                                 note: widget.note,
                                 onPageClosed: () {},
                               ));
-                        } else {
-                          Get.to(const RichEditorPage());
                         }
                       },
                       child: const Text('高级'),
