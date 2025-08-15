@@ -52,7 +52,7 @@ dependencies:
   pull_to_refresh: ^2.0.0
   flutter_rounded_date_picker: ^3.0.4
   flutter_pickers: ^2.1.9
-  image_gallery_saver: ^2.0.3
+  #image_gallery_saver: ^2.0.3
   # permission_handler: ^10.4.3
   group_button: ^5.3.3
   intl: ^0.20.2
