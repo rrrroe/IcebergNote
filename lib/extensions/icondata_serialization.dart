@@ -22,7 +22,7 @@ Widget iconDataToWidget(String s, double size, double opacity) {
           opacity: opacity, // 设置透明度
           child: Container(
             alignment: Alignment.center, // 确保容器中的子组件居中
-            padding: EdgeInsets.all(0),
+            padding: const EdgeInsets.all(0),
             child: FittedBox(
               fit: BoxFit.scaleDown, // 防止文字溢出
               child: Text(

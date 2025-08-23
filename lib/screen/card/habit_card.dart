@@ -725,6 +725,337 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
   }
 }
 
+class HabitCardYear extends StatefulWidget {
+  final VoidCallback onChanged;
+  final int mod;
+  final Habit habit;
+  final List<HabitRecord?> habitRecords;
+  final DateTime today;
+  final int todayIndex;
+  final int index;
+  final Color bgColor;
+  final Color ftColor;
+
+  const HabitCardYear(
+      {super.key,
+      required this.onChanged,
+      required this.mod, //0正常，1实例无法进一步跳转，2拖动模式
+      required this.habit,
+      required this.habitRecords,
+      required this.today,
+      required this.todayIndex,
+      required this.index,
+      required this.bgColor,
+      required this.ftColor});
+
+  @override
+  State<HabitCardYear> createState() => _HabitCardYearState();
+}
+
+class _HabitCardYearState extends State<HabitCardYear> {
+  int daySum = 0;
+  double numSum = 0;
+  double scoreSum = 0;
+  int maxSeq = 0;
+  double percent = 0;
+  double target = 0;
+  int startIndex = 0;
+  int stopIndex = 365;
+  @override
+  void initState() {
+    stopIndex = widget.habitRecords.length;
+
+    startIndex = widget.habit.startDate.difference(widget.today).inDays -
+        widget.todayIndex;
+    if (widget.habit.stopDate.isAfter(widget.habit.startDate)) {
+      stopIndex = widget.habit.stopDate.difference(widget.today).inDays -
+          widget.todayIndex;
+    }
+    target = widget.habit.weight *
+        widget.habit.freqNum /
+        widget.habit.freqDen *
+        (min(stopIndex, 49) - max(0, startIndex));
+
+    super.initState();
+  }
+
+  void countScores() {
+    daySum = 0;
+    numSum = 0;
+    scoreSum = 0;
+    maxSeq = 0;
+    percent = 0;
+    int currentSeq = 0;
+    for (int i = 0; i < widget.habitRecords.length; i++) {
+      if (widget.habitRecords[i] != null) {
+        if (widget.habitRecords[i]!.value == 1) {
+          daySum++;
+          if (widget.habit.type == 0) {
+            numSum = numSum + widget.habitRecords[i]!.value;
+          } else if (widget.habit.type == 1) {
+            numSum = numSum + widget.habitRecords[i]!.data;
+          }
+          scoreSum = scoreSum + widget.habitRecords[i]!.score;
+          currentSeq++;
+          if (currentSeq > maxSeq) {
+            maxSeq = currentSeq;
+          }
+        } else {
+          currentSeq = 0;
+        }
+      } else {
+        currentSeq = 0;
+      }
+    }
+    if (target != 0) {
+      percent = scoreSum / target * 100;
+    } else {
+      percent = -1;
+    }
+  }
+
+  void saveRecord(index) {
+    if (widget.mod == 0) {
+      DateTime now = DateTime.now();
+      // realmHabitRecord.write(() {
+      //   if (widget.habitRecords[index] != null) {
+      //     if (widget.habitRecords[index]!.value == 0) {
+      //       widget.habitRecords[index]!.value = 1;
+      //     } else {
+      //       widget.habitRecords[index]!.value = 0;
+      //     }
+      //     widget.habitRecords[index]!.updateDate = now.toUtc();
+      //   } else {
+      //     widget.habitRecords[index] = HabitRecord(
+      //         Uuid.v4(),
+      //         widget.habit.id,
+      //         1,
+      //         widget.today
+      //             .add(Duration(days: index - widget.todayIndex))
+      //             .add(Duration(hours: now.timeZoneOffset.inHours)),
+      //         now.toUtc(),
+      //         now.toUtc());
+      //     realmHabitRecord.add(widget.habitRecords[index]!);
+      //   }
+      // });
+      // syncHabitRecordToRemote(widget.habitRecords[index]!);
+      saveSingleRecord(
+          widget.habitRecords[index],
+          widget.habit,
+          widget.today
+              .add(Duration(days: index - widget.todayIndex))
+              .add(Duration(hours: now.timeZoneOffset.inHours)),
+          now,
+          context,
+          widget.onChanged);
+    }
+    setState(() {
+      countScores();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    countScores();
+    Widget currentIcon = iconDataToWidget(widget.habit.icon, 40, 1);
+    return Card(
+      margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+      elevation: 0,
+      shadowColor: Colors.grey,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: widget.bgColor,
+          width: 5,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(5, 10, 0, 10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(child: Container()),
+                Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (widget.mod == 0 || widget.mod == 2) {
+                          Get.to(() => HabitInputPage(
+                              onPageClosed: () {
+                                widget.onChanged();
+                              },
+                              mod: 1,
+                              habit: widget.habit));
+                        }
+                      },
+                      child: Container(
+                          height: 60,
+                          width: 60,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              border:
+                                  Border.all(color: Colors.black12, width: 0),
+                              borderRadius: BorderRadius.circular(8.0),
+                              color: Colors.white),
+                          child: currentIcon),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      widget.habit.name,
+                      style: TextStyle(color: widget.bgColor, fontSize: 18),
+                    ),
+                  ],
+                ),
+                Expanded(child: Container()),
+                Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: List.generate(
+                        7,
+                        (int i) => Row(
+                              children: List.generate(
+                                  7,
+                                  (int j) => GestureDetector(
+                                        onTap: () {
+                                          saveRecord(i * 7 + j);
+                                          widget.onChanged();
+                                        },
+                                        child: Container(
+                                          height: 16,
+                                          width: 16,
+                                          margin: const EdgeInsets.fromLTRB(
+                                              0, 0, 0, 0),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.white,
+                                                  width: widget.todayIndex ==
+                                                          i * 7 + j
+                                                      ? 2
+                                                      : 0),
+                                              // borderRadius:
+                                              //     BorderRadius.circular(0),
+                                              color: (i * 7 + j) >=
+                                                      widget.habitRecords.length
+                                                  ? Colors.white
+                                                  : isFinished(
+                                                              widget.habit,
+                                                              widget.habitRecords[
+                                                                  i * 7 + j]) >=
+                                                          1
+                                                      ? widget.bgColor
+                                                      : Colors.black12),
+                                        ),
+                                      )),
+                            ))),
+                Expanded(child: Container()),
+                SizedBox(
+                  width: 115,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text('完成天数',
+                              style: TextStyle(
+                                  color: widget.bgColor, fontSize: 14)),
+                          Text('完成次数',
+                              style: TextStyle(
+                                  color: widget.bgColor, fontSize: 14)),
+                          Text('累计分数',
+                              style: TextStyle(
+                                  color: widget.bgColor, fontSize: 14)),
+                          Text('最长连续',
+                              style: TextStyle(
+                                  color: widget.bgColor, fontSize: 14)),
+                          Text(percent >= 0 ? '完成率' : '',
+                              style: TextStyle(
+                                  color: widget.bgColor, fontSize: 14)),
+                        ],
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: List.generate(
+                          5,
+                          (int i) => Text(
+                              ((percent >= 0 && i == 4) || i < 4) ? ': ' : '',
+                              style: TextStyle(
+                                  color: widget.bgColor, fontSize: 14)),
+                        ),
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('$daySum',
+                              style: TextStyle(
+                                  color: widget.bgColor, fontSize: 14)),
+                          Text('$numSum',
+                              style: TextStyle(
+                                  color: widget.bgColor, fontSize: 14)),
+                          Text(numberFormatMaxf2.format(scoreSum),
+                              style: TextStyle(
+                                  color: widget.bgColor, fontSize: 14)),
+                          Text('$maxSeq',
+                              style: TextStyle(
+                                  color: widget.bgColor, fontSize: 14)),
+                          Text(
+                              percent >= 0
+                                  ? '${percent.toStringAsFixed(0)}%'
+                                  : '',
+                              style: TextStyle(
+                                  color: widget.bgColor, fontSize: 14)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(child: Container()),
+                // GestureDetector(
+                //   onTap: () {
+                //     saveRecord(widget.today.weekday - 1);
+                //     widget.onChanged();
+                //   },
+                //   child: Container(
+                //     height: 50,
+                //     width: 50,
+                //     decoration: BoxDecoration(
+                //         borderRadius: BorderRadius.circular(8.0),
+                //         color: Colors.white),
+                //     child: widget.mod == 2
+                //         ? ReorderableDragStartListener(
+                //             index: widget.index,
+                //             child: const Icon(
+                //               Icons.drag_handle_rounded,
+                //               size: 30,
+                //               color: Colors.grey,
+                //             ),
+                //           )
+                //         : Icon(
+                //             Icons.verified_outlined,
+                //             size:
+                //                 isFinished(widget.today.weekday - 1) ? 50 : 35,
+                //             color: isFinished(widget.today.weekday - 1)
+                //                 ? widget.bgColor
+                //                 : Colors.black12,
+                //           ),
+                //   ),
+                // ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 void saveSingleRecord(HabitRecord? record, Habit habit, DateTime currentDay,
     DateTime now, BuildContext context, VoidCallback onChanged) {
   if (habit.type == 0) {

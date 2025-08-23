@@ -919,6 +919,23 @@ class _HabitListScreenState extends State<HabitListScreen> {
               ftColor: ftColor,
             ));
       case 3:
+        return GestureDetector(
+            onTap: () {},
+            onLongPress: () {
+              reordering = true;
+              setState(() {});
+            },
+            child: HabitCardYear(
+              onChanged: onChanged,
+              mod: mod,
+              habit: habit,
+              habitRecords: habitRecords.sublist(firstDayYear, lastDayYear),
+              today: today,
+              todayIndex: today.difference(firstDay).inDays - firstDayYear,
+              index: index,
+              bgColor: bgColor,
+              ftColor: ftColor,
+            ));
       default:
         return GestureDetector(
             onTap: () {},
