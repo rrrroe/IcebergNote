@@ -114,6 +114,12 @@ class _HabitListScreenState extends State<HabitListScreen> {
     //         DateTime(today.year, today.month + 1)
     //             .add(const Duration(days: -1)))) +
     //     3;
+    firstDayYear = (DateTime(today.year, 1, 1)).difference(firstDay).inDays;
+    lastDayYear = (DateTime(today.year, 12, 31)).difference(firstDay).inDays;
+    // print("today:$today   todayIndex:$todayIndex");
+    // print("firstDay:$firstDay   lastDay:$lastDay");
+    // print("firstDayWeek:$firstDayWeek   lastDayWeek:$lastDayWeek");
+    // print("firstDayYear$firstDayYear   lastDayYear$lastDayYear");
   }
 
   void dataInit() {
@@ -134,7 +140,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
     scoresToday = countScores(todayIndex, todayIndex + 1);
     scoresWeek = countScores(firstDayWeek, lastDayWeek);
     scores7Week = countScores(firstDay7Week, lastDay7Week);
-    scoresYear = countScores(firstDayYear, lastDayYear);
+    scoresYear = countScores(firstDayYear, lastDayYear + 1);
     // print('--------------------------------------');
     // print('today        : $today');
     // print('firstDay     : $firstDay');
@@ -919,6 +925,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
               ftColor: ftColor,
             ));
       case 3:
+        print("$today   ${today.difference(firstDay).inDays - firstDayYear}");
         return GestureDetector(
             onTap: () {},
             onLongPress: () {
@@ -929,7 +936,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
               onChanged: onChanged,
               mod: mod,
               habit: habit,
-              habitRecords: habitRecords.sublist(firstDayYear, lastDayYear),
+              habitRecords: habitRecords.sublist(firstDayYear, lastDayYear + 1),
               today: today,
               todayIndex: today.difference(firstDay).inDays - firstDayYear,
               index: index,

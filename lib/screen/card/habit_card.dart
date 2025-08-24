@@ -36,7 +36,7 @@ double isFinished(Habit habit, HabitRecord? record) {
   }
 }
 
-NumberFormat numberFormatMaxf2 = NumberFormat('#.##');
+NumberFormat numberFormatMaxf2 = NumberFormat('#.#');
 
 class HabitCardDay extends StatefulWidget {
   final VoidCallback onChanged;
@@ -633,7 +633,7 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
                           Text('完成天数',
                               style: TextStyle(
                                   color: widget.bgColor, fontSize: 14)),
-                          Text('完成次数',
+                          Text('完成数量',
                               style: TextStyle(
                                   color: widget.bgColor, fontSize: 14)),
                           Text('累计分数',
@@ -642,7 +642,7 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
                           Text('最长连续',
                               style: TextStyle(
                                   color: widget.bgColor, fontSize: 14)),
-                          Text(percent >= 0 ? '完成率' : '',
+                          Text(percent >= 0 ? '目标进度' : '',
                               style: TextStyle(
                                   color: widget.bgColor, fontSize: 14)),
                         ],
@@ -665,7 +665,7 @@ class _HabitCardSeasonState extends State<HabitCardSeason> {
                           Text('$daySum',
                               style: TextStyle(
                                   color: widget.bgColor, fontSize: 14)),
-                          Text('$numSum',
+                          Text(numberFormatMaxf2.format(numSum),
                               style: TextStyle(
                                   color: widget.bgColor, fontSize: 14)),
                           Text(numberFormatMaxf2.format(scoreSum),
@@ -760,12 +760,14 @@ class _HabitCardYearState extends State<HabitCardYear> {
   double percent = 0;
   double target = 0;
   int startIndex = 0;
-  int stopIndex = 365;
+  int stopIndex = 367;
+  List<List<HabitRecord?>> recordsOfYear = [];
+
   @override
   void initState() {
     stopIndex = widget.habitRecords.length;
 
-    startIndex = widget.habit.startDate.difference(widget.today).inDays -
+    startIndex = widget.habit.startDate.difference(widget.today).inDays +
         widget.todayIndex;
     if (widget.habit.stopDate.isAfter(widget.habit.startDate)) {
       stopIndex = widget.habit.stopDate.difference(widget.today).inDays -
@@ -774,12 +776,40 @@ class _HabitCardYearState extends State<HabitCardYear> {
     target = widget.habit.weight *
         widget.habit.freqNum /
         widget.habit.freqDen *
-        (min(stopIndex, 49) - max(0, startIndex));
+        (min(stopIndex, widget.habitRecords.length) - max(0, startIndex));
 
     super.initState();
   }
 
   void countScores() {
+    recordsOfYear = [];
+    if (widget.habitRecords.length == 366) {
+      recordsOfYear.add(widget.habitRecords.sublist(0, 31)); // 1月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(31, 60)); // 2月 (29天)
+      recordsOfYear.add(widget.habitRecords.sublist(60, 91)); // 3月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(91, 121)); // 4月 (30天)
+      recordsOfYear.add(widget.habitRecords.sublist(121, 152)); // 5月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(152, 182)); // 6月 (30天)
+      recordsOfYear.add(widget.habitRecords.sublist(182, 213)); // 7月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(213, 244)); // 8月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(244, 274)); // 9月 (30天)
+      recordsOfYear.add(widget.habitRecords.sublist(274, 305)); // 10月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(305, 335)); // 11月 (30天)
+      recordsOfYear.add(widget.habitRecords.sublist(335, 366)); // 12月 (31天)
+    } else if (widget.habitRecords.length == 365) {
+      recordsOfYear.add(widget.habitRecords.sublist(0, 31)); // 1月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(31, 59)); // 2月 (28天)
+      recordsOfYear.add(widget.habitRecords.sublist(59, 90)); // 3月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(90, 120)); // 4月 (30天)
+      recordsOfYear.add(widget.habitRecords.sublist(120, 151)); // 5月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(151, 181)); // 6月 (30天)
+      recordsOfYear.add(widget.habitRecords.sublist(181, 212)); // 7月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(212, 243)); // 8月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(243, 273)); // 9月 (30天)
+      recordsOfYear.add(widget.habitRecords.sublist(273, 304)); // 10月 (31天)
+      recordsOfYear.add(widget.habitRecords.sublist(304, 334)); // 11月 (30天)
+      recordsOfYear.add(widget.habitRecords.sublist(334, 365)); // 12月 (31天)
+    }
     daySum = 0;
     numSum = 0;
     scoreSum = 0;
@@ -856,6 +886,8 @@ class _HabitCardYearState extends State<HabitCardYear> {
 
   @override
   Widget build(BuildContext context) {
+    print("todayindex${widget.todayIndex}   start$startIndex   Stop$stopIndex");
+
     countScores();
     Widget currentIcon = iconDataToWidget(widget.habit.icon, 40, 1);
     return Card(
@@ -876,179 +908,179 @@ class _HabitCardYearState extends State<HabitCardYear> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(child: Container()),
                 Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        if (widget.mod == 0 || widget.mod == 2) {
-                          Get.to(() => HabitInputPage(
-                              onPageClosed: () {
-                                widget.onChanged();
-                              },
-                              mod: 1,
-                              habit: widget.habit));
-                        }
-                      },
-                      child: Container(
-                          height: 60,
-                          width: 60,
-                          alignment: Alignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: List.generate(
+                    recordsOfYear.length,
+                    (int i) => Row(
+                      children: List.generate(
+                        recordsOfYear[i].length,
+                        (int j) => Container(
+                          height: 8,
+                          width: 8,
+                          margin: const EdgeInsets.fromLTRB(1, 1, 1, 1),
                           decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: Colors.black12, width: 0),
-                              borderRadius: BorderRadius.circular(8.0),
-                              color: Colors.white),
-                          child: currentIcon),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      widget.habit.name,
-                      style: TextStyle(color: widget.bgColor, fontSize: 18),
-                    ),
-                  ],
-                ),
-                Expanded(child: Container()),
-                Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: List.generate(
-                        7,
-                        (int i) => Row(
-                              children: List.generate(
-                                  7,
-                                  (int j) => GestureDetector(
-                                        onTap: () {
-                                          saveRecord(i * 7 + j);
-                                          widget.onChanged();
-                                        },
-                                        child: Container(
-                                          height: 16,
-                                          width: 16,
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 0, 0, 0),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.white,
-                                                  width: widget.todayIndex ==
-                                                          i * 7 + j
-                                                      ? 2
-                                                      : 0),
-                                              // borderRadius:
-                                              //     BorderRadius.circular(0),
-                                              color: (i * 7 + j) >=
-                                                      widget.habitRecords.length
-                                                  ? Colors.white
-                                                  : isFinished(
-                                                              widget.habit,
-                                                              widget.habitRecords[
-                                                                  i * 7 + j]) >=
-                                                          1
-                                                      ? widget.bgColor
-                                                      : Colors.black12),
-                                        ),
-                                      )),
-                            ))),
-                Expanded(child: Container()),
-                SizedBox(
-                  width: 115,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text('完成天数',
-                              style: TextStyle(
-                                  color: widget.bgColor, fontSize: 14)),
-                          Text('完成次数',
-                              style: TextStyle(
-                                  color: widget.bgColor, fontSize: 14)),
-                          Text('累计分数',
-                              style: TextStyle(
-                                  color: widget.bgColor, fontSize: 14)),
-                          Text('最长连续',
-                              style: TextStyle(
-                                  color: widget.bgColor, fontSize: 14)),
-                          Text(percent >= 0 ? '完成率' : '',
-                              style: TextStyle(
-                                  color: widget.bgColor, fontSize: 14)),
-                        ],
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: List.generate(
-                          5,
-                          (int i) => Text(
-                              ((percent >= 0 && i == 4) || i < 4) ? ': ' : '',
-                              style: TextStyle(
-                                  color: widget.bgColor, fontSize: 14)),
+                              border: Border.all(color: Colors.white, width: 0),
+                              borderRadius: BorderRadius.circular(5),
+                              color: recordsOfYear[i][j] != null
+                                  ? recordsOfYear[i][j]!.value > 0
+                                      ? widget.bgColor
+                                      : Colors.black12
+                                  : Colors.black12),
                         ),
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text('$daySum',
-                              style: TextStyle(
-                                  color: widget.bgColor, fontSize: 14)),
-                          Text('$numSum',
-                              style: TextStyle(
-                                  color: widget.bgColor, fontSize: 14)),
-                          Text(numberFormatMaxf2.format(scoreSum),
-                              style: TextStyle(
-                                  color: widget.bgColor, fontSize: 14)),
-                          Text('$maxSeq',
-                              style: TextStyle(
-                                  color: widget.bgColor, fontSize: 14)),
-                          Text(
-                              percent >= 0
-                                  ? '${percent.toStringAsFixed(0)}%'
-                                  : '',
-                              style: TextStyle(
-                                  color: widget.bgColor, fontSize: 14)),
-                        ],
+                    ),
+                  ),
+                ),
+                Expanded(child: Container()),
+              ],
+            ),
+            Container(constraints: const BoxConstraints(minHeight: 5)),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (widget.mod == 0 || widget.mod == 2) {
+                            Get.to(() => HabitInputPage(
+                                onPageClosed: () {
+                                  widget.onChanged();
+                                },
+                                mod: 1,
+                                habit: widget.habit));
+                          }
+                        },
+                        child: Container(
+                            height: 50,
+                            width: 50,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.black12, width: 0),
+                                borderRadius: BorderRadius.circular(8.0),
+                                color: Colors.white),
+                            child: currentIcon),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        widget.habit.name,
+                        style: TextStyle(
+                          color: widget.bgColor,
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Expanded(child: Container()),
-                // GestureDetector(
-                //   onTap: () {
-                //     saveRecord(widget.today.weekday - 1);
-                //     widget.onChanged();
-                //   },
-                //   child: Container(
-                //     height: 50,
-                //     width: 50,
-                //     decoration: BoxDecoration(
-                //         borderRadius: BorderRadius.circular(8.0),
-                //         color: Colors.white),
-                //     child: widget.mod == 2
-                //         ? ReorderableDragStartListener(
-                //             index: widget.index,
-                //             child: const Icon(
-                //               Icons.drag_handle_rounded,
-                //               size: 30,
-                //               color: Colors.grey,
-                //             ),
-                //           )
-                //         : Icon(
-                //             Icons.verified_outlined,
-                //             size:
-                //                 isFinished(widget.today.weekday - 1) ? 50 : 35,
-                //             color: isFinished(widget.today.weekday - 1)
-                //                 ? widget.bgColor
-                //                 : Colors.black12,
-                //           ),
-                //   ),
-                // ),
+                Expanded(
+                    flex: 3,
+                    child: Row(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('完成天数',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                            Text('累计分数',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                            Text('时间已过',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                          ],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: List.generate(
+                            3,
+                            (int i) => Text(': ',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                          ),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text('$daySum',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                            Text(numberFormatMaxf2.format(scoreSum),
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                            Text(
+                                widget.todayIndex >= widget.habitRecords.length
+                                    ? '100%'
+                                    : '${((widget.todayIndex + 1 - max(0, startIndex)) / ((min(stopIndex, widget.habitRecords.length) - max(0, startIndex))) * 100).toInt()}%',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                          ],
+                        ),
+                      ],
+                    )),
+                Expanded(
+                    flex: 3,
+                    child: Row(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('完成数量',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                            Text('最长连续',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                            Text(percent >= 0 ? '目标进度' : '',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                          ],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: List.generate(
+                            3,
+                            (int i) => Text(
+                                ((percent >= 0 && i == 4) || i < 4) ? ': ' : '',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                          ),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(numberFormatMaxf2.format(numSum),
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                            Text('$maxSeq',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                            Text(
+                                percent >= 0
+                                    ? '${percent.toStringAsFixed(0)}%'
+                                    : '',
+                                style: TextStyle(
+                                    color: widget.bgColor, fontSize: 14)),
+                          ],
+                        ),
+                      ],
+                    )),
               ],
-            ),
+            )
           ],
         ),
       ),
