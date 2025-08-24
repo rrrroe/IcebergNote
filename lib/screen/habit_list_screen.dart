@@ -925,7 +925,6 @@ class _HabitListScreenState extends State<HabitListScreen> {
               ftColor: ftColor,
             ));
       case 3:
-        print("$today   ${today.difference(firstDay).inDays - firstDayYear}");
         return GestureDetector(
             onTap: () {},
             onLongPress: () {

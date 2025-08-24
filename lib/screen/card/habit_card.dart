@@ -886,7 +886,7 @@ class _HabitCardYearState extends State<HabitCardYear> {
 
   @override
   Widget build(BuildContext context) {
-    print("todayindex${widget.todayIndex}   start$startIndex   Stop$stopIndex");
+    // print("todayindex${widget.todayIndex}   start$startIndex   Stop$stopIndex");
 
     countScores();
     Widget currentIcon = iconDataToWidget(widget.habit.icon, 40, 1);
