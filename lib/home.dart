@@ -601,15 +601,17 @@ class _NavigationTransitionState extends State<NavigationTransition> {
                 trailing: user.name.value == '登录'
                     ? const Text('')
                     : user.vipDate.value.isBefore(DateTime.now())
-                        ? const Text('会员已过期')
-                        : const Text('尊享会员',
-                            style: TextStyle(
+                        ? Text(
+                            '会员${user.vipDate.value.year}年${user.vipDate.value.month}月${user.vipDate.value.day}日已过期')
+                        : Text(
+                            '会员至${user.vipDate.value.year}年${user.vipDate.value.month}月${user.vipDate.value.day}日',
+                            style: const TextStyle(
                                 color: Color.fromARGB(255, 111, 102, 0))),
                 onTap: () {
                   if (user.name.value == '登录') {
                     Get.to(const LoginScreen());
                   } else {
-                    user.logout();
+                    // user.logout();
                   }
                 },
               ),
@@ -629,31 +631,46 @@ class _NavigationTransitionState extends State<NavigationTransition> {
                 );
               },
             ),
-            ListTile(
-              leading:
-                  const Icon(Icons.devices_rounded, color: Colors.blueGrey),
-              title: Text(
-                deviceUniqueId,
-                style: const TextStyle(fontSize: 8),
-              ),
-              onTap: () {
-                getUniqueId();
-                setState(() {});
-              },
-            ),
-            GetBuilder<UserController>(
-              init: UserController(), // 首次启动
-              builder: (user) => ListTile(
-                leading:
-                    const Icon(Icons.devices_rounded, color: Colors.blueGrey),
-                title: Text(
-                  '#${user.deviceNO.value}',
-                ),
-                onTap: () {
-                  user.refreshLocalUser();
-                },
-              ),
-            ),
+            // ListTile(
+            //   leading: const Icon(Icons.settings, color: Colors.blueGrey),
+            //   title: const Text('设置'),
+            //   onTap: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => SearchPage(
+            //           mod: 2,
+            //           txt: '',
+            //         ),
+            //       ),
+            //     );
+            //   },
+            // ),
+            // ListTile(
+            //   leading:
+            //       const Icon(Icons.devices_rounded, color: Colors.blueGrey),
+            //   title: Text(
+            //     deviceUniqueId,
+            //     style: const TextStyle(fontSize: 8),
+            //   ),
+            //   onTap: () {
+            //     getUniqueId();
+            //     setState(() {});
+            //   },
+            // ),
+            // GetBuilder<UserController>(
+            //   init: UserController(), // 首次启动
+            //   builder: (user) => ListTile(
+            //     leading:
+            //         const Icon(Icons.devices_rounded, color: Colors.blueGrey),
+            //     title: Text(
+            //       '#${user.deviceNO.value}',
+            //     ),
+            //     onTap: () {
+            //       user.refreshLocalUser();
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),

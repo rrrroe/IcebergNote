@@ -139,7 +139,6 @@ void main() async {
   final configHabitRecord =
       Configuration.local([HabitRecord.schema], schemaVersion: 1);
   realmHabitRecord = Realm(configHabitRecord);
-  // userLocalInfo = await SharedPreferences.getInstance();
   var deleteOvertime = realm.query<Notes>(
       "noteIsDeleted == true AND noteUpdateDate < \$0 AND noteCreateDate < \$0 SORT(noteCreateDate DESC)",
       [DateTime.now().toUtc()]);
