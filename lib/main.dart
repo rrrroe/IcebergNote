@@ -7,6 +7,7 @@ import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 import 'package:icebergnote/class/habit.dart';
 import 'package:icebergnote/postgresql/sync.dart';
@@ -279,6 +280,7 @@ class _AppState extends State<App> {
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
+        FlutterQuillLocalizations.delegate,
       ],
       supportedLocales: const [
         Locale('en', 'US'), // English

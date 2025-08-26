@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:icebergnote/class/notes.dart';
 import 'package:icebergnote/screen/input/input_screen.dart';
+import 'package:icebergnote/screen/richtext/richtext_input.dart';
 import 'package:icebergnote/screen/search_screen.dart';
 import 'dart:ui' as ui;
 import '../noteslist_screen.dart';
@@ -268,18 +269,32 @@ class NormalCardState extends State<NormalCard> {
           ),
         ),
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChangePage(
-                onPageClosed: () {
-                  widget.refreshList();
-                },
-                note: widget.note,
-                mod: 1,
+          if (widget.note.noteType == '.长文') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RichTextPage(
+                  onPageClosed: () {
+                    widget.refreshList();
+                  },
+                  note: widget.note,
+                ),
               ),
-            ),
-          );
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChangePage(
+                  onPageClosed: () {
+                    widget.refreshList();
+                  },
+                  note: widget.note,
+                  mod: 1,
+                ),
+              ),
+            );
+          }
         },
         onLongPress: () {
           showModalBottomSheet(
