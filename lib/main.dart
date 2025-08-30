@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/foundation.dart';
@@ -12,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:icebergnote/class/habit.dart';
 import 'package:icebergnote/postgresql/sync.dart';
 import 'package:icebergnote/screen/login_screen.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:realm/realm.dart';
 import 'constants.dart';
 import 'home.dart';
@@ -131,8 +134,10 @@ late Realm realmHabitRecord;
 Map<String, Map<int, List>> recordTemplates = {};
 Map<String, Map<String, List>> recordTemplatesSettings = {};
 bool isFinishSync = false;
+Directory? appDocumentDir;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final config = Configuration.local([Notes.schema], schemaVersion: 1);
   realm = Realm(config);
   final configHabit = Configuration.local([Habit.schema], schemaVersion: 1);
@@ -148,6 +153,7 @@ void main() async {
       realm.delete(deleteOvertime[i]);
     });
   }
+  appDocumentDir = await getApplicationDocumentsDirectory();
 
   getUniqueId();
   recordTemplateInit();

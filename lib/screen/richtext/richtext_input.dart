@@ -1,17 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io show Directory, File;
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
-import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:icebergnote/class/notes.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/postgresql/sync.dart';
-import 'package:icebergnote/screen/richtext/quill_delta_sample.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:realm/realm.dart';
 
 class RichTextPage extends StatefulWidget {
   const RichTextPage(
@@ -34,16 +36,29 @@ class _RichTextPageState extends State<RichTextPage> {
             return null;
           }
           // Save the image somewhere and return the image URL that will be
-          // stored in the Quill Delta JSON (the document).
+          final appDir = await getApplicationDocumentsDirectory();
+          final imagesDir = io.Directory('${appDir.path}/note_images');
+          // 创建图片目录（如果不存在）
+          if (!await imagesDir.exists()) {
+            await imagesDir.create(recursive: true);
+          }
           final newFileName =
-              'image-file-${DateTime.now().toIso8601String()}.png';
-          final newPath = path.join(
-            io.Directory.systemTemp.path,
-            newFileName,
-          );
-          final file = await io.File(
-            newPath,
-          ).writeAsBytes(imageBytes, flush: true);
+              'image-${DateTime.now().millisecondsSinceEpoch}.png';
+          final newPath = path.join(imagesDir.path, newFileName);
+
+          // 写入文件到应用目录
+          final file =
+              await io.File(newPath).writeAsBytes(imageBytes, flush: true);
+          // stored in the Quill Delta JSON (the document).
+          // final newFileName =
+          //     'image-file-${DateTime.now().toIso8601String()}.png';
+          // final newPath = path.join(
+          //   io.Directory.systemTemp.path,
+          //   newFileName,
+          // );
+          // final file = await io.File(
+          //   newPath,
+          // ).writeAsBytes(imageBytes, flush: true);
           return file.path;
         },
       ),
@@ -53,7 +68,6 @@ class _RichTextPageState extends State<RichTextPage> {
   final ScrollController _editorScrollController = ScrollController();
   TextEditingController titleController = TextEditingController();
   Timer? _debounce;
-
   @override
   void initState() {
     super.initState();
@@ -83,7 +97,7 @@ class _RichTextPageState extends State<RichTextPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Quill Example'),
+        title: const Text('Flutter Quill Example'),
         actions: [
           IconButton(
             icon: const Icon(Icons.output),
@@ -127,8 +141,68 @@ class _RichTextPageState extends State<RichTextPage> {
               QuillSimpleToolbar(
                 controller: _controller,
                 config: QuillSimpleToolbarConfig(
-                  embedButtons: FlutterQuillEmbeds.toolbarButtons(),
-                  showClipboardPaste: true,
+                  toolbarIconAlignment: WrapAlignment.start,
+                  multiRowsDisplay: true,
+                  showDividers: true,
+                  showFontFamily: false,
+                  showFontSize: true,
+                  showBoldButton: true,
+                  showItalicButton: true,
+                  showSmallButton: false,
+                  showUnderLineButton: true,
+                  showLineHeightButton: false,
+                  showStrikeThrough: true,
+                  showInlineCode: true,
+                  showColorButton: true,
+                  showBackgroundColorButton: true,
+                  showClearFormat: true,
+                  showAlignmentButtons: false,
+                  showLeftAlignment: true,
+                  showCenterAlignment: true,
+                  showRightAlignment: true,
+                  showJustifyAlignment: true,
+                  showHeaderStyle: true,
+                  showListNumbers: true,
+                  showListBullets: true,
+                  showListCheck: true,
+                  showCodeBlock: true,
+                  showQuote: true,
+                  showIndent: true,
+                  showLink: true,
+                  showUndo: true,
+                  showRedo: true,
+                  showDirection: false,
+                  showSearchButton: true,
+                  showSubscript: true,
+                  showSuperscript: true,
+                  showClipboardCut: false,
+                  showClipboardCopy: false,
+                  showClipboardPaste: false,
+                  linkStyleType: LinkStyleType.original,
+                  headerStyleType: HeaderStyleType.original,
+                  decoration: null,
+                  embedButtons: FlutterQuillEmbeds.toolbarButtons(
+                      imageButtonOptions: QuillToolbarImageButtonOptions(
+                          imageButtonConfig: QuillToolbarImageConfig(
+                    onImageInsertCallback: (imageUrl, quillController) async {
+                      String newUrl = await _onImagePickCallback(
+                          File(imageUrl), appDocumentDir!);
+
+                      quillController
+                        ..skipRequestKeyboard = true
+                        ..insertImageBlock(imageSource: newUrl);
+                    },
+                    onImageInsertedCallback: (image) async {},
+                  ))),
+                  linkDialogAction: null,
+                  dialogTheme: null,
+                  iconTheme: null,
+                  axis: Axis.horizontal,
+                  color: null,
+                  sectionDividerColor: null,
+                  sectionDividerSpace: null,
+                  toolbarSize: null,
+                  toolbarRunSpacing: 0,
                   customButtons: [
                     QuillToolbarCustomButtonOptions(
                       icon: const Icon(Icons.add_alarm_rounded),
@@ -151,6 +225,7 @@ class _RichTextPageState extends State<RichTextPage> {
                   ],
                   buttonOptions: QuillSimpleToolbarButtonOptions(
                     base: QuillToolbarBaseButtonOptions(
+                      iconSize: 13,
                       afterButtonPressed: () {
                         final isDesktop = {
                           TargetPlatform.linux,
@@ -179,15 +254,16 @@ class _RichTextPageState extends State<RichTextPage> {
                   scrollController: _editorScrollController,
                   controller: _controller,
                   config: QuillEditorConfig(
-                    placeholder: 'Start writing your notes...',
+                    placeholder: '开始创作',
                     padding: const EdgeInsets.all(16),
                     embedBuilders: [
                       ...FlutterQuillEmbeds.editorBuilders(
                         imageEmbedConfig: QuillEditorImageEmbedConfig(
                           imageProviderBuilder: (context, imageUrl) {
                             // https://pub.dev/packages/flutter_quill_extensions#-image-assets
-                            if (imageUrl.startsWith('assets/')) {
-                              return AssetImage(imageUrl);
+                            if (imageUrl.startsWith('icebergnote/')) {
+                              return FileImage(
+                                  File('${appDocumentDir!.path}/$imageUrl'));
                             }
                             return null;
                           },
@@ -274,6 +350,32 @@ class _RichTextPageState extends State<RichTextPage> {
   }
 }
 
+Future<String> _onImagePickCallback(
+    io.File pickedImage, Directory appDocumentDir) async {
+  userLocalInfo = await SharedPreferences.getInstance();
+  if (userLocalInfo != null) {
+    userID = userLocalInfo!.getString('userID');
+  }
+  // 1. 获取应用的本地文档目录
+  final filename = '${Uuid.v4()}_${pickedImage.uri.pathSegments.last}';
+  final relativePath = 'icebergnote/user${userID ?? 'tmp'}/images/';
+
+  final fullPath = '${appDocumentDir.path}/$relativePath$filename';
+
+  // 2. 确保目标目录存在
+  final directory = Directory('${appDocumentDir.path}/$relativePath');
+  if (!directory.existsSync()) {
+    directory.createSync(recursive: true);
+  }
+
+  // 3. 复制图片到目标路径
+  final file = File(pickedImage.path);
+  await file.copy(fullPath);
+
+  // 4. 返回相对路径
+  return relativePath + filename;
+}
+
 class TimeStampEmbed extends Embeddable {
   const TimeStampEmbed(
     String value,
@@ -307,28 +409,5 @@ class TimeStampEmbedBuilder extends EmbedBuilder {
         Text(embedContext.node.value.data as String),
       ],
     );
-  }
-}
-
-class RichTextStorage {
-  // 将 QuillController 的内容转换为 JSON 字符串
-  static String convertToStorageFormat(QuillController controller) {
-    final delta = controller.document.toDelta();
-    return jsonEncode(delta.toJson());
-  }
-
-  // 从 JSON 字符串恢复 QuillController
-  static QuillController restoreFromStorageFormat(String contentJson) {
-    try {
-      final json = jsonDecode(contentJson) as List;
-      final delta = Delta.fromJson(json);
-      return QuillController(
-        document: Document.fromDelta(delta),
-        selection: const TextSelection.collapsed(offset: 0),
-      );
-    } catch (e) {
-      // 如果解析失败，返回一个空的控制器
-      return QuillController.basic();
-    }
   }
 }
