@@ -142,28 +142,30 @@ class _RichTextPageState extends State<RichTextPage> {
                 controller: _controller,
                 config: QuillSimpleToolbarConfig(
                   toolbarIconAlignment: WrapAlignment.start,
-                  multiRowsDisplay: true,
-                  showDividers: true,
+                  multiRowsDisplay: Platform.isWindows ||
+                      Platform.isMacOS ||
+                      Platform.isLinux,
+                  showDividers: false,
                   showFontFamily: false,
-                  showFontSize: true,
-                  showBoldButton: true,
-                  showItalicButton: true,
+                  showFontSize: false,
+                  showBoldButton: false,
+                  showItalicButton: false,
                   showSmallButton: false,
-                  showUnderLineButton: true,
+                  showUnderLineButton: false,
                   showLineHeightButton: false,
-                  showStrikeThrough: true,
-                  showInlineCode: true,
-                  showColorButton: true,
-                  showBackgroundColorButton: true,
-                  showClearFormat: true,
+                  showStrikeThrough: false,
+                  showInlineCode: false,
+                  showColorButton: false,
+                  showBackgroundColorButton: false,
+                  showClearFormat: false,
                   showAlignmentButtons: false,
                   showLeftAlignment: true,
                   showCenterAlignment: true,
                   showRightAlignment: true,
                   showJustifyAlignment: true,
                   showHeaderStyle: true,
-                  showListNumbers: true,
-                  showListBullets: true,
+                  showListNumbers: false,
+                  showListBullets: false,
                   showListCheck: true,
                   showCodeBlock: true,
                   showQuote: true,
@@ -172,9 +174,9 @@ class _RichTextPageState extends State<RichTextPage> {
                   showUndo: true,
                   showRedo: true,
                   showDirection: false,
-                  showSearchButton: true,
-                  showSubscript: true,
-                  showSuperscript: true,
+                  showSearchButton: false,
+                  showSubscript: false,
+                  showSuperscript: false,
                   showClipboardCut: false,
                   showClipboardCopy: false,
                   showClipboardPaste: false,
@@ -192,7 +194,6 @@ class _RichTextPageState extends State<RichTextPage> {
                         ..skipRequestKeyboard = true
                         ..insertImageBlock(imageSource: newUrl);
                     },
-                    onImageInsertedCallback: (image) async {},
                   ))),
                   linkDialogAction: null,
                   dialogTheme: null,
@@ -203,26 +204,26 @@ class _RichTextPageState extends State<RichTextPage> {
                   sectionDividerSpace: null,
                   toolbarSize: null,
                   toolbarRunSpacing: 0,
-                  customButtons: [
-                    QuillToolbarCustomButtonOptions(
-                      icon: const Icon(Icons.add_alarm_rounded),
-                      onPressed: () {
-                        _controller.document.insert(
-                          _controller.selection.extentOffset,
-                          TimeStampEmbed(
-                            DateTime.now().toString(),
-                          ),
-                        );
+                  // customButtons: [
+                  //   QuillToolbarCustomButtonOptions(
+                  //     icon: const Icon(Icons.add_alarm_rounded),
+                  //     onPressed: () {
+                  //       _controller.document.insert(
+                  //         _controller.selection.extentOffset,
+                  //         TimeStampEmbed(
+                  //           DateTime.now().toString(),
+                  //         ),
+                  //       );
 
-                        _controller.updateSelection(
-                          TextSelection.collapsed(
-                            offset: _controller.selection.extentOffset + 1,
-                          ),
-                          ChangeSource.local,
-                        );
-                      },
-                    ),
-                  ],
+                  //       _controller.updateSelection(
+                  //         TextSelection.collapsed(
+                  //           offset: _controller.selection.extentOffset + 1,
+                  //         ),
+                  //         ChangeSource.local,
+                  //       );
+                  //     },
+                  //   ),
+                  // ],
                   buttonOptions: QuillSimpleToolbarButtonOptions(
                     base: QuillToolbarBaseButtonOptions(
                       iconSize: 13,
