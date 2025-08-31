@@ -10,6 +10,7 @@ import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:icebergnote/class/notes.dart';
 import 'package:icebergnote/main.dart';
 import 'package:icebergnote/postgresql/sync.dart';
+import 'package:icebergnote/theme.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -180,6 +181,7 @@ class _RichTextPageState extends State<RichTextPage> {
                   showClipboardCut: false,
                   showClipboardCopy: false,
                   showClipboardPaste: false,
+
                   linkStyleType: LinkStyleType.original,
                   headerStyleType: HeaderStyleType.original,
                   decoration: null,
@@ -255,6 +257,59 @@ class _RichTextPageState extends State<RichTextPage> {
                   scrollController: _editorScrollController,
                   controller: _controller,
                   config: QuillEditorConfig(
+                    customStyles: DefaultStyles(
+                      paragraph: const DefaultTextBlockStyle(
+                        TextStyle(
+                            fontSize: 18,
+                            wordSpacing: 4,
+                            textBaseline: TextBaseline.ideographic,
+                            color: Colors.black,
+                            fontFamily: 'LXGWWenKai'),
+                        HorizontalSpacing(0, 0), // 段落间距
+                        VerticalSpacing(10, 0),
+                        VerticalSpacing(0, 0),
+                        null,
+                      ),
+                      h1: DefaultTextBlockStyle(
+                        TextStyle(
+                            fontSize: 32,
+                            wordSpacing: 4,
+                            textBaseline: TextBaseline.ideographic,
+                            color: fontColorBule,
+                            fontFamily: 'LXGWWenKai',
+                            fontWeight: FontWeight.w600),
+                        const HorizontalSpacing(0, 0), // 段落间距
+                        const VerticalSpacing(10, 0),
+                        const VerticalSpacing(0, 0),
+                        null,
+                      ),
+                      h2: DefaultTextBlockStyle(
+                        TextStyle(
+                            fontSize: 26,
+                            wordSpacing: 4,
+                            textBaseline: TextBaseline.ideographic,
+                            color: fontColorGreen,
+                            fontFamily: 'LXGWWenKai',
+                            fontWeight: FontWeight.w600),
+                        const HorizontalSpacing(0, 0), // 段落间距
+                        const VerticalSpacing(10, 0),
+                        const VerticalSpacing(0, 0),
+                        null,
+                      ),
+                      h3: DefaultTextBlockStyle(
+                        TextStyle(
+                            fontSize: 20,
+                            wordSpacing: 4,
+                            textBaseline: TextBaseline.ideographic,
+                            color: fontColorPurple,
+                            fontFamily: 'LXGWWenKai',
+                            fontWeight: FontWeight.w600),
+                        const HorizontalSpacing(0, 0), // 段落间距
+                        const VerticalSpacing(10, 0),
+                        const VerticalSpacing(0, 0),
+                        null,
+                      ),
+                    ),
                     placeholder: '开始创作',
                     padding: const EdgeInsets.all(16),
                     embedBuilders: [

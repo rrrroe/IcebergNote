@@ -64,3 +64,10 @@ extension MacaronColorExtension on MacaronColors {
     }
   }
 }
+
+Color fontColorBule = const Color.fromARGB(255, 0, 140, 198);
+Color fontColorPink = const Color.fromARGB(255, 136, 44, 117);
+Color fontColorGreen = const Color.fromARGB(255, 34, 139, 34); // ForestGreen
+Color fontColorPurple = const Color.fromARGB(255, 106, 90, 205); // SlateBlue
+Color fontColorBrown = const Color.fromARGB(255, 165, 42, 42); // Brown
+Color fontColorDarkGray = const Color.fromARGB(255, 105, 105, 105); // DimGray
