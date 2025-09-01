@@ -270,7 +270,7 @@ class BottomNoteTypeSheet extends StatelessWidget {
                             mod: 0,
                             anniversary: anniversary,
                           ));
-                    } else if (noteTypeList[index] == '.长文') {
+                    } else if (noteTypeList[index] == '.图文') {
                       Navigator.pop(context);
                       Notes note = Notes(
                           Uuid.v4(),
@@ -926,7 +926,7 @@ class SearchPageState extends State<SearchPage> {
         searchText: searchText,
         anniversary: anniversary,
       );
-    } else if (note.noteType == '.长文') {
+    } else if (note.noteType == '.图文') {
       return RichtextCard(
         note: note,
         mod: mod,

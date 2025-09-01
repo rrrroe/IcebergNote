@@ -23,7 +23,7 @@ class APPConstants {
   static const String titleTag = 'icebergnotetitle';
 }
 
-List<String> defaultAddTypeList = ['.待办', '.清单', '.记录', '.日子', '.长文'];
+List<String> defaultAddTypeList = ['.待办', '.清单', '.记录', '.日子', '.图文'];
 
 enum ColorSeed {
   baseColor('M3 Baseline', Color(0xff6750a4)),

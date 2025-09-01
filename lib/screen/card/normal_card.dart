@@ -269,7 +269,7 @@ class NormalCardState extends State<NormalCard> {
           ),
         ),
         onTap: () {
-          if (widget.note.noteType == '.长文') {
+          if (widget.note.noteType == '.图文') {
             Navigator.push(
               context,
               MaterialPageRoute(

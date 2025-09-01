@@ -32,7 +32,7 @@ class KeyboardManager extends ChangeNotifier {
   }
 }
 
-List templateTypeList = ['数字', '文本', '单选', '多选', '时间', '日期', '长文', '时长', '清单'];
+List templateTypeList = ['数字', '文本', '单选', '多选', '时间', '日期', '图文', '时长', '清单'];
 
 String mapToyaml(Map map) {
   String yaml = '';
@@ -605,7 +605,7 @@ class _PropertyCardState extends State<PropertyCard> {
         return buildNumberCard();
       case '单选':
         return buildSingleSelectCard();
-      case '长文':
+      case '图文':
         return buildLongTextCard();
       case '日期':
         return buildDateCard();

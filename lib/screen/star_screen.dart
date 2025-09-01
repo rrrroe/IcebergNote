@@ -134,7 +134,7 @@ class StarPageState extends State<StarPage> {
         searchText: searchText,
         anniversary: anniversary,
       );
-    } else if (note.noteType == '.长文') {
+    } else if (note.noteType == '.图文') {
       return RichtextCard(
         note: note,
         mod: widget.mod,

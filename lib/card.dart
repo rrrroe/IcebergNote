@@ -73,7 +73,7 @@ Widget buildRecordCardOfList(Notes note, int mod, BuildContext context,
             if (noteMapOther.values.elementAt(index) != null &&
                 noteMapOther.values.elementAt(index) != '') {
               switch (propertySettings[1]) {
-                case '长文':
+                case '图文':
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.ideographic,
