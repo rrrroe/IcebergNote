@@ -22,6 +22,7 @@ import 'package:icebergnote/screen/card/normal_card.dart';
 import 'package:icebergnote/screen/input/anniversary_input.dart';
 import 'package:icebergnote/screen/input/input_screen.dart';
 import 'package:icebergnote/class/notes.dart';
+import 'package:icebergnote/screen/richtext/richtext_card.dart';
 import 'package:icebergnote/screen/richtext/richtext_input.dart';
 import 'package:icebergnote/screen/widget/poplog.dart';
 import 'package:realm/realm.dart';
@@ -924,6 +925,14 @@ class SearchPageState extends State<SearchPage> {
         refreshList: refreshList,
         searchText: searchText,
         anniversary: anniversary,
+      );
+    } else if (note.noteType == '.长文') {
+      return RichtextCard(
+        note: note,
+        mod: mod,
+        context: context,
+        refreshList: refreshList,
+        searchText: searchText,
       );
     } else {
       return NormalCard(

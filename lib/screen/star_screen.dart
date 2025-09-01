@@ -9,6 +9,7 @@ import 'package:icebergnote/screen/card/anniversary_card.dart';
 import 'package:icebergnote/screen/card/check_list_card.dart';
 import 'package:icebergnote/screen/card/todo_card.dart';
 import 'package:icebergnote/screen/card/normal_card.dart';
+import 'package:icebergnote/screen/richtext/richtext_card.dart';
 import 'package:realm/realm.dart';
 
 import '../main.dart';
@@ -132,6 +133,14 @@ class StarPageState extends State<StarPage> {
         refreshList: refreshList,
         searchText: searchText,
         anniversary: anniversary,
+      );
+    } else if (note.noteType == '.长文') {
+      return RichtextCard(
+        note: note,
+        mod: widget.mod,
+        context: context,
+        refreshList: refreshList,
+        searchText: searchText,
       );
     } else {
       return NormalCard(
